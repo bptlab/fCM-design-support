@@ -1,0 +1,43 @@
+{
+  "name": "not-gryphon",
+  "version": "1.0.0",
+  "description": "Modeling Tool with Design-Time Support for Fragment-Based Case Management",
+  "main": "index.js",
+  "scripts": {
+    "test": "karma start",
+    "build": "grunt build",
+    "serve": "grunt serve",
+    "dev": "grunt auto-build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bptlab/fCM-design-support.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bptlab/fCM-design-support/issues"
+  },
+  "homepage": "https://github.com/bptlab/fCM-design-support#readme",
+  
+  "devDependencies": {
+    "browserify": "^17.0.0",
+    "esmify": "^2.1.1",
+    "grunt": "^1.4.1",
+    "grunt-browserify": "^6.0.0",
+    "grunt-cli": "^1.4.3",
+    "grunt-contrib-connect": "^3.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-less": "^3.0.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "load-grunt-tasks": "^5.1.0",
+    "stringify": "^5.2.0",
+    "time-grunt": "^2.0.0"
+
+  },
+  "dependencies": {
+    "diagram-js": "^7.8.1",
+    "bpmn-js": "^8.8.2",
+    "jquery": "^3.6.0"
+  }
+}
