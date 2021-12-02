@@ -2,8 +2,12 @@ import BpmnModeler from 'bpmn-js/lib/Modeler';
 import diagramXML from '../resources/newDiagram.bpmn';
 import $ from 'jquery';
 
-var modeler = new BpmnModeler({
+var fragmentModeler = new BpmnModeler({
     container: '#canvas'
+});
+
+var dataModeler = new BpmnModeler({
+    container: '#secondCanvas'
 });
 
 function createNewDiagram() {
@@ -12,7 +16,8 @@ function createNewDiagram() {
 
 async function openDiagram(xml) {
     try {
-        await modeler.importXML(xml);
+        await fragmentModeler.importXML(xml);
+        await dataModeler.importXML(xml);
     } catch (err) {
         console.error(err);
     }
@@ -23,4 +28,4 @@ $(function() {
 });
 
 // expose bpmnjs to window for debugging purposes
-window.bpmnjs = modeler;
+window.bpmnjs = fragmentModeler;
