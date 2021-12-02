@@ -23,12 +23,12 @@ module.exports = function(grunt) {
           watch: true
         },
         files: {
-          'dist/index.js': ['app/index.js']
+          'dist/index.js': ['app/*.js']
         }
       },
       app: {
         files: {
-          'dist/index.js': ['app/index.js']
+          'dist/index.js': ['app/*.js']
         }
       }
     },
