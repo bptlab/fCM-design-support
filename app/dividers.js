@@ -7,7 +7,7 @@ window.addEventListener('touchmove', function (e) { dragmove(e); });
 window.addEventListener('mouseup', dragend);
 window.addEventListener('touchend', dragend);
 $('.divider').each((index, divider) => {
-    divider.style.backgroundColor = 'transparent';
+    divider.style.backgroundColor = 'rgba(150,150,150,0.5)';
     divider.addEventListener('mousedown', function (e) { dragstart(e); });
     divider.addEventListener('touchstart', function (e) { dragstart(e); });
 });
@@ -23,7 +23,7 @@ function dragmove(e) {
         dragTarget.style.backgroundColor = 'blue';
         var prev = $(dragTarget).prev('div')[0];
         var next = $(dragTarget).next('div')[0];
-        if (true) {
+        if (dragTarget.classList.contains('vertical')) {
             var percentage = (e.pageX / window.innerWidth) * 100;
             if (percentage > 5 && percentage < 98) {
                 var mainPercentage = 100 - percentage;
@@ -33,13 +33,14 @@ function dragmove(e) {
                 next.style.left = percentage + '%';
             }
         } else {
-            var containertop = Number(w3_getStyleValue(document.getElementById('container'), 'top').replace('px', ''));
-            var percentage = ((e.pageY - containertop + 20) / (window.innerHeight - containertop + 20)) * 100;
+            var percentage = (e.pageY / window.innerHeight) * 100;
+            console.log(percentage);
             if (percentage > 5 && percentage < 98) {
                 var mainPercentage = 100 - percentage;
-                document.getElementById('textareacontainer').style.height = percentage + '%';
-                document.getElementById('iframecontainer').style.height = mainPercentage + '%';
-                fixDragBtn();
+                prev.style.height = percentage + '%';
+                next.style.height = mainPercentage + '%';
+                dragTarget.style.top = 'calc('+percentage + '% - 10px)';
+                next.style.top = percentage + '%';
             }
         }
     }
@@ -47,7 +48,7 @@ function dragmove(e) {
 
 function dragend() {
     $('.divider').each((index, divider) => {
-        divider.style.backgroundColor = 'transparent';
+        divider.style.backgroundColor = 'rgba(150,150,150,0.5)';
     });
     dragTarget = undefined;
 }
