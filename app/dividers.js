@@ -21,26 +21,30 @@ function dragstart(e) {
 function dragmove(e) {
     if (dragTarget) {
         dragTarget.style.backgroundColor = 'blue';
+        var parent = $(dragTarget).parent()[0];
+        var parentStyle = window.getComputedStyle(parent);
         var prev = $(dragTarget).prev('div')[0];
         var next = $(dragTarget).next('div')[0];
+        console.log(parent.getBoundingClientRect());
         if (dragTarget.classList.contains('vertical')) {
-            var percentage = (e.pageX / window.innerWidth) * 100;
-            if (percentage > 5 && percentage < 98) {
+            var parentInnerWidth = parseInt(parentStyle.width, 10) - parseInt(parentStyle.paddingLeft, 10) - parseInt(parentStyle.paddingRight, 10);
+            var percentage = ((e.pageX - (parent.getBoundingClientRect().left + parseInt(parentStyle.paddingLeft, 10))) / parentInnerWidth) * 100;
+            if (percentage > 5 && percentage < 95) {
                 var mainPercentage = 100 - percentage;
                 prev.style.width = percentage + '%';
                 next.style.width = mainPercentage + '%';
-                dragTarget.style.left = 'calc('+percentage + '% - 10px)';
-                next.style.left = percentage + '%';
+                dragTarget.style.left = 'calc('+ percentage * (parentInnerWidth / parseInt(parentStyle.width, 10)) + '% - 10px - '+ parentStyle.paddingLeft +')';
+                next.style.left = 0 + '%';
             }
         } else {
-            var percentage = (e.pageY / window.innerHeight) * 100;
-            console.log(percentage);
-            if (percentage > 5 && percentage < 98) {
+            var parentInnerHeight = parseInt(parentStyle.height, 10) - parseInt(parentStyle.paddingTop, 10) - parseInt(parentStyle.paddingBottom, 10);
+            var percentage = ((e.pageY - (parent.getBoundingClientRect().top + parseInt(parentStyle.paddingTop, 10))) / parentInnerHeight) * 100;
+            if (percentage > 5 && percentage < 95) {
                 var mainPercentage = 100 - percentage;
                 prev.style.height = percentage + '%';
                 next.style.height = mainPercentage + '%';
-                dragTarget.style.top = 'calc('+percentage + '% - 10px)';
-                next.style.top = percentage + '%';
+                dragTarget.style.top = 'calc('+percentage * (parentInnerHeight / parseInt(parentStyle.height, 10)) + '% - 10px + ' + parentStyle.paddingTop +')';
+                next.style.top = 0 + '%';
             }
         }
     }
