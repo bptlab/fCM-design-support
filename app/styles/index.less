@@ -3,9 +3,10 @@
 }
 
 body,
-html {
+html,
+body > div {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: rgb(51, 51, 51);
+  color: black;
   font-size: 12px;
 
   height: 100%;
@@ -28,7 +29,7 @@ body {
 
 .content {
   float: left;
-  position:absolute;
+  position: relative;
 }
 
 .left, .right {
@@ -37,7 +38,7 @@ body {
 }
 
 .right {
-  left: 50%;
+  left: 0%;
 }
 
 .top, .bottom {
@@ -46,7 +47,7 @@ body {
 }
 
 .bottom {
-  top: 50%;
+  top: 0%;
 }
 
 .left, .right, .top, .bottom {
