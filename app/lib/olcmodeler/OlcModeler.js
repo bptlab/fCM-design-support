@@ -20,6 +20,8 @@ import draw from './draw';
 import rules from './rules';
 import modeling from './modeling';
 
+import moddle from './moddle';
+
 /**
  * Our editor constructor
  *
@@ -56,7 +58,10 @@ export default function OlcModeler(options) {
     palette,
     draw,
     rules,
-    modeling
+    modeling,
+    {
+      moddle: ['value', new moddle({})]
+    }
   ];
 
   return new Diagram({

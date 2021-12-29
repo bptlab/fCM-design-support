@@ -3,8 +3,7 @@ import inherits from 'inherits';
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 
 
-export default function OlcUpdater(
-    eventBus, connectionDocking) {
+export default function OlcUpdater(eventBus, connectionDocking) {
 
     CommandInterceptor.call(this, eventBus);
 

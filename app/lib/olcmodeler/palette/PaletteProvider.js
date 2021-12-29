@@ -2,9 +2,7 @@ import {
   assign
 } from 'min-dash';
 
-/**
- * A palette provider for od elements.
- */
+//TODO rename prefix
 export default function PaletteProvider(
   palette, create, elementFactory,
   spaceTool, lassoTool, handTool, globalConnect, translate) {
@@ -46,12 +44,7 @@ PaletteProvider.prototype.getPaletteEntries = function (element) {
   function createAction(type, group, className, title, options) {
 
     function createListener(event) {
-      var shape = elementFactory.createShape(assign({
-        type: type,
-        //TODO width and height should be replacable with default values for types
-        width: 100,
-        height: 80
-      }, options));
+      var shape = elementFactory.createShape(assign({type: type}, options));
       create.start(event, shape);
     }
 

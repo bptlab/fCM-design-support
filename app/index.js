@@ -8,36 +8,34 @@ import $ from 'jquery';
 // });
 
 
-var diagram = new OlcModeler({
+var olcModeler = new OlcModeler({
     container: document.querySelector('#canvas')
 });
 
 (() => {
-    const canvas = diagram.get('canvas');
-    const elementFactory = diagram.get('elementFactory');
+    const canvas = olcModeler.get('canvas');
+    const elementFactory = olcModeler.get('elementFactory');
     
     // add root
-    var root = elementFactory.createRoot();
+    var root = elementFactory.createRoot({type : 'olc:Olc'});
     
     canvas.setRootElement(root);
     
     // add shapes
     var shape1 = elementFactory.createShape({
       type: 'olc:State',
+      name: 'State A',
       x: 150,
-      y: 100,
-      width: 100,
-      height: 80
+      y: 100
     });
     
     canvas.addShape(shape1, root);
     
     var shape2 = elementFactory.createShape({
       type: 'olc:State',
+      name: 'State B',
       x: 290,
-      y: 220,
-      width: 100,
-      height: 80
+      y: 220
     });
     
     canvas.addShape(shape2, root);
@@ -104,5 +102,5 @@ $(function() {
     createNewDiagram();
 });
 
-// expose bpmnjs to window for debugging purposes
-//TODO window.bpmnjs = fragmentModeler;
+// expose modeler to window for debugging purposes
+window.modeler = olcModeler;

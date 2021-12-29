@@ -220,7 +220,7 @@ export default function OlcRenderer(
 
       var circle = drawCircle(parentGfx, element.width, element.height, attrs);
 
-      var semantic = element.businessObject || {name: 'foobar'};
+      var semantic = element.businessObject || {name: '< unknown >'};
       renderLabel(parentGfx, semantic.name, {
         box: element,
         align: 'center-middle',
@@ -282,7 +282,7 @@ function getCirclePath(shape) {
 
   var cx = shape.x + shape.width / 2,
       cy = shape.y + shape.height / 2,
-      radius = shape.width / 2 - 4 /* -4 here so that the arrow tips close correctly, not sure why they do not otherwise*/;
+      radius = shape.width / 2;
 
   var circlePath = [
     ['M', cx, cy],
