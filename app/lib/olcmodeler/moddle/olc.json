@@ -1,0 +1,67 @@
+{
+    "name": "Object diagram",
+    "uri": "http://bptlab/schema/olc",
+    "prefix": "olc",
+    "xml": {
+      "tagAlias": "lowerCase"
+    },
+    "types": [
+      {
+        "name": "OlcElement",
+        "isAbstract": true,
+        "properties": [
+          {
+            "name": "name",
+            "isAttr": true,
+            "type": "String"
+          },
+          {
+            "name": "id",
+            "isAttr": true,
+            "type": "String",
+            "isId": true
+          }
+        ]
+      },
+      {
+        "name": "State",
+        "superClass": [
+          "OlcElement"
+        ],
+        "properties": []
+      },
+      {
+        "name": "Transition",
+        "superClass": [
+          "OlcElement"
+        ],
+        "properties": [
+          {
+            "name": "sourceState",
+            "isAttr": true,
+            "isReference": true,
+            "type": "State"
+          },
+          {
+            "name": "targetState",
+            "isAttr": true,
+            "isReference": true,
+            "type": "State"
+          }
+        ]
+      },
+      {
+        "name": "Olc",
+        "superClass": [
+          "OlcElement"
+        ],
+        "properties": [
+          {
+            "name": "Elements",
+            "isMany": true,
+            "type": "OlcElement"
+          }
+        ]
+      }
+    ]
+  }
