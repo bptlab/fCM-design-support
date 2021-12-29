@@ -4,12 +4,9 @@ import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 
 
 export default function OlcUpdater(
-    eventBus, connectionDocking,
-    translate) {
+    eventBus, connectionDocking) {
 
     CommandInterceptor.call(this, eventBus);
-
-    this._translate = translate;
 
     // connection cropping //////////////////////
     // crop connection ends during create/update
@@ -17,10 +14,12 @@ export default function OlcUpdater(
 
         var context = e.context,
             hints = context.hints || {},
-            connection;
+            connection = context.connection;
 
         if (!context.cropped && hints.createElementsBehavior !== false) {
-            connection = context.connection;
+            if (connection.source === connection.target) {
+                connection.waypoints = reflectiveEdge(connection.source);
+            }
             connection.waypoints = connectionDocking.getCroppedWaypoints(connection);
             context.cropped = true;
         }
@@ -36,10 +35,22 @@ export default function OlcUpdater(
     });
 }
 
+function reflectiveEdge(element) {
+    var {x, y, width, height} = element;
+    var center = {x : x + width / 2, y : y + height / 2};
+    var topRight = {x : x + width, y : y};
+    var dx = width / 10, dy = height / 10;
+    return [
+        {x : center.x   - dx, y : center.y   - dy},
+        {x : topRight.x - dx, y : topRight.y - dy},
+        {x : topRight.x + dx, y : topRight.y + dy},
+        {x : center.x   + dx, y : center.y   + dy}
+    ];
+}
+
 inherits(OlcUpdater, CommandInterceptor);
 
 OlcUpdater.$inject = [
     'eventBus',
-    'connectionDocking',
-    'translate'
+    'connectionDocking'
 ];

@@ -274,25 +274,25 @@ OlcRenderer.prototype.drawShape = function (parentGfx, element) {
 OlcRenderer.prototype.drawConnection = OlcRenderer.prototype.drawShape;
 
 OlcRenderer.prototype.getShapePath = function (element) {
-  return getRectPath(element);
+  return getCirclePath(element);
 };
 
 // Utility
-function getRectPath(shape) {
-  var x = shape.x,
-    y = shape.y,
-    width = shape.width,
-    height = shape.height;
+function getCirclePath(shape) {
 
-  var rectPath = [
-    ['M', x, y],
-    ['l', width, 0],
-    ['l', 0, height],
-    ['l', -width, 0],
+  var cx = shape.x + shape.width / 2,
+      cy = shape.y + shape.height / 2,
+      radius = shape.width / 2 - 4 /* -4 here so that the arrow tips close correctly, not sure why they do not otherwise*/;
+
+  var circlePath = [
+    ['M', cx, cy],
+    ['m', 0, -radius],
+    ['a', radius, radius, 0, 1, 1, 0, 2 * radius],
+    ['a', radius, radius, 0, 1, 1, 0, -2 * radius],
     ['z']
   ];
 
-  return componentsToPath(rectPath);
+  return componentsToPath(circlePath);
 }
 
 function is(element, type) {
