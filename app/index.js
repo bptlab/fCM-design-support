@@ -93,6 +93,7 @@ async function openDiagram(xml) {
     try {
         // await fragmentModeler.importXML(xml);
         await dataModeler.importXML(xml);
+        await olcModeler.createNew();
     } catch (err) {
         console.error(err);
     }
@@ -104,3 +105,8 @@ $(function() {
 
 // expose modeler to window for debugging purposes
 window.modeler = olcModeler;
+
+
+document.getElementById('exportOlc').addEventListener('click', function() {
+  olcModeler.saveXML({ format: true }).then(result => console.log(result.xml));
+});
