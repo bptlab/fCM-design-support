@@ -21,6 +21,8 @@ import TextUtil from 'diagram-js/lib/util/Text';
 
 import Ids from 'ids';
 
+import {is} from '../../util/Util';
+
 var RENDERER_IDS = new Ids();
 
 import {
@@ -262,7 +264,7 @@ OlcRenderer.$inject = [
 
 
 OlcRenderer.prototype.canRender = function (element) {
-  return element.type === 'olc:State' || element.type === 'olc:Transition';//is(element, 'olc:State');
+  return is(element, 'olc:State') || is(element, 'olc:Transition');
 };
 
 OlcRenderer.prototype.drawShape = function (parentGfx, element) {
@@ -293,14 +295,4 @@ function getCirclePath(shape) {
   ];
 
   return componentsToPath(circlePath);
-}
-
-function is(element, type) {
-  var bo = getBusinessObject(element);
-
-  return bo && (typeof bo.$instanceOf === 'function') && bo.$instanceOf(type);
-}
-
-function getBusinessObject(element) {
-  return (element && element.businessObject) || element;
 }

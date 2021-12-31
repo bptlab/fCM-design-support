@@ -2,6 +2,7 @@ import inherits from 'inherits';
 
 import RuleProvider from 'diagram-js/lib/features/rules/RuleProvider';
 
+import {is} from '../../util/Util';
 
 export default function OlcRuleProvider(eventBus) {
   RuleProvider.call(this, eventBus);
@@ -18,11 +19,11 @@ OlcRuleProvider.prototype.init = function () {
     var source = context.source,
       target = context.target;
 
-    return source.type === 'olc:State' && target.type === 'olc:State' && { type: 'olc:Transition' };//TODO is(element, 'olc:State');
+    return is(source, 'olc:State') && is(target, 'olc:State') && { type: 'olc:Transition' };
   });
 
   this.addRule('connection.start', function (context) {
     var source = context.source;
-    return source.type === 'olc:State' && { type: 'olc:Transition' };//TODO is(element, 'olc:State');
+    return is(source, 'olc:State') && { type: 'olc:Transition' };
   });
 };
