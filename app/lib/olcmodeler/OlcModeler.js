@@ -27,7 +27,8 @@ import moddle from './moddle';
 var emptyDiagram =
   `<?xml version="1.0" encoding="UTF-8"?>
 <olc:definitions xmlns:olc="http://bptlab/schema/olc" xmlns:olcDi="http://bptlab/schema/olcDi">
-    <olc:olc id="MainOlc" />
+    <olc:olc id="MainOlc">
+    </olc:olc>
 </olc:definitions>`;
 
 /**
@@ -120,8 +121,12 @@ OlcModeler.prototype.importXML = function(xml, rootBoard) {
         context: context
       }) || definitions;
 
+      
+      self.clear();
+
       self.importDefinitions(definitions, rootBoard);
       self._emit('import.done', { error: null, warnings: null });
+      resolve();
     }).catch(function(err) {
 
       self._emit('import.parse.complete', {
@@ -138,6 +143,10 @@ OlcModeler.prototype.importXML = function(xml, rootBoard) {
 
 OlcModeler.prototype.importDefinitions = function(definitions) {
   this._definitions = definitions;
+  const elementFactory = this.get('elementFactory');
+  var root = elementFactory.createRoot({type : 'olc:Olc', businessObject : definitions.olcs[0]});
+  const canvas = this.get('canvas');
+  canvas.setRootElement(root);
   //TODO do something with it
 }
 
@@ -152,7 +161,7 @@ OlcModeler.prototype.saveXML = function(options) {
   return new Promise(function(resolve, reject) {
 
     if (!definitions) {
-      var err = new Error('no definitions loaded');
+      var err = new Error('no xml loaded');
 
       return reject(err);
     }

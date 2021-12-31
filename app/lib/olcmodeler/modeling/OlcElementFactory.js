@@ -13,8 +13,15 @@ inherits(OlcElementFactory, BaseElementFactory);
 
 OlcElementFactory.$inject = ['moddle'];
 
+var i = 0;
+
 OlcElementFactory.prototype.createBusinessObject = function (type, attrs) {
-    return this._moddle.create(type, attrs || {});
+    var element = this._moddle.create(type, attrs || {});
+    if(!element.id) {
+        var prefix = (element.$type || '').replace(/^[^:]*:/g, '') + '_';
+        element.id = prefix + (i++);
+    }
+    return element;
 };
 
 OlcElementFactory.prototype.baseCreate = BaseElementFactory.prototype.create;
