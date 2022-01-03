@@ -18,6 +18,9 @@ export default function OlcUpdater(eventBus, connectionDocking) {
         if (!context.cropped && hints.createElementsBehavior !== false) {
             if (connection.source === connection.target) {
                 connection.waypoints = reflectiveEdge(connection.source);
+            } else {
+                //TODO: Handle bidirectional edges
+                connection.waypoints = [center(connection.source), center(connection.target)];
             }
             connection.waypoints = connectionDocking.getCroppedWaypoints(connection);
             context.cropped = true;
@@ -57,14 +60,14 @@ export default function OlcUpdater(eventBus, connectionDocking) {
 
 function reflectiveEdge(element) {
     var { x, y, width, height } = element;
-    var center = { x: x + width / 2, y: y + height / 2 };
+    var centerP = center(element);
     var topRight = { x: x + width, y: y };
     var dx = width / 10, dy = height / 10;
     return [
-        { x: center.x - dx, y: center.y - dy },
+        { x: centerP.x - dx, y: centerP.y - dy },
         { x: topRight.x - dx, y: topRight.y - dy },
         { x: topRight.x + dx, y: topRight.y + dy },
-        { x: center.x + dx, y: center.y + dy }
+        { x: centerP.x + dx, y: centerP.y + dy }
     ];
 }
 
@@ -84,3 +87,11 @@ OlcUpdater.$inject = [
     'eventBus',
     'connectionDocking'
 ];
+
+//TODO move to common utils
+function center(shape) {
+    return {
+      x: shape.x + shape.width / 2,
+      y: shape.y + shape.height / 2
+    };
+  }
