@@ -4,22 +4,26 @@ import {
 import inherits from 'inherits';
 import BaseElementFactory from 'diagram-js/lib/core/ElementFactory';
 
-export default function OlcElementFactory(moddle) {
+export default function OlcElementFactory(moddle, elementRegistry) {
     BaseElementFactory.call(this);
     this._moddle = moddle;
+    this._elementRegistry = elementRegistry;
 }
 
 inherits(OlcElementFactory, BaseElementFactory);
 
-OlcElementFactory.$inject = ['moddle'];
+OlcElementFactory.$inject = [
+    'moddle',
+    'elementRegistry'
+];
 
-var i = 0;
+var i = 0; //TODO replace with more sophisticated system
 
 OlcElementFactory.prototype.createBusinessObject = function (type, attrs) {
     var element = this._moddle.create(type, attrs || {});
     if(!element.id) {
         var prefix = (element.$type || '').replace(/^[^:]*:/g, '') + '_';
-        element.id = prefix + (i++);
+        while (this._elementRegistry.get(element.id = prefix + i)) i++;
     }
     return element;
 };
@@ -42,7 +46,10 @@ OlcElementFactory.prototype.create = function (elementType, attrs) {
         if (!attrs.type) {
             throw new Error('no shape type specified');
         }
-        businessObject = this.createBusinessObject(attrs.type, attrs);
+        var businessAttrs = assign({}, attrs);
+        delete businessAttrs.width;
+        delete businessAttrs.height;
+        businessObject = this.createBusinessObject(businessAttrs.type, businessAttrs);
     }
 
     attrs = assign({
