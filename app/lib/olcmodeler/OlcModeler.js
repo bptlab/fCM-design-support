@@ -29,10 +29,6 @@ var emptyDiagram =
   `<?xml version="1.0" encoding="UTF-8"?>
   <olc:definitions xmlns:olc="http://bptlab/schema/olc" xmlns:olcDi="http://bptlab/schema/olcDi">
     <olc:olc id="MainOlc">
-      <olc:state name="Foo" id="State_0" x="60" y="60" type="olc:State" />
-      <olc:state name="Bar" id="State_1" x="160" y="60" type="olc:State" />
-      <olc:transition id="Transition_3" sourceState="State_0" targetState="State_1" type="olc:Transition" />
-      <olc:transition id="Transition_5" sourceState="State_1" targetState="State_0" type="olc:Transition" />
     </olc:olc>
   </olc:definitions>`;
 
@@ -96,7 +92,7 @@ OlcModeler.prototype.createNew = function() {
   return this.importXML(emptyDiagram);
 }
 
-OlcModeler.prototype.importXML = function(xml, rootBoard) {
+OlcModeler.prototype.importXML = function(xml) {
 
   var self = this;
 
@@ -129,7 +125,7 @@ OlcModeler.prototype.importXML = function(xml, rootBoard) {
       
       self.clear();
 
-      self.importDefinitions(definitions, rootBoard);
+      self.importDefinitions(definitions);
       self._emit('import.done', { error: null, warnings: null });
       resolve();
     }).catch(function(err) {
@@ -159,7 +155,7 @@ OlcModeler.prototype.importDefinitions = function(definitions) {
 
   this._emit('import.render.start', { definitions: definitions });
 
-  elements['olc:State'].forEach(state => {
+  (elements['olc:State'] || []).forEach(state => {
     var stateVisual = elementFactory.createShape({
       type : 'olc:State', 
       businessObject : state, 
@@ -170,7 +166,7 @@ OlcModeler.prototype.importDefinitions = function(definitions) {
     canvas.addShape(stateVisual, root);
   });
 
-  elements['olc:Transition'].forEach(transition => {
+  (elements['olc:Transition'] || []).forEach(transition => {
     var source = states[transition.get('sourceState').get('id')];
     var target = states[transition.get('targetState').get('id')];
     var transitionVisual = elementFactory.createConnection({
