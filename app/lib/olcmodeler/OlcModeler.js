@@ -1,5 +1,5 @@
 import inherits from 'inherits';
-import { groupBy } from 'min-dash'
+import { groupBy, without, findIndex } from 'min-dash'
 
 import Diagram from 'diagram-js';
 
@@ -155,7 +155,7 @@ OlcModeler.prototype.importDefinitions = function (definitions) {
   this._definitions = definitions;
   this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: definitions });
   this._emit('import.render.start', { definitions: definitions });
-  this.showOlc(definitions.olcs[1]);
+  this.showOlc(definitions.olcs[0]);
   this._emit('import.render.complete', {});
 }
 
@@ -163,6 +163,7 @@ OlcModeler.prototype.showOlc = function (olc) {
   this.clear();
   this._olc = olc;
   this._emit(OlcEvents.SELECTED_OLC_CHANGED, { olc: olc });
+  if (!olc) return;
   const elementFactory = this.get('elementFactory');
   var diagramRoot = elementFactory.createRoot({ type: 'olc:Olc', businessObject: olc });
   const canvas = this.get('canvas');
@@ -196,13 +197,28 @@ OlcModeler.prototype.showOlc = function (olc) {
   });
 }
 
-OlcModeler.prototype.showOlcById = function(id) {
-  if(id && this._definitions && id !== (this._olc && this._olc.get('id'))) {
+OlcModeler.prototype.showOlcById = function (id) {
+  if (id && this._definitions && id !== (this._olc && this._olc.get('id'))) {
     var olc = this._definitions.olcs.filter(olc => olc.get('id') === id)[0];
-    if(olc) {
+    if (olc) {
       this.showOlc(olc);
     }
   }
+}
+
+OlcModeler.prototype.addOlc = function () {
+  var olc = this.get('elementFactory').createBusinessObject('olc:Olc', { name: 'foobar' });
+  this._definitions.olcs.push(olc);
+  this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: this._definitions });
+  this.showOlc(olc);
+}
+
+OlcModeler.prototype.deleteOlc = function () {
+  var currentIndex = findIndex(this._definitions.olcs, this._olc);
+  var indexAfterRemoval = Math.min(currentIndex, this._definitions.olcs.length - 2);
+  this._definitions.olcs = without(this._definitions.olcs, this._olc);
+  this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: this._definitions });
+  this.showOlc(this._definitions.olcs[indexAfterRemoval]);
 }
 
 OlcModeler.prototype.saveXML = function (options) {
