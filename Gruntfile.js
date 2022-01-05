@@ -90,7 +90,8 @@ module.exports = function(grunt) {
       styles: {
         files: {
           'dist/css/index.css': 'app/styles/index.less',
-          'dist/css/start.css': 'app/styles/start.less'
+          'dist/css/start.css': 'app/styles/start.less',
+          'dist/css/checking.css': 'app/styles/checking.less'
         }
       }
     },
