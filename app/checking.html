@@ -19,13 +19,28 @@
     <div class="startContent">
         <div class="checkingBox">
             <p class="checkingHeading">Does your model fit fCM?</p>
-            <div class="question"><p>Has your model a flexible semi-structure?</p><div class="triangle">&#x25BC</div></div>
-            <div class="question">Has your model data-driven decisions?<div class="triangle">&#x25BC</div></div>
-            <div class="question">Is your model goal-oriented?<div class="triangle">&#x25BC</div></div>
-            <div class="question">Is your model defined by domain experts' decisions?<div class="triangle">&#x25BC</div></div>
+            <div class="question"><p class="question-text">Has your model a flexible semi-structure?</p><div class="triangle" onclick="changeclass('question-1')">&#x25BC</div></div>
+            <div id="question-1" class="question-explained">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</div>
+            <div class="question"><p class="question-text">Has your model data-driven decisions?</p><div class="triangle" onclick="changeclass('question-2')">&#x25BC</div></div>
+            <div class="question"><p class="question-text">Is your model goal-oriented?</p><div class="triangle" onclick="changeclass('question-3')">&#x25BC</div></div>
+            <div class="question"><p class="question-text">Is your model defined by domain experts' decisions?</p><div class="triangle" onclick="changeclass('question-4')">&#x25BC</div></div>
             <a href="/" class="checkingButton">Start fcm modeling</a>
         </div>
     </div>
 </body>
 
 </html>
+
+<script>
+function changeclass(question) {
+
+var selected_question = document.getElementById(question)
+
+    if(selected_question.classList.contains("hidden") == true) {
+        selected_question.classList.remove("hidden");
+    } else {  
+        selected_question.classList.add("hidden");
+    }
+
+} 
+</script>
