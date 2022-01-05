@@ -16,8 +16,15 @@
 
 <body>
     <div class="topBar">
-        <button id="exportOlc" class="button">Export Olc as Xml</button>
-        <button id="importOlc" class="button">Import Olc from Xml</button>
+        <div class="debugButton">
+            <button id="exportOlc" class="button">Export Olc as Xml</button>
+            <button id="importOlc" class="button">Import Olc from Xml</button>
+        </div>
+        <div>
+            <a class="barButton"> New </a>
+            <a class="barButton"> Open </a>
+            <a class="barButton"> Save </a>
+        </div>
     </div>
     <div class="mainContent">
         <div class="content left">
@@ -29,7 +36,7 @@
         
         <div class="content right">
             <div class="content top">
-                <div id="notcanvas"class="canvas">
+                <div id="datamodel-canvas"class="canvas">
                 </div>
             </div>
         
