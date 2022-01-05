@@ -33,8 +33,7 @@ var DEFAULT_FILL_OPACITY = .95;
 var DEFAULT_TEXT_SIZE = 16;
 var LINE_HEIGHT_RATIO = 1.2;
 
-export default function OlcRenderer(
-  config, eventBus, styles,
+export default function OlcRenderer(eventBus, styles,
   canvas, priority) {
 
   BaseRenderer.call(this, eventBus, priority);
@@ -44,12 +43,12 @@ export default function OlcRenderer(
 
   var computeStyle = styles.computeStyle;
 
-  var defaultTextStyle = assign({
+  var defaultTextStyle = {
     fontFamily: 'IBM Plex, sans-serif',
     fontSize: DEFAULT_TEXT_SIZE,
     fontWeight: 'normal',
     lineHeight: LINE_HEIGHT_RATIO
-  }, config && config.defaultStyle || {});
+  };
   var textUtil = new TextUtil({
     style: defaultTextStyle
   });
@@ -256,7 +255,6 @@ export default function OlcRenderer(
 inherits(OlcRenderer, BaseRenderer);
 
 OlcRenderer.$inject = [
-  'config.postit',
   'eventBus',
   'styles',
   'canvas'

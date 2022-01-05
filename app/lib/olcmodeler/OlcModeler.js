@@ -1,5 +1,5 @@
 import inherits from 'inherits';
-import {groupBy} from 'min-dash'
+import { groupBy } from 'min-dash'
 
 import Diagram from 'diagram-js';
 
@@ -18,19 +18,29 @@ import RulesModule from 'diagram-js/lib/features/rules';
 import SelectionModule from 'diagram-js/lib/features/selection';
 import ZoomScrollModule from 'diagram-js/lib/navigation/zoomscroll';
 
-import palette from './palette';
-import draw from './draw';
-import rules from './rules';
-import modeling from './modeling';
+import OlcPaletteModule from './palette';
+import OlcDrawModule from './draw';
+import OlcRulesModule from './rules';
+import OlcModelingModule from './modeling';
+import OlcButtonBarModule from './buttonbar';
 
-import moddle from './moddle';
+import OlcModdle from './moddle';
+import OlcEvents from './OlcEvents';
 
 var emptyDiagram =
   `<?xml version="1.0" encoding="UTF-8"?>
-  <olc:definitions xmlns:olc="http://bptlab/schema/olc" xmlns:olcDi="http://bptlab/schema/olcDi">
-    <olc:olc id="MainOlc">
-    </olc:olc>
-  </olc:definitions>`;
+<olc:definitions xmlns:olc="http://bptlab/schema/olc" xmlns:olcDi="http://bptlab/schema/olcDi">
+  <olc:olc id="MainOlc" name="Olc Uno">
+    <olc:state name="Foo" id="State_0" type="olc:State" x="119" y="177" />
+    <olc:state name="Bar" id="State_1" type="olc:State" x="289" y="176" />
+    <olc:transition id="Transition_1" sourceState="State_0" targetState="State_1" type="olc:Transition" />
+  </olc:olc>
+  <olc:olc id="SecondOlc" name="Olc Dos">
+    <olc:state name="Boo" id="State_3" type="olc:State" x="119" y="177" />
+    <olc:state name="Klar" id="State_4" type="olc:State" x="289" y="176" />
+    <olc:transition id="Transition_2" sourceState="State_3" targetState="State_4" type="olc:Transition" />
+  </olc:olc>
+</olc:definitions>`;
 
 /**
  * Our editor constructor
@@ -65,12 +75,14 @@ export default function OlcModeler(options) {
 
   // our own modules, contributing controls, customizations, and more
   const customModules = [
-    palette,
-    draw,
-    rules,
-    modeling,
+    OlcPaletteModule,
+    OlcDrawModule,
+    OlcRulesModule,
+    OlcModelingModule,
+    OlcButtonBarModule,
     {
-      moddle: ['value', new moddle({})]
+      moddle: ['value', new OlcModdle({})],
+      olcModeler: ['value', this]
     }
   ];
 
@@ -88,21 +100,21 @@ export default function OlcModeler(options) {
 
 inherits(OlcModeler, Diagram);
 
-OlcModeler.prototype.createNew = function() {
+OlcModeler.prototype.createNew = function () {
   return this.importXML(emptyDiagram);
 }
 
-OlcModeler.prototype.importXML = function(xml) {
+OlcModeler.prototype.importXML = function (xml) {
 
   var self = this;
 
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
 
     // hook in pre-parse listeners +
     // allow xml manipulation
     xml = self._emit('import.parse.start', { xml: xml }) || xml;
 
-    self.get('moddle').fromXML(xml).then(function(result) {
+    self.get('moddle').fromXML(xml).then(function (result) {
 
       var definitions = result.rootElement;
       var references = result.references;
@@ -121,14 +133,10 @@ OlcModeler.prototype.importXML = function(xml) {
         definitions: definitions,
         context: context
       }) || definitions;
-
-      
-      self.clear();
-
       self.importDefinitions(definitions);
       self._emit('import.done', { error: null, warnings: null });
       resolve();
-    }).catch(function(err) {
+    }).catch(function (err) {
 
       self._emit('import.parse.complete', {
         error: err
@@ -142,47 +150,62 @@ OlcModeler.prototype.importXML = function(xml) {
   });
 };
 
-OlcModeler.prototype.importDefinitions = function(definitions) {
-
+//TODO handle errors during import
+OlcModeler.prototype.importDefinitions = function (definitions) {
   this._definitions = definitions;
-  const elementFactory = this.get('elementFactory');
-  var root = elementFactory.createRoot({type : 'olc:Olc', businessObject : definitions.olcs[0]});
-  const canvas = this.get('canvas');
-  canvas.setRootElement(root);
-
-  var elements = groupBy(root.businessObject.get('Elements'), element => element.$type);
-  var states = {};
-
+  this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: definitions });
   this._emit('import.render.start', { definitions: definitions });
+  this.showOlc(definitions.olcs[1]);
+  this._emit('import.render.complete', {});
+}
+
+OlcModeler.prototype.showOlc = function (olc) {
+  this.clear();
+  this._olc = olc;
+  this._emit(OlcEvents.SELECTED_OLC_CHANGED, { olc: olc });
+  const elementFactory = this.get('elementFactory');
+  var diagramRoot = elementFactory.createRoot({ type: 'olc:Olc', businessObject: olc });
+  const canvas = this.get('canvas');
+  canvas.setRootElement(diagramRoot);
+
+  var elements = groupBy(olc.get('Elements'), element => element.$type);
+  var states = {};
 
   (elements['olc:State'] || []).forEach(state => {
     var stateVisual = elementFactory.createShape({
-      type : 'olc:State', 
-      businessObject : state, 
-      x : parseInt(state.get('x')), 
-      y : parseInt(state.get('y'))
+      type: 'olc:State',
+      businessObject: state,
+      x: parseInt(state.get('x')),
+      y: parseInt(state.get('y'))
     });
     states[state.get('id')] = stateVisual;
-    canvas.addShape(stateVisual, root);
+    canvas.addShape(stateVisual, diagramRoot);
   });
 
   (elements['olc:Transition'] || []).forEach(transition => {
     var source = states[transition.get('sourceState').get('id')];
     var target = states[transition.get('targetState').get('id')];
     var transitionVisual = elementFactory.createConnection({
-      type : 'olc:Transition', 
-      businessObject : transition, 
-      source : source, 
-      target : target,
-      waypoints : this.get('olcUpdater').connectionWaypoints(source, target)
+      type: 'olc:Transition',
+      businessObject: transition,
+      source: source,
+      target: target,
+      waypoints: this.get('olcUpdater').connectionWaypoints(source, target)
     });
-    canvas.addConnection(transitionVisual, root);
+    canvas.addConnection(transitionVisual, diagramRoot);
   });
-
-  this._emit('import.render.complete', {});
 }
 
-OlcModeler.prototype.saveXML = function(options) {
+OlcModeler.prototype.showOlcById = function(id) {
+  if(id && this._definitions && id !== (this._olc && this._olc.get('id'))) {
+    var olc = this._definitions.olcs.filter(olc => olc.get('id') === id)[0];
+    if(olc) {
+      this.showOlc(olc);
+    }
+  }
+}
+
+OlcModeler.prototype.saveXML = function (options) {
 
   options = options || {};
 
@@ -190,7 +213,7 @@ OlcModeler.prototype.saveXML = function(options) {
 
   var definitions = this._definitions;
 
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
 
     if (!definitions) {
       var err = new Error('no xml loaded');
@@ -203,7 +226,7 @@ OlcModeler.prototype.saveXML = function(options) {
       definitions: definitions
     }) || definitions;
 
-    self.get('moddle').toXML(definitions, options).then(function(result) {
+    self.get('moddle').toXML(definitions, options).then(function (result) {
 
       var xml = result.xml;
 
@@ -222,13 +245,13 @@ OlcModeler.prototype.saveXML = function(options) {
       }
 
       return resolve({ xml: xml });
-    }).catch(function(err) {
+    }).catch(function (err) {
 
       return reject(err);
     });
   });
 };
 
-OlcModeler.prototype._emit = function(type, event) {
+OlcModeler.prototype._emit = function (type, event) {
   return this.get('eventBus').fire(type, event);
 };
