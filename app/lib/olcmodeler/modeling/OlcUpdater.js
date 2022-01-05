@@ -6,6 +6,8 @@ import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 export default function OlcUpdater(eventBus, connectionDocking) {
 
     CommandInterceptor.call(this, eventBus);
+    this._connectionDocking = connectionDocking;
+    self = this;
 
     // connection cropping //////////////////////
     // crop connection ends during create/update
@@ -16,10 +18,7 @@ export default function OlcUpdater(eventBus, connectionDocking) {
             connection = context.connection;
 
         if (!context.cropped && hints.createElementsBehavior !== false) {
-            if (connection.source === connection.target) {
-                connection.waypoints = reflectiveEdge(connection.source);
-            }
-            connection.waypoints = connectionDocking.getCroppedWaypoints(connection);
+            connection.waypoints = self.connectionWaypoints(connection.source, connection.target);
             context.cropped = true;
         }
     }
@@ -53,18 +52,29 @@ export default function OlcUpdater(eventBus, connectionDocking) {
         element.businessObject.sourceState = element.source.businessObject;
         element.businessObject.targetState = element.target.businessObject;
     });
+
+    this.executed([
+        'shape.create',
+        'shape.move'
+    ], event => {
+        var element = event.context.shape;
+        var {x, y} = element;
+        var businessObject = element.businessObject;
+        businessObject.set('x', x);
+        businessObject.set('y', y);
+    });
 }
 
 function reflectiveEdge(element) {
     var { x, y, width, height } = element;
-    var center = { x: x + width / 2, y: y + height / 2 };
+    var centerP = center(element);
     var topRight = { x: x + width, y: y };
     var dx = width / 10, dy = height / 10;
     return [
-        { x: center.x - dx, y: center.y - dy },
+        { x: centerP.x - dx, y: centerP.y - dy },
         { x: topRight.x - dx, y: topRight.y - dy },
         { x: topRight.x + dx, y: topRight.y + dy },
-        { x: center.x + dx, y: center.y + dy }
+        { x: centerP.x + dx, y: centerP.y + dy }
     ];
 }
 
@@ -84,3 +94,23 @@ OlcUpdater.$inject = [
     'eventBus',
     'connectionDocking'
 ];
+
+//TODO move to common utils
+function center(shape) {
+    return {
+      x: shape.x + shape.width / 2,
+      y: shape.y + shape.height / 2
+    };
+}
+
+OlcUpdater.prototype.connectionWaypoints = function(source, target) {
+    var connection = {source, target};
+    if (connection.source === connection.target) {
+        connection.waypoints = reflectiveEdge(connection.source);
+    } else {
+        //TODO: Handle bidirectional edges
+        connection.waypoints = [center(connection.source), center(connection.target)];
+    }
+    connection.waypoints = this._connectionDocking.getCroppedWaypoints(connection);
+    return connection.waypoints;
+}

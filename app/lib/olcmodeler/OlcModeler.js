@@ -1,4 +1,5 @@
 import inherits from 'inherits';
+import {groupBy} from 'min-dash'
 
 import Diagram from 'diagram-js';
 
@@ -26,10 +27,10 @@ import moddle from './moddle';
 
 var emptyDiagram =
   `<?xml version="1.0" encoding="UTF-8"?>
-<olc:definitions xmlns:olc="http://bptlab/schema/olc" xmlns:olcDi="http://bptlab/schema/olcDi">
+  <olc:definitions xmlns:olc="http://bptlab/schema/olc" xmlns:olcDi="http://bptlab/schema/olcDi">
     <olc:olc id="MainOlc">
     </olc:olc>
-</olc:definitions>`;
+  </olc:definitions>`;
 
 /**
  * Our editor constructor
@@ -91,7 +92,7 @@ OlcModeler.prototype.createNew = function() {
   return this.importXML(emptyDiagram);
 }
 
-OlcModeler.prototype.importXML = function(xml, rootBoard) {
+OlcModeler.prototype.importXML = function(xml) {
 
   var self = this;
 
@@ -124,7 +125,7 @@ OlcModeler.prototype.importXML = function(xml, rootBoard) {
       
       self.clear();
 
-      self.importDefinitions(definitions, rootBoard);
+      self.importDefinitions(definitions);
       self._emit('import.done', { error: null, warnings: null });
       resolve();
     }).catch(function(err) {
@@ -142,12 +143,43 @@ OlcModeler.prototype.importXML = function(xml, rootBoard) {
 };
 
 OlcModeler.prototype.importDefinitions = function(definitions) {
+
   this._definitions = definitions;
   const elementFactory = this.get('elementFactory');
   var root = elementFactory.createRoot({type : 'olc:Olc', businessObject : definitions.olcs[0]});
   const canvas = this.get('canvas');
   canvas.setRootElement(root);
-  //TODO do something with it
+
+  var elements = groupBy(root.businessObject.get('Elements'), element => element.$type);
+  var states = {};
+
+  this._emit('import.render.start', { definitions: definitions });
+
+  (elements['olc:State'] || []).forEach(state => {
+    var stateVisual = elementFactory.createShape({
+      type : 'olc:State', 
+      businessObject : state, 
+      x : parseInt(state.get('x')), 
+      y : parseInt(state.get('y'))
+    });
+    states[state.get('id')] = stateVisual;
+    canvas.addShape(stateVisual, root);
+  });
+
+  (elements['olc:Transition'] || []).forEach(transition => {
+    var source = states[transition.get('sourceState').get('id')];
+    var target = states[transition.get('targetState').get('id')];
+    var transitionVisual = elementFactory.createConnection({
+      type : 'olc:Transition', 
+      businessObject : transition, 
+      source : source, 
+      target : target,
+      waypoints : this.get('olcUpdater').connectionWaypoints(source, target)
+    });
+    canvas.addConnection(transitionVisual, root);
+  });
+
+  this._emit('import.render.complete', {});
 }
 
 OlcModeler.prototype.saveXML = function(options) {
