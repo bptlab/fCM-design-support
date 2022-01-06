@@ -7,25 +7,22 @@ window.addEventListener('touchmove', function (e) { dragmove(e); });
 window.addEventListener('mouseup', dragend);
 window.addEventListener('touchend', dragend);
 $('.divider').each((index, divider) => {
-    divider.style.backgroundColor = 'rgba(150,150,150,0.5)';
     divider.addEventListener('mousedown', function (e) { dragstart(e); });
     divider.addEventListener('touchstart', function (e) { dragstart(e); });
 });
 
 function dragstart(e) {
-    console.log(e);
     e.preventDefault();
     dragTarget = e.target;
 }
 
 function dragmove(e) {
     if (dragTarget) {
-        dragTarget.style.backgroundColor = 'blue';
+        dragTarget.classList.add('dragged')
         var parent = $(dragTarget).parent()[0];
         var parentStyle = window.getComputedStyle(parent);
         var prev = $(dragTarget).prev('div')[0];
         var next = $(dragTarget).next('div')[0];
-        console.log(parent.getBoundingClientRect());
         if (dragTarget.classList.contains('vertical')) {
             var parentInnerWidth = parseInt(parentStyle.width, 10) - parseInt(parentStyle.paddingLeft, 10) - parseInt(parentStyle.paddingRight, 10);
             var percentage = ((e.pageX - (parent.getBoundingClientRect().left + parseInt(parentStyle.paddingLeft, 10))) / parentInnerWidth) * 100;
@@ -52,7 +49,7 @@ function dragmove(e) {
 
 function dragend() {
     $('.divider').each((index, divider) => {
-        divider.style.backgroundColor = 'rgba(150,150,150,0.5)';
+        divider.classList.remove('dragged')
     });
     dragTarget = undefined;
 }
