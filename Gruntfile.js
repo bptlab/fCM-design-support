@@ -89,7 +89,8 @@ module.exports = function(grunt) {
       },
       styles: {
         files: {
-          'dist/css/index.css': ['app/styles/index.less', 'app/styles/olc.less', 'app/styles/dividers.less'],
+          'dist/css/index.css': ['app/styles/index.less', 'app/styles/dividers.less'],
+          'dist/css/lib.css': ['app/lib/**/*.less'],
           'dist/css/start.css': 'app/styles/start.less',
           'dist/css/checking.css': 'app/styles/checking.less'
         }
@@ -107,7 +108,7 @@ module.exports = function(grunt) {
 
       less: {
         files: [
-          'app/styles/**/*.less'
+          'app/**/*.less'
         ],
         tasks: [
           'less'
