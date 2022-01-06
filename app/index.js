@@ -1,6 +1,9 @@
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import diagramXML from '../resources/newDiagram.bpmn';
 import OlcModeler from './lib/olcmodeler/OlcModeler';
+import GoalStateModeler from './lib/goalstatemodeler/GoalStateModeler';
+import { dummy } from './lib/goalstatemodeler/GoalStateModeler';
+
 import $ from 'jquery';
 
 // var fragmentModeler = new BpmnModeler({
@@ -108,6 +111,10 @@ var dataModeler = new BpmnModeler({
     container: '#datamodel-canvas'
 });
 
+var goalStatementModeler = new GoalStateModeler(
+  '#goalstate-canvas'
+);
+
 function createNewDiagram() {
     openDiagram(diagramXML);
 }
@@ -124,6 +131,7 @@ async function openDiagram(xml) {
 
 $(function() {
     createNewDiagram();
+    goalStatementModeler.showGoalStatement(dummy);
 });
 
 // expose modeler to window for debugging purposes
