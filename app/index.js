@@ -39,7 +39,7 @@ function upload(callback) {
 
 
 var olcModeler = new OlcModeler({
-    container: document.querySelector('#canvas')
+    container: document.querySelector('#olc-canvas')
 });
 
 function foo() {
@@ -105,7 +105,7 @@ function foo() {
 }
 
 var dataModeler = new BpmnModeler({
-    container: '#secondCanvas'
+    container: '#datamodel-canvas'
 });
 
 function createNewDiagram() {
