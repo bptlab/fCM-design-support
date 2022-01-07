@@ -2,7 +2,7 @@ import BpmnModeler from 'bpmn-js/lib/Modeler';
 import diagramXML from '../resources/newDiagram.bpmn';
 import OlcModeler from './lib/olcmodeler/OlcModeler';
 import GoalStateModeler from './lib/goalstatemodeler/GoalStateModeler';
-import { dummy } from './lib/goalstatemodeler/GoalStateModeler';
+import { dummyGoalState } from './lib/goalstatemodeler/GoalStateModeler';
 
 import $ from 'jquery';
 
@@ -131,7 +131,7 @@ async function openDiagram(xml) {
 
 $(function() {
     createNewDiagram();
-    goalStatementModeler.showGoalStatement(dummy);
+    goalStatementModeler.showGoalStatement(dummyGoalState);
 });
 
 // expose modeler to window for debugging purposes
