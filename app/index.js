@@ -1,5 +1,6 @@
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import diagramXML from '../resources/newDiagram.bpmn';
+import datamodelXML from '../resources/emptyBoard.bpmn';
 import OlcModeler from './lib/olcmodeler/OlcModeler';
 import GoalStateModeler from './lib/goalstatemodeler/GoalStateModeler';
 import DataModelModeler from './lib/datamodelmodeler/Modeler';
@@ -7,9 +8,12 @@ import { dummyGoalState } from './lib/goalstatemodeler/GoalStateModeler';
 
 import $ from 'jquery';
 
+
 // var fragmentModeler = new BpmnModeler({
 //     container: '#canvas'
 // });
+
+
 
 function download(name, data) {
   var encodedData = encodeURIComponent(data);
@@ -108,13 +112,16 @@ function foo() {
   // selection.select(shape3);
 }
 
-var dataModeler_2 = new DataModelModeler({
-    container: '#fragments-canvas'
+var dataModeler = new DataModelModeler({
+    container: '#datamodel-canvas',
+    keyboard: {
+        bindTo: window,
+  }
 });
 
 
-var dataModeler = new BpmnModeler({
-    container: '#datamodel-canvas'
+var fragmentModeler = new BpmnModeler({
+    container: '#fragments-canvas'
 });
 
 var goalStatementModeler = new GoalStateModeler(
@@ -122,14 +129,15 @@ var goalStatementModeler = new GoalStateModeler(
 );
 
 function createNewDiagram() {
-    openDiagram(diagramXML);
+    openDiagram(diagramXML, datamodelXML);
 }
 
-async function openDiagram(xml) {
+async function openDiagram(bpmn_xml, datamodel_xml) {
     try {
         // await fragmentModeler.importXML(xml);
-        await dataModeler.importXML(xml);
+        await fragmentModeler.importXML(bpmn_xml);
         await olcModeler.createNew();
+        await dataModeler.importXML(datamodel_xml)
     } catch (err) {
         console.error(err);
     }
