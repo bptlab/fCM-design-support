@@ -2,6 +2,7 @@ import BpmnModeler from 'bpmn-js/lib/Modeler';
 import diagramXML from '../resources/newDiagram.bpmn';
 import OlcModeler from './lib/olcmodeler/OlcModeler';
 import GoalStateModeler from './lib/goalstatemodeler/GoalStateModeler';
+import DataModelModeler from './lib/datamodelmodeler/Modeler';
 import { dummyGoalState } from './lib/goalstatemodeler/GoalStateModeler';
 
 import $ from 'jquery';
@@ -106,6 +107,11 @@ function foo() {
   // const selection = diagram.get('selection');
   // selection.select(shape3);
 }
+
+var dataModeler_2 = new DataModelModeler({
+    container: '#fragments-canvas'
+});
+
 
 var dataModeler = new BpmnModeler({
     container: '#datamodel-canvas'
