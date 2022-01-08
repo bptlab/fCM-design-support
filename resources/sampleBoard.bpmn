@@ -2,7 +2,7 @@
 <od:definitions xmlns:od="http://tk/schema/od" xmlns:odDi="http://tk/schema/odDi"
                 xmlns:dc="http://www.omg.org/spec/DD/20100524/DC">
     <od:odBoard id="Board_debug">
-        <od:link name="components" id="Link_Object_2669_to_Object_2837_type_components" type="components"
+        <od:link name="1:1" id="Link_Object_2669_to_Object_2837_type_components" type="components"
                  sourceRef="Object_2669" targetRef="Object_2837"/>
         <od:link name="components" id="Link_Object_2669_to_Object_2838_type_components" type="components"
                  sourceRef="Object_2669" targetRef="Object_2838"/>
