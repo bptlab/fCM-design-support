@@ -207,6 +207,9 @@ function dragElement(elmnt) {
   }
 }
 
+
+// function to toggle the note Area
+
 document.getElementById("noteAreaToggleButton").addEventListener("click", toggleNoteArea, false)
 
 function toggleNoteArea() {
@@ -219,3 +222,8 @@ function toggleNoteArea() {
         noteArea.classList.add("hidden");
     }
 }
+
+
+// function to make the error bar expand
+
+
