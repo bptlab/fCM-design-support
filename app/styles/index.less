@@ -78,3 +78,38 @@ body {
   content: 'Abc';
   font-size: medium;
 }
+
+#note-area-wrapper {
+    position: absolute;
+    visibility: inherit;
+    top: 40%;
+    left: 40%;
+    z-index: 1000;
+    height: 450px;
+    width: 800px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.25);
+    border-style: solid;
+    border-width: 5px;
+    border-color: #29487D;
+    border-radius: 15px;
+    padding: 10px;
+    background-color:white;
+}
+
+#note-area-drag {
+    height: 25px;
+    width:25px;
+}
+
+#note-area-drag:hover {
+    cursor: grabbing;
+}
+
+.note-area {
+    height: 400px;
+    width: 770px;
+}
+
+.hidden {
+    display:none;
+}

@@ -162,3 +162,60 @@ document.getElementById('exportOlc').addEventListener('click', function() {
 document.getElementById('importOlc').addEventListener('click', function() {
   upload(xml => olcModeler.importXML(xml));
 });
+
+
+
+// functions to make the note area draggable
+
+//Make the DIV element draggagle:
+dragElement(document.getElementById("note-area-wrapper"));
+
+function dragElement(elmnt) {
+      
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  document.getElementById("note-area-drag").onmousedown = dragMouseDown;
+
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    /* stop moving when mouse button is released:*/
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
+document.getElementById("noteAreaToggleButton").addEventListener("click", toggleNoteArea, false)
+
+function toggleNoteArea() {
+
+    var noteArea = document.getElementById("note-area-wrapper");
+    
+    if(noteArea.classList.contains("hidden") == true) {
+        noteArea.classList.remove("hidden");
+    } else {          
+        noteArea.classList.add("hidden");
+    }
+}
