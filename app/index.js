@@ -7,6 +7,7 @@ import DataModelModeler from './lib/datamodelmodeler/Modeler';
 import { dummyGoalState } from './lib/goalstatemodeler/GoalStateModeler';
 
 import $ from 'jquery';
+import Mediator from './lib/mediator/Mediator';
 
 
 
@@ -40,9 +41,15 @@ function upload(callback) {
   document.body.removeChild(fileInput);
 }
 
+var mediator = new Mediator();
+window.mediator = mediator;
 
 var olcModeler = new OlcModeler({
-    container: document.querySelector('#olc-canvas')
+    container: document.querySelector('#olc-canvas'),
+    additionalModules: [{
+      __init__ : ['mediator'],
+      mediator : ['type', mediator.OlcModelerHook]
+    }]
 });
 
 function foo() {
