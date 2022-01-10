@@ -1,4 +1,4 @@
-import BpmnModeler from 'bpmn-js/lib/Modeler';
+import FragmentModeler from './lib/fragmentmodeler/FragmentModeler';
 import diagramXML from '../resources/newDiagram.bpmn';
 import datamodelXML from '../resources/sampleBoard.bpmn';
 import OlcModeler from './lib/olcmodeler/OlcModeler';
@@ -7,11 +7,6 @@ import DataModelModeler from './lib/datamodelmodeler/Modeler';
 import { dummyGoalState } from './lib/goalstatemodeler/GoalStateModeler';
 
 import $ from 'jquery';
-
-
-// var fragmentModeler = new BpmnModeler({
-//     container: '#canvas'
-// });
 
 
 
@@ -115,13 +110,13 @@ function foo() {
 var dataModeler = new DataModelModeler({
     container: '#datamodel-canvas',
     keyboard: {
-        bindTo: window,
-  }
+        bindTo: window
+    }
 });
 
-
-var fragmentModeler = new BpmnModeler({
-    container: '#fragments-canvas'
+var fragmentModeler = FragmentModeler({
+    container: '#fragments-canvas',
+    keyboard: { bindTo: document }
 });
 
 var goalStatementModeler = new GoalStateModeler(
@@ -225,5 +220,4 @@ function toggleNoteArea() {
 
 
 // function to make the error bar expand
-
 
