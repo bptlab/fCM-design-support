@@ -2,15 +2,15 @@
     padding: 10px;
 }
 
-.gs-conjunction > .operand:not(.first):before {
+.gs-conjunction > .gs-operands > .operand:not(:first-of-type):before {
     content: " ∧ ";
 }
 
-.gs-disjunction > .operand:not(.first):before {
+.gs-disjunction > .gs-operands > .operand:not(:first-of-type):before {
     content: " ∨ "
 }
 
-.gs-literal {
+.gs-literal, .gs-operands {
     display: inline;
 }
 

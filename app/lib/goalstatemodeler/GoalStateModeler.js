@@ -42,9 +42,6 @@ GoalStateModeler.prototype.createDisjunctionElement = function(parentElement, di
         var newConjunction = { type: 'conjunction', operands: [] };
         disjunction.operands.push(newConjunction);
         element.addOperand(newConjunction);
-        // Put button to end again
-        element.removeChild(addConjunctionButton);
-        element.appendChild(addConjunctionButton);
     });
     element.appendChild(addConjunctionButton);
     return element;
@@ -58,9 +55,6 @@ GoalStateModeler.prototype.createConjunctionElement = function(parentElement, co
         var newLiteral = {type: 'literal', class: Object.keys(dummyStateList)[0], states: []};
         conjunction.operands.push(newLiteral);
         element.addOperand(newLiteral);
-        // Put button to end again
-        element.removeChild(addLiteralButton);
-        element.appendChild(addLiteralButton);
     });
     element.appendChild(addLiteralButton);
     return element;
@@ -70,9 +64,14 @@ GoalStateModeler.prototype.createOperationElement = function(parentElement, oper
     var element = document.createElement('div');
     element.classList.add('gs-operation');
     element.classList.add('gs-' + operation.type);
+    
+    var operandsElement = document.createElement('div');
+    operandsElement.classList.add('gs-operands');
+    element.appendChild(operandsElement);
+    element.operandsElement = operandsElement;
+
     element.addOperand = (operand) => {
-        var operandElement = this.handleStatement(element, operand);
-        if (operand === operation.operands[0]) operandElement.classList.add('first');
+        var operandElement = this.handleStatement(operandsElement, operand);
         operandElement.classList.add('operand');
         
         var deleteButton = document.createElement('button');
@@ -100,32 +99,10 @@ GoalStateModeler.prototype.createLiteralElement = function(parentElement, litera
 
     var classDropDownMenu = document.createElement('div');
     classDropDownMenu.classList.add('gs-dropdown-menu');
-    for(var clazz of Object.keys(dummyStateList)) {
-        var entry = document.createElement('div');
-        const innerClass = clazz;
-        entry.classList.add('gs-dropdown-entry');
-        entry.innerHTML = clazz;
-        entry.addEventListener('click', event => {
-            this.changeClass(innerClass, literal);
-        });
-        classDropDownMenu.appendChild(entry);
-    }
-    // classElement.appendChild(classDropDownMenu);
     classElement.dropdown = classDropDownMenu;
 
     var stateDropDownMenu = document.createElement('div');
     stateDropDownMenu.classList.add('gs-dropdown-menu');
-    for(var state of dummyStateList[literal.class]) {
-        var entry = document.createElement('div');
-        const innerState = state;
-        entry.classList.add('gs-dropdown-entry');
-        entry.innerHTML = state;
-        entry.addEventListener('click', event => {
-            this.toggleState(innerState, literal);
-        });
-        stateDropDownMenu.appendChild(entry);
-    }
-    // stateElement.appendChild(stateDropDownMenu);
     stateElement.dropdown = stateDropDownMenu;
 
     this.populateLiteral(literal, element);
@@ -135,9 +112,33 @@ GoalStateModeler.prototype.createLiteralElement = function(parentElement, litera
 
 GoalStateModeler.prototype.populateLiteral = function(literal, element) {
     var {classElement, stateElement} = element;
-    classElement.innerHTML = literal.class;
+
+    classElement.innerText = literal.class;
+    classElement.dropdown.innerHTML = "";
+    for(var clazz of Object.keys(dummyStateList)) {
+        var entry = document.createElement('div');
+        const innerClass = clazz;
+        entry.classList.add('gs-dropdown-entry');
+        entry.innerHTML = clazz;
+        entry.addEventListener('click', event => {
+            this.changeClass(innerClass, literal);
+        });
+        classElement.dropdown.appendChild(entry);
+    }
     classElement.appendChild(classElement.dropdown);
-    stateElement.innerHTML = '[' + literal.states.join('|') + ']';
+
+    stateElement.innerText = '[' + (literal.states.length > 0 ? literal.states.join('|') : '<empty>') + ']';
+    stateElement.dropdown.innerHTML = "";
+    for(var state of dummyStateList[literal.class]) {
+        var entry = document.createElement('div');
+        const innerState = state;
+        entry.classList.add('gs-dropdown-entry');
+        entry.innerHTML = state;
+        entry.addEventListener('click', event => {
+            this.toggleState(innerState, literal);
+        });
+        stateElement.dropdown.appendChild(entry);
+    }
     stateElement.appendChild(stateElement.dropdown);
 }
 
@@ -147,9 +148,11 @@ GoalStateModeler.prototype.clear = function() {
 }
 
 GoalStateModeler.prototype.changeClass = function(clazz, literal) {
-    literal.class = clazz;
-    literal.states = [];
-    this.populateLiteral(literal, literal.element);
+    if (literal.class !== clazz) {
+        literal.class = clazz;
+        literal.states = [];
+        this.populateLiteral(literal, literal.element);
+    }
 }
 
 GoalStateModeler.prototype.toggleState = function(state, literal) {
@@ -166,7 +169,7 @@ GoalStateModeler.prototype.deleteStatement = function(parentStatement, statement
     var element = statement.element;
     var parentElement = parentStatement.element;
     parentStatement.operands = without(parentStatement.operands, statement);
-    parentElement.removeChild(element);
+    parentElement.operandsElement.removeChild(element);
 }
 
 GoalStateModeler.prototype.handleStatesChanged = function(clazz, newStates) {
