@@ -30,7 +30,7 @@ body {
 }
 
 .mainContent {
-  height: 100%;
+  height: calc(100% - 80px);
 }
 
 
@@ -71,7 +71,7 @@ body {
 // Overwrite changes from bootstrap.min.css
 .djs-palette .separator {
   background-color: transparent;
-  opacity: 1;
+  opacity: 1; 
 }
 
 .od-icon-object:before { content: '\e800'; } /* '' */
@@ -120,11 +120,15 @@ body {
     display:none;
 }
 
-.errorBar {
+#errorBar {
+  position: absolute;
+  width: 100%;
+  bottom: 0px;
   height: 40px;
   background-color: #29487D;
   display: flex;
   justify-content: flex-start;
-  align-items: center; 
+  align-items: flex-start; 
   z-index: 1000;
+  padding-top: 10px;
 }
