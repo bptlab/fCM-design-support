@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import { without } from 'min-dash';
+import { is } from '../datamodelmodeler/util/ModelUtil';
 
 export default function GoalStateModeler(container) {
     var root = document.createElement('div');
@@ -8,16 +9,16 @@ export default function GoalStateModeler(container) {
     this._root = root;
 }
 
-GoalStateModeler.prototype.showGoalStatement = function (goalStatement) {
+GoalStateModeler.prototype.showGoalState = function (goalState) {
     this.clear();
-    this._goalStatement = goalStatement;
-    if (!goalStatement) return;
+    this._goalState = goalState;
+    if (!goalState) return;
     this._handlers = {
         'disjunction': this.createDisjunctionElement,
         'conjunction': this.createConjunctionElement,
         'literal': this.createLiteralElement
     }
-    this.handleStatement(this._root, goalStatement);
+    this.handleStatement(this._root, goalState);
 }
 
 GoalStateModeler.prototype.handleStatement = function (parentElement, statement) {
@@ -64,13 +65,14 @@ GoalStateModeler.prototype.createOperationElement = function (parentElement, ope
     element.operandsElement = operandsElement;
 
     element.addOperand = (operand) => {
+        operand.parent = operation; //TODO maybe use moddle later, which has a parent function
         var operandElement = this.handleStatement(operandsElement, operand);
         operandElement.classList.add('operand');
 
         var deleteButton = document.createElement('button');
         deleteButton.innerHTML = 'x';
         deleteButton.addEventListener('click', event => {
-            this.deleteStatement(operation, operand);
+            this.deleteStatement(operand);
         });
         operandElement.appendChild(deleteButton);
     }
@@ -174,12 +176,12 @@ GoalStateModeler.prototype.toggleState = function (state, literal) {
     } else {
         literal.states.push(state);
     }
-    console.log(literal.states);
     this.populateLiteral(literal, literal.element);
 }
 
-GoalStateModeler.prototype.deleteStatement = function (parentStatement, statement) {
+GoalStateModeler.prototype.deleteStatement = function (statement) {
     var element = statement.element;
+    var parentStatement = statement.parent;
     var parentElement = parentStatement.element;
     parentStatement.operands = without(parentStatement.operands, statement);
     parentElement.operandsElement.removeChild(element);
@@ -189,16 +191,36 @@ GoalStateModeler.prototype.handleStatesChanged = function (clazz, newStates) {
     //TODO
 }
 
-GoalStateModeler.prototype.handleClassesChanged = function (classes) {
-    //TODO
+GoalStateModeler.prototype.handleOlcListChanged = function (classes, dryRun=false) {
+    this._classList = classes;
+    if (this._goalState) {
+        var statementsToVisit = [this._goalState];
+        var literalsToDelete = [];
+        while (statementsToVisit.length > 0) {
+            var nextStatement = statementsToVisit.shift();
+            if (nextStatement.type === 'literal') {
+                if (!classes.includes(nextStatement.class)) {
+                    literalsToDelete.push(nextStatement);
+                }
+            } else {
+                statementsToVisit.push(...nextStatement.operands);
+            }
+        }
+        if (!dryRun) {
+            literalsToDelete.forEach(literal => this.deleteStatement(literal));
+        }
+        return {literalsToDelete};
+    } else {
+        return {literalsToDelete : []};
+    }
 }
 
 GoalStateModeler.prototype.getClassList = function () {
-    return dummyStateList;
+    return this._classList || [];
 }
 
 GoalStateModeler.prototype.getStateList = function (clazz) {
-    return clazz.states;
+    return clazz.get('Elements').filter(element => is(element, 'olc:State'));
 }
 
 

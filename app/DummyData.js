@@ -1,3 +1,5 @@
+import { is } from "./lib/datamodelmodeler/util/ModelUtil";
+
 export var dummyStateList = [
     {
         id: 'Class1',
@@ -38,42 +40,43 @@ export var dummyStateList = [
     }
 ];
 
-function toReferences(literal) {
-    var clazz = dummyStateList.filter(clazz => clazz.id === literal.classId)[0];
-    var states = literal.stateIds.map(stateId => clazz.states.filter(state => state.id === stateId)[0]);
+export function dummyGoalState(olcs){
+    function toReferences(literal) {
+        var clazz = olcs.filter(clazz => clazz.id === literal.classId)[0];
+        var states = literal.stateIds.map(stateId => clazz.get('Elements').filter(element => is(element, 'olc:State')).filter(state => state.id === stateId)[0]);
+        return {
+            type: literal.type,
+            class: clazz,
+            states: states
+        };
+    }
     return {
-        type: literal.type,
-        class: clazz,
-        states: states
-    };
-}
-
-export var dummyGoalState = {
-    type: 'disjunction',
-    operands: [
-        {
-            type: 'conjunction',
-            operands: [
-                toReferences({ type: 'literal', classId: 'Class1', stateIds: ['State2', 'State3'] }),
-                toReferences({ type: 'literal', classId: 'Class2', stateIds: ['State5'] }),
-                toReferences({ type: 'literal', classId: 'Class3', stateIds: ['State8'] })
-            ]
-        },
-        {
-            type: 'conjunction',
-            operands: [
-                toReferences({ type: 'literal', classId: 'Class1', stateIds: ['State2', 'State3'] }),
-                toReferences({ type: 'literal', classId: 'Class2', stateIds: ['State6'] }),
-                toReferences({ type: 'literal', classId: 'Class3', stateIds: ['State8'] })
-            ]
-        },
-        {
-            type: 'conjunction',
-            operands: [
-                toReferences({ type: 'literal', classId: 'Class4', stateIds: ['State10'] })
-            ]
-        },
-    ]
+        type: 'disjunction',
+        operands: [
+            {
+                type: 'conjunction',
+                operands: [
+                    toReferences({ type: 'literal', classId: 'Class1', stateIds: ['State2', 'State3'] }),
+                    toReferences({ type: 'literal', classId: 'Class2', stateIds: ['State5'] }),
+                    toReferences({ type: 'literal', classId: 'Class3', stateIds: ['State8'] })
+                ]
+            },
+            {
+                type: 'conjunction',
+                operands: [
+                    toReferences({ type: 'literal', classId: 'Class1', stateIds: ['State2', 'State3'] }),
+                    toReferences({ type: 'literal', classId: 'Class2', stateIds: ['State6'] }),
+                    toReferences({ type: 'literal', classId: 'Class3', stateIds: ['State8'] })
+                ]
+            },
+            {
+                type: 'conjunction',
+                operands: [
+                    toReferences({ type: 'literal', classId: 'Class4', stateIds: ['State10'] })
+                ]
+            },
+        ]
+    }
 }
 
 export default {

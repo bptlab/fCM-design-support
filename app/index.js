@@ -126,9 +126,10 @@ var fragmentModeler = FragmentModeler({
     keyboard: { bindTo: document }
 });
 
-var goalStatementModeler = new GoalStateModeler(
+var goalStateModeler = new GoalStateModeler(
   '#goalstate-canvas'
 );
+new mediator.GoalStateModelerHook(goalStateModeler);
 
 async function createNewDiagram() {
     await openDiagram(diagramXML, datamodelXML);
@@ -148,7 +149,8 @@ async function openDiagram(bpmn_xml, datamodel_xml) {
 $(function() {
     createNewDiagram().then(() => {
       DummyData.dummyStateList.forEach(clazz => {
-        olcModeler.addOlc(clazz.name, clazz.id); // Also implies that this olc is then selected
+        olcModeler.addOlc(clazz.name, clazz.id); // TODO: The clazz id should not become the olc id but a class ref in the end
+        // AddOlc Also implies that this olc is then selected
         var canvas = olcModeler.get('canvas');
         var diagramRoot = canvas.getRootElement();
         for (var i = 0; i < clazz.states.length; i++) {
@@ -165,7 +167,7 @@ $(function() {
           canvas.addShape(stateVisual, diagramRoot);
         }
       });
-      goalStatementModeler.showGoalStatement(DummyData.dummyGoalState);
+      goalStateModeler.showGoalState(DummyData.dummyGoalState(olcModeler._definitions.olcs));
     });
 });
 
