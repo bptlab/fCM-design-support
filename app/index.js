@@ -4,7 +4,7 @@ import datamodelXML from '../resources/sampleBoard.bpmn';
 import OlcModeler from './lib/olcmodeler/OlcModeler';
 import GoalStateModeler from './lib/goalstatemodeler/GoalStateModeler';
 import DataModelModeler from './lib/datamodelmodeler/Modeler';
-import { dummyGoalState } from './lib/goalstatemodeler/GoalStateModeler';
+import DummyData from './DummyData';
 
 import $ from 'jquery';
 import Mediator from './lib/mediator/Mediator';
@@ -130,8 +130,8 @@ var goalStatementModeler = new GoalStateModeler(
   '#goalstate-canvas'
 );
 
-function createNewDiagram() {
-    openDiagram(diagramXML, datamodelXML);
+async function createNewDiagram() {
+    await openDiagram(diagramXML, datamodelXML);
 }
 
 async function openDiagram(bpmn_xml, datamodel_xml) {
@@ -146,8 +146,27 @@ async function openDiagram(bpmn_xml, datamodel_xml) {
 }
 
 $(function() {
-    createNewDiagram();
-    goalStatementModeler.showGoalStatement(dummyGoalState);
+    createNewDiagram().then(() => {
+      DummyData.dummyStateList.forEach(clazz => {
+        olcModeler.addOlc(clazz.name, clazz.id); // Also implies that this olc is then selected
+        var canvas = olcModeler.get('canvas');
+        var diagramRoot = canvas.getRootElement();
+        for (var i = 0; i < clazz.states.length; i++) {
+          var state = clazz.states[i];
+          var attrs = {
+            type: 'olc:State',
+            id: state.id,
+            name: state.name,
+            x: (i+2) * 100,
+            y: 100
+          };
+          var stateVisual = olcModeler.get('elementFactory').createShape(attrs);
+          diagramRoot.businessObject.get('Elements').push(stateVisual.businessObject);
+          canvas.addShape(stateVisual, diagramRoot);
+        }
+      });
+      goalStatementModeler.showGoalStatement(DummyData.dummyGoalState);
+    });
 });
 
 // expose modeler to window for debugging purposes

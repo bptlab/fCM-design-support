@@ -44,7 +44,7 @@ OlcElementFactory.prototype.create = function (elementType, attrs) {
 
     if (!businessObject) {
         if (!attrs.type) {
-            throw new Error('no shape type specified');
+            throw new Error('no element type specified');
         }
         var businessAttrs = assign({}, attrs);
         delete businessAttrs.width;

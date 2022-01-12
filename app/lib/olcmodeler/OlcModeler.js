@@ -30,6 +30,11 @@ import OlcEvents from './OlcEvents';
 var emptyDiagram =
   `<?xml version="1.0" encoding="UTF-8"?>
 <olc:definitions xmlns:olc="http://bptlab/schema/olc" xmlns:olcDi="http://bptlab/schema/olcDi">
+</olc:definitions>`;
+
+var exampleDiagram =
+  `<?xml version="1.0" encoding="UTF-8"?>
+<olc:definitions xmlns:olc="http://bptlab/schema/olc" xmlns:olcDi="http://bptlab/schema/olcDi">
   <olc:olc id="MainOlc" name="Olc Uno">
     <olc:state name="Foo" id="State_0" type="olc:State" x="119" y="177" />
     <olc:state name="Bar" id="State_1" type="olc:State" x="289" y="176" />
@@ -199,16 +204,16 @@ OlcModeler.prototype.showOlc = function (olc) {
 
 OlcModeler.prototype.showOlcById = function (id) {
   if (id && this._definitions && id !== (this._olc && this._olc.get('id'))) {
-    var olc = this._definitions.olcs.filter(olc => olc.get('id') === id)[0];
+    var olc = this._definitions.get('olcs').filter(olc => olc.get('id') === id)[0];
     if (olc) {
       this.showOlc(olc);
     }
   }
 }
 
-OlcModeler.prototype.addOlc = function () {
-  var olc = this.get('elementFactory').createBusinessObject('olc:Olc', { name: 'foobar' });
-  this._definitions.olcs.push(olc);
+OlcModeler.prototype.addOlc = function (name='foobar', id) {
+  var olc = this.get('elementFactory').createBusinessObject('olc:Olc', { name: name, id: id });
+  this._definitions.get('olcs').push(olc);
   this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: this._definitions });
   this.showOlc(olc);
 }

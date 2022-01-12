@@ -49,7 +49,7 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
         deleteOlcButton.disabled = olcs.length === 0;
     }
 
-    eventBus.on([OlcEvents.DEFINITIONS_CHANGED], event => repopulate(event.definitions.olcs));
+    eventBus.on([OlcEvents.DEFINITIONS_CHANGED], event => repopulate(event.definitions.get('olcs')));
     eventBus.on([OlcEvents.SELECTED_OLC_CHANGED], event => selectOlcMenu.value = event.olc && event.olc.get('id'));
 
 }
