@@ -87,6 +87,60 @@ Mediator.prototype.DataModelerHook = function (eventBus, dataModeler) {
     this.mediator.dataModelerHook = this;
     this._eventBus = eventBus;
     this.dataModeler = dataModeler;
+
+    this.executed([
+        'shape.create'
+    ], event => {
+        if (is(event.context.shape, 'od:Class')) {
+            console.log(event);
+            //this.mediator.addedState(event.context.shape.businessObject);
+        }
+    });
+
+    this.reverted([
+        'shape.create'
+    ], event => {
+        if (is(event.context.shape, 'od:Class')) {
+            console.log(event);
+            //this.mediator.addedState(event.context.shape.businessObject);
+        }
+    });
+
+    this.executed([
+        'shape.delete'
+    ], event => {
+        if (is(event.context.shape, 'od:Class')) {
+            console.log(event);
+            //this.mediator.deletedState(event.context.shape.businessObject);
+        }
+    });
+
+    this.reverted([
+        'shape.delete'
+    ], event => {
+        if (is(event.context.shape, 'od:Class')) {
+            console.log(event);
+            //this.mediator.deletedState(event.context.shape.businessObject);
+        }
+    });
+
+    this.executed([
+        'element.updateLabel'
+    ], event => {
+        if (is(event.context.element, 'od:Class') && event.context.element.businessObject.labelAttribute === 'name') {
+            console.log(event);
+            //this.mediator.renamedState(event.context.element.businessObject);
+        }
+    });
+
+    this.reverted([
+        'element.updateLabel'
+    ], event => {
+        if (is(event.context.element, 'od:Class') && event.context.element.businessObject.labelAttribute === 'name') {
+            console.log(event);
+            //this.mediator.renamedState(event.context.element.businessObject);
+        }
+    });
 }
 inherits(Mediator.prototype.DataModelerHook, CommandInterceptor);
 
