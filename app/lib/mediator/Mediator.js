@@ -9,24 +9,25 @@ export default function Mediator() {
     });
 }
 
-Mediator.prototype.addedState = function (event) {
-    var state = event.context.shape.businessObject;
-    var clazz = state.$parent;
-    console.log('added state named \"', state.name, '\" with id \"', state.id, '\" to class named \"', clazz.name, '\" with id \"', clazz.id, "\"");
+Mediator.prototype.addedState = function (olcState) {
+    var clazz = olcState.$parent;
+    console.log('added state named \"', olcState.name, '\" with id \"', olcState.id, '\" to class named \"', clazz.name, '\" with id \"', clazz.id, "\"");
 }
 
-Mediator.prototype.deletedState = function (event) {
-    var state = event.context.shape.businessObject;
-    var clazz = state.$parent;
-    console.log('removed state named \"', state.name, '\" with id \"', state.id, '\" from class named \"', clazz.name, '\" with id \"', clazz.id, "\"");
+Mediator.prototype.deletedState = function (olcState) {
+    var clazz = olcState.$parent;
+    console.log('removed state named \"', olcState.name, '\" with id \"', olcState.id, '\" from class named \"', clazz.name, '\" with id \"', clazz.id, "\"");
+    this.fragmentModelerHook.fragmentModeler.handleStateDeleted(olcState);
 }
 
 Mediator.prototype.renamedState = function (olcState) {
-    this.goalStateModelerHook._goalStateModeler.handleStateRenamed(olcState);
+    this.goalStateModelerHook.goalStateModeler.handleStateRenamed(olcState);
+    this.fragmentModelerHook.fragmentModeler.handleStateRenamed(olcState);
 }
 
 Mediator.prototype.olcListChanged = function (olcs) {
-    this.goalStateModelerHook._goalStateModeler.handleOlcListChanged(olcs);
+    this.goalStateModelerHook.goalStateModeler.handleOlcListChanged(olcs);
+    this.fragmentModelerHook.fragmentModeler.handleOlcListChanged(olcs);
 }
 
 // === Olc Modeler Hook
@@ -41,14 +42,14 @@ Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
         'shape.create'
     ], event => {
         if (is(event.context.shape, 'olc:State')) {
-            this.mediator.addedState(event);
+            this.mediator.addedState(event.context.shape.businessObject);
         }
     });
     this.executed([
         'shape.delete'
     ], event => {
         if (is(event.context.shape, 'olc:State')) {
-            this.mediator.deletedState(event);
+            this.mediator.deletedState(event.context.shape.businessObject);
         }
     });
 
@@ -112,6 +113,6 @@ Mediator.prototype.FragmentModelerHook.$inject = [
 // === Goal State Modeler Hook
 Mediator.prototype.GoalStateModelerHook = function(goalStateModeler) {
     this.mediator = this.__proto__.constructor.mediator;
-    this._goalStateModeler = goalStateModeler;
+    this.goalStateModeler = goalStateModeler;
     this.mediator.goalStateModelerHook = this;
 }
