@@ -194,24 +194,38 @@ GoalStateModeler.prototype.handleStatesChanged = function (clazz, newStates) {
 GoalStateModeler.prototype.handleOlcListChanged = function (classes, dryRun=false) {
     this._classList = classes;
     if (this._goalState) {
-        var statementsToVisit = [this._goalState];
         var literalsToDelete = [];
-        while (statementsToVisit.length > 0) {
-            var nextStatement = statementsToVisit.shift();
-            if (nextStatement.type === 'literal') {
-                if (!classes.includes(nextStatement.class)) {
-                    literalsToDelete.push(nextStatement);
-                }
-            } else {
-                statementsToVisit.push(...nextStatement.operands);
+        this.forEachLiteral(literal => {
+            if (!classes.includes(literal.class)) {
+                literalsToDelete.push(literal);
             }
-        }
+        });
         if (!dryRun) {
             literalsToDelete.forEach(literal => this.deleteStatement(literal));
         }
         return {literalsToDelete};
     } else {
         return {literalsToDelete : []};
+    }
+}
+
+GoalStateModeler.prototype.handleStateRenamed = function (state) {
+    this.forEachLiteral(literal => {
+        if (literal.states.includes(state)) {
+            this.populateLiteral(literal, literal.element);
+        }
+    });
+}
+
+GoalStateModeler.prototype.forEachLiteral = function(consumer) {
+    var statementsToVisit = [this._goalState];
+    while (statementsToVisit.length > 0) {
+        var nextStatement = statementsToVisit.shift();
+        if (nextStatement.type === 'literal') {
+            consumer(nextStatement);
+        } else {
+            statementsToVisit.push(...nextStatement.operands);
+        }
     }
 }
 

@@ -52,78 +52,24 @@ var olcModeler = new OlcModeler({
     }]
 });
 
-function foo() {
-  
-  const canvas = olcModeler.get('canvas');
-  const elementFactory = olcModeler.get('elementFactory');
-
-  // add root
-  var root = canvas.getRootElement();
-  console.log(root);
-
-  // add shapes
-  var shape1 = elementFactory.createShape({
-    type: 'olc:State',
-    name: 'State A',
-    x: 150,
-    y: 100
-  });
-
-  canvas.addShape(shape1, root);
-
-  var shape2 = elementFactory.createShape({
-    type: 'olc:State',
-    name: 'State B',
-    x: 290,
-    y: 220
-  });
-
-  canvas.addShape(shape2, root);
-
-
-  var connection1 = elementFactory.createConnection({
-    type: 'olc:Transition',
-    waypoints: [
-      { x: 250, y: 180 },
-      { x: 290, y: 220 }
-    ],
-    source: shape1,
-    target: shape2
-  });
-
-  canvas.addConnection(connection1, root);
-
-
-  // var shape3 = elementFactory.createShape({
-  //   x: 450,
-  //   y: 80,
-  //   width: 100,
-  //   height: 80
-  // });
-  // canvas.addShape(shape3, root);
-  // var shape4 = elementFactory.createShape({
-  //   x: 425,
-  //   y: 50,
-  //   width: 300,
-  //   height: 200,
-  //   isFrame: true
-  // });
-  // canvas.addShape(shape4, root);
-  // // (3) interact with the diagram via API
-  // const selection = diagram.get('selection');
-  // selection.select(shape3);
-}
-
 var dataModeler = new DataModelModeler({
     container: '#datamodel-canvas',
     keyboard: {
         bindTo: window
-    }
+    },
+    additionalModules: [{
+      __init__ : ['mediator'],
+      mediator : ['type', mediator.DataModelerHook]
+    }]
 });
 
-var fragmentModeler = FragmentModeler({
+var fragmentModeler = new FragmentModeler({
     container: '#fragments-canvas',
-    keyboard: { bindTo: document }
+    keyboard: { bindTo: document },
+    additionalModules: [{
+      __init__ : ['mediator'],
+      mediator : ['type', mediator.FragmentModelerHook]
+    }]
 });
 
 var goalStateModeler = new GoalStateModeler(
