@@ -2,7 +2,7 @@ import { is } from "./lib/datamodelmodeler/util/ModelUtil";
 
 export var dummyStateList = [
     {
-        id: 'Class1',
+        id: 'Class1_Paper',
         name: 'Paper',
         states: [
             { id: 'State1', name: 'In Review' },
@@ -12,7 +12,7 @@ export var dummyStateList = [
     },
 
     {
-        id: 'Class2',
+        id: 'Class2_Conference',
         name: 'Conference',
         states: [
             { id: 'State4', name: 'In Planning' },
@@ -22,7 +22,7 @@ export var dummyStateList = [
     },
 
     {
-        id: 'Class3',
+        id: 'Class3_Decision',
         name: 'Decision',
         states: [
             { id: 'State7', name: 'Scheduled' },
@@ -31,7 +31,7 @@ export var dummyStateList = [
     },
 
     {
-        id: 'Class4',
+        id: 'Class4_Unicorn',
         name: 'Unicorn',
         states: [
             { id: 'State9', name: 'Vanished' },
@@ -56,23 +56,23 @@ export function dummyGoalState(olcs){
             {
                 type: 'conjunction',
                 operands: [
-                    toReferences({ type: 'literal', classId: 'Class1', stateIds: ['State2', 'State3'] }),
-                    toReferences({ type: 'literal', classId: 'Class2', stateIds: ['State5'] }),
-                    toReferences({ type: 'literal', classId: 'Class3', stateIds: ['State8'] })
+                    toReferences({ type: 'literal', classId: 'Class1_Paper', stateIds: ['State2', 'State3'] }),
+                    toReferences({ type: 'literal', classId: 'Class2_Conference', stateIds: ['State5'] }),
+                    toReferences({ type: 'literal', classId: 'Class3_Decision', stateIds: ['State8'] })
                 ]
             },
             {
                 type: 'conjunction',
                 operands: [
-                    toReferences({ type: 'literal', classId: 'Class1', stateIds: ['State2', 'State3'] }),
-                    toReferences({ type: 'literal', classId: 'Class2', stateIds: ['State6'] }),
-                    toReferences({ type: 'literal', classId: 'Class3', stateIds: ['State8'] })
+                    toReferences({ type: 'literal', classId: 'Class1_Paper', stateIds: ['State2', 'State3'] }),
+                    toReferences({ type: 'literal', classId: 'Class2_Conference', stateIds: ['State6'] }),
+                    toReferences({ type: 'literal', classId: 'Class3_Decision', stateIds: ['State8'] })
                 ]
             },
             {
                 type: 'conjunction',
                 operands: [
-                    toReferences({ type: 'literal', classId: 'Class4', stateIds: ['State10'] })
+                    toReferences({ type: 'literal', classId: 'Class4_Unicorn', stateIds: ['State10'] })
                 ]
             },
         ]
