@@ -191,7 +191,7 @@ GoalStateModeler.prototype.handleStatesChanged = function (clazz, newStates) {
     //TODO
 }
 
-GoalStateModeler.prototype.handleOlcListChanged = function (classes, dryRun=false) {
+GoalStateModeler.prototype.handleOlcListChanged = function (classes) {
     this._classList = classes;
     if (this._goalState) {
         var literalsToDelete = [];
@@ -202,13 +202,21 @@ GoalStateModeler.prototype.handleOlcListChanged = function (classes, dryRun=fals
                 this.populateLiteral(literal, literal.element);
             }
         });
-        if (!dryRun) {
-            literalsToDelete.forEach(literal => this.deleteStatement(literal));
-        }
+        literalsToDelete.forEach(literal => this.deleteStatement(literal));
         return {literalsToDelete};
     } else {
         return {literalsToDelete : []};
     }
+}
+
+GoalStateModeler.prototype.getLiteralsWithClassId = function (id) {
+    var literalsOfClass = [];
+    this.forEachLiteral(literal => {
+        if (literal.class.id === id) {
+            literalsOfClass.push(literal);
+        }
+    });
+    return literalsOfClass;
 }
 
 GoalStateModeler.prototype.handleStateRenamed = function (state) {

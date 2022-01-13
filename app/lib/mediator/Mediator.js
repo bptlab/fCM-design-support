@@ -13,6 +13,13 @@ Mediator.prototype.addedClass = function (clazz) {
     this.olcModelerHook.olcModeler.addOlc(clazz.name, clazz.id);
 }
 
+Mediator.prototype.confirmClassDeletion = function (clazz) {
+    var affectedLiterals = this.goalStateModelerHook.goalStateModeler.getLiteralsWithClassId(clazz.id);
+    var affectedStates = this.olcModelerHook.olcModeler.getOlcById(clazz.id).get('Elements').filter(element => is(element, 'olc:State'));
+    return confirm('Do you really want to delete class \"' + clazz.name + '\" ?'
+        + '\n' + affectedLiterals.length + ' literal(s) and ' + affectedStates.length + ' olc state(s) would be deleted as well.');
+}
+
 Mediator.prototype.deletedClass = function (clazz) {
     this.olcModelerHook.olcModeler.deleteOlc(clazz.id);
     this.fragmentModelerHook.fragmentModeler.handleClassDeleted(clazz);
@@ -71,7 +78,7 @@ Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
         'element.updateLabel'
     ], event => {
         if (is(event.context.element, 'olc:State')) {
-           this.mediator.renamedState(event.context.element.businessObject);
+            this.mediator.renamedState(event.context.element.businessObject);
         }
     });
 
@@ -79,7 +86,7 @@ Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
         'element.updateLabel'
     ], event => {
         if (is(event.context.element, 'olc:State')) {
-           this.mediator.renamedState(event.context.element.businessObject);
+            this.mediator.renamedState(event.context.element.businessObject);
         }
     });
 
@@ -136,6 +143,19 @@ Mediator.prototype.DataModelerHook = function (eventBus, dataModeler) {
         }
     });
 
+    this.preExecute([
+        'elements.delete'
+    ], event => {
+        event.context.elements = event.context.elements.filter(element => {
+            if (is(element, 'od:Class')) {
+                this.mediator.confirmClassDeletion(element.businessObject);
+            } else {
+                return true;
+            }
+        });
+    });
+
+
     this.executed([
         'element.updateLabel'
     ], event => {
@@ -177,7 +197,7 @@ Mediator.prototype.FragmentModelerHook.$inject = [
 ];
 
 // === Goal State Modeler Hook
-Mediator.prototype.GoalStateModelerHook = function(goalStateModeler) {
+Mediator.prototype.GoalStateModelerHook = function (goalStateModeler) {
     this.mediator = this.__proto__.constructor.mediator;
     this.goalStateModeler = goalStateModeler;
     this.mediator.goalStateModelerHook = this;
