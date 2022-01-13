@@ -15,10 +15,12 @@ Mediator.prototype.addedClass = function (clazz) {
 
 Mediator.prototype.deletedClass = function (clazz) {
     this.olcModelerHook.olcModeler.deleteOlc(clazz.id);
+    this.fragmentModelerHook.fragmentModeler.handleClassDeleted(clazz);
 }
 
 Mediator.prototype.renamedClass = function (clazz) {
     this.olcModelerHook.olcModeler.renameOlc(clazz.name, clazz.id);
+    this.fragmentModelerHook.fragmentModeler.handleClassRenamed(clazz);
 }
 
 Mediator.prototype.addedState = function (olcState) {

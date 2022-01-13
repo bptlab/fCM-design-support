@@ -29,3 +29,11 @@ FragmentModeler.prototype.handleStateRenamed = function (state) {
 FragmentModeler.prototype.handleStateDeleted = function (state) {
     // TODO called when an olc state is deleted
 }
+
+FragmentModeler.prototype.handleClassRenamed = function (clazz) {
+    // TODO called when a data class is renamed
+}
+
+FragmentModeler.prototype.handleClassDeleted = function (clazz) {
+    // TODO called when a data class is deleted
+}
