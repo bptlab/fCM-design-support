@@ -286,7 +286,7 @@ export default function ODRenderer(
   }
 
   this.handlers = {
-    'od:Object': function(parentGfx, element, attrs) {
+    'od:Class': function(parentGfx, element, attrs) {
       var rect = drawRect(parentGfx, element.width, element.height, 0, assign({
         fill: getFillColor(element, defaultFillColor),
         fillOpacity: HIGH_FILL_OPACITY,
@@ -301,7 +301,7 @@ export default function ODRenderer(
 
       return rect;
     },
-    'od:Link': function(parentGfx, element) {
+    'od:Association': function(parentGfx, element) {
       var pathData = createPathFromConnection(element);
 
       var fill = getFillColor(element, defaultFillColor),

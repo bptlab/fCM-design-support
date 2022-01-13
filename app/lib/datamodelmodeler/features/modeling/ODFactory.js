@@ -27,10 +27,10 @@ ODFactory.prototype._needsId = function(element) {
 ODFactory.prototype._ensureId = function(element) {
 
   // generate semantic ids for elements
-  // od:Object -> Object_ID
+  // od:Class -> Object_ID
   var prefix;
 
-  if (is(element, 'od:Object')) {
+  if (is(element, 'od:Class')) {
     prefix = 'Object';
   } else {
     prefix = (element.$type || '').replace(/^[^:]*:/g, '');
@@ -46,7 +46,7 @@ ODFactory.prototype._ensureId = function(element) {
 
 ODFactory.prototype.create = function(type, attrs) {
   var element = this._model.create(type, attrs || {});
-  if (type === 'od:Object') {
+  if (type === 'od:Class') {
     element.attributeValues = '';
   }
 
@@ -77,7 +77,7 @@ ODFactory.prototype.createDiBounds = function(bounds) {
 };
 
 ODFactory.prototype.createDiEdge = function(semantic, waypoints, attrs) {
-  return this.create('odDi:Link', assign({
+  return this.create('odDi:Association', assign({
     boardElement: semantic
   }, attrs));
 };

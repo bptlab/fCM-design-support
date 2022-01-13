@@ -20,7 +20,7 @@ export var FLOW_LABEL_INDENT = 15;
  * @return {Boolean} true if has label
  */
 export function isLabelExternal(semantic) {
-  return is(semantic, 'od:Link');
+  return is(semantic, 'od:Association');
 }
 
 /**

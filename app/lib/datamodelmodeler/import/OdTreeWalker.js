@@ -215,7 +215,7 @@ export default function OdTreeWalker(handler, translate) {
 
   function handleBoardElements(boardElements, context) {
     forEach(boardElements, function(element) {
-      if (is(element, 'od:Link')) {
+      if (is(element, 'od:Association')) {
         deferred.push(function() {
           handleSequenceFlow(element, context);
         });

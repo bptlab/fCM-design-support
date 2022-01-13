@@ -192,7 +192,7 @@ function canStartConnection(element) {
   }
 
   return is(element,
-    'od:Object'
+    'od:Class'
   );
 }
 
@@ -206,13 +206,13 @@ function canConnect(source, target) {
     return null;
   }
   if (canConnectLink(source, target)) {
-    return { type: 'od:Link' };
+    return { type: 'od:Association' };
   }
   return false;
 }
 
 function canConnectLink(source, target) {
-  return is(source, 'od:Object') && is(target, 'od:Object');
+  return is(source, 'od:Class') && is(target, 'od:Class');
 }
 
 /**
@@ -298,7 +298,7 @@ function canCreate(shape, target, source, position) {
 }
 
 function canResize(shape, newBounds) {
-  if (isAny(shape, [ 'od:Object' ])) {
+  if (isAny(shape, [ 'od:Class' ])) {
     return !newBounds || (newBounds.width >= 50 && newBounds.height >= 50);
   }
   return false;

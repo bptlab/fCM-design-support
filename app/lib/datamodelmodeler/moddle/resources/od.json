@@ -1,5 +1,5 @@
 {
-  "name": "Object diagram",
+  "name": "Class diagram",
   "uri": "http://tk/schema/od",
   "prefix": "od",
   "xml": {
@@ -24,7 +24,7 @@
       ]
     },
     {
-      "name": "Object",
+      "name": "Class",
       "superClass": [
         "BoardElement"
       ],
@@ -35,15 +35,15 @@
           "type": "String"
         },
         {
-          "name": "links",
+          "name": "associations",
           "isMany": true,
-          "type": "Link",
+          "type": "Association",
           "isReference": true
         }
       ]
     },
     {
-      "name": "Link",
+      "name": "Association",
       "superClass": [
         "BoardElement"
       ],
@@ -57,13 +57,13 @@
           "name": "sourceRef",
           "isAttr": true,
           "isReference": true,
-          "type": "Object"
+          "type": "Class"
         },
         {
           "name": "targetRef",
           "isAttr": true,
           "isReference": true,
-          "type": "Object"
+          "type": "Class"
         }
       ]
     },

@@ -99,7 +99,7 @@ PaletteProvider.prototype.getPaletteEntries = function(element) {
       separator: true
     },
     'create-object': createAction(
-      'od:Object', 'od-elements', 'od-icon-object',
+      'od:Class', 'od-elements', 'od-icon-object',
       translate('Create object')
     ),
     'object-linker': {

@@ -53,7 +53,7 @@
       "superClass": ["LabeledShape"]
     },
     {
-      "name": "Link",
+      "name": "Association",
       "properties": [
         {
           "name": "label",

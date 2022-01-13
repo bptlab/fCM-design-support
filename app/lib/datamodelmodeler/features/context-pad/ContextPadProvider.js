@@ -83,7 +83,7 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
   }
 
   createDeleteEntry(actions);
-  if (element.type === 'od:Object') {
+  if (element.type === 'od:Class') {
     createLinkObjectsEntry(actions);
     createLinkNewObjectEntry(actions);
   }
@@ -140,7 +140,7 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
   function createLinkNewObjectEntry(actions) {
     assign(actions, {
       'append.append-task': appendAction(
-        'od:Object',
+        'od:Class',
         'od-no-font-icon-object',
         translate('Link with new object')
       ),

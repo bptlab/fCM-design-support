@@ -114,7 +114,7 @@ OdImporter.prototype.add = function(semantic, parentElement) {
   }
 
   // CONNECTION
-  else if (is(di, 'odDi:Link')) {
+  else if (is(di, 'odDi:Association')) {
 
     var source = this._getSource(semantic),
         target = this._getTarget(semantic);

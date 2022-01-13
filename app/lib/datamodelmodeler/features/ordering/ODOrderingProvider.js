@@ -23,9 +23,9 @@ export default function ODOrderingProvider(eventBus, canvas, translate) {
   OrderingProvider.call(this, eventBus);
 
   var orders = [
-    { type: 'od:Object', order: { level: 5 } },
+    { type: 'od:Class', order: { level: 5 } },
     {
-      type: 'od:Link',
+      type: 'od:Association',
       order: {
         level: 3,
       }

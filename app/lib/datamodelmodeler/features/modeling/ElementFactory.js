@@ -105,7 +105,7 @@ ElementFactory.prototype.createOdElement = function(elementType, attrs) {
 
 
 ElementFactory.prototype._getDefaultSize = function(semantic) {
-  if (is(semantic, 'od:Object')) {
+  if (is(semantic, 'od:Class')) {
     return { width: 150, height: 90 };
   }
   return { width: 100, height: 80 };

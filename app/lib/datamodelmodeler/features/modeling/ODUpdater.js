@@ -369,14 +369,14 @@ ODUpdater.prototype.updateConnection = function(context) {
       newSource = getBusinessObject(connection.source),
       newTarget = getBusinessObject(connection.target);
 
-  var inverseSet = is(businessObject, 'od:Link');
+  var inverseSet = is(businessObject, 'od:Association');
 
   if (businessObject.sourceRef !== newSource) {
     if (inverseSet) {
-      collectionRemove(businessObject.sourceRef && businessObject.sourceRef.get('links'), businessObject);
+      collectionRemove(businessObject.sourceRef && businessObject.sourceRef.get('associations'), businessObject);
 
-      if (newSource && newSource.get('links')) {
-        newSource.get('links').push(businessObject);
+      if (newSource && newSource.get('associations')) {
+        newSource.get('associations').push(businessObject);
       }
     }
 

@@ -23,7 +23,7 @@ import {
  */
 export function getNewShapePosition(source, element) {
 
-  if (is(element, 'od:Object')) {
+  if (is(element, 'od:Class')) {
     return getFlowNodePosition(source, element);
   }
 }
@@ -39,7 +39,7 @@ export function getFlowNodePosition(source, element) {
 
   var horizontalDistance = getConnectedDistance(source, {
     filter: function(connection) {
-      return is(connection, 'od:Link');
+      return is(connection, 'od:Association');
     }
   });
 
