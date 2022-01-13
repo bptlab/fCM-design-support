@@ -198,6 +198,8 @@ GoalStateModeler.prototype.handleOlcListChanged = function (classes, dryRun=fals
         this.forEachLiteral(literal => {
             if (!classes.includes(literal.class)) {
                 literalsToDelete.push(literal);
+            } else {
+                this.populateLiteral(literal, literal.element);
             }
         });
         if (!dryRun) {

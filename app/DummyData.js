@@ -3,7 +3,6 @@ import { is } from "./lib/datamodelmodeler/util/ModelUtil";
 export var dummyStateList = [
     {
         id: 'Class1_Paper',
-        name: 'Paper',
         states: [
             { id: 'State1', name: 'In Review' },
             { id: 'State2', name: 'Accepted' },
@@ -13,7 +12,6 @@ export var dummyStateList = [
 
     {
         id: 'Class2_Conference',
-        name: 'Conference',
         states: [
             { id: 'State4', name: 'In Planning' },
             { id: 'State5', name: 'Planned' },
@@ -23,7 +21,6 @@ export var dummyStateList = [
 
     {
         id: 'Class3_Decision',
-        name: 'Decision',
         states: [
             { id: 'State7', name: 'Scheduled' },
             { id: 'State8', name: 'Done' }
@@ -32,7 +29,6 @@ export var dummyStateList = [
 
     {
         id: 'Class4_Unicorn',
-        name: 'Unicorn',
         states: [
             { id: 'State9', name: 'Vanished' },
             { id: 'State10', name: 'Found' }

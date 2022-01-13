@@ -36,10 +36,11 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     var deleteOlcButton = document.createElement('button');
     deleteOlcButton.innerHTML = '🗑️';
     //TODO tooltip deleteOlcButton.innerHTML = 'Delete Current Olc';
-    deleteOlcButton.addEventListener('click', () => olcModeler.deleteOlc());
+    deleteOlcButton.addEventListener('click', () => olcModeler.deleteCurrentOlc());
     buttonBar.appendChild(deleteOlcButton);
 
     function repopulate(olcs) {
+        var valueBefore = selectOlcMenu.value;
         for(var i = 0; i < olcs.length; i++) {
             selectOlcMenu.options[i] = new Option(olcs[i].get('name'), olcs[i].get('id'));
         }
@@ -47,6 +48,7 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
             delete selectOlcMenu.remove(i-1);
         }
         deleteOlcButton.disabled = olcs.length === 0;
+        selectOlcMenu.value = valueBefore;
     }
 
     eventBus.on([OlcEvents.DEFINITIONS_CHANGED], event => repopulate(event.definitions.get('olcs')));

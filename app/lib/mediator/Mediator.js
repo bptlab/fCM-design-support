@@ -9,6 +9,18 @@ export default function Mediator() {
     });
 }
 
+Mediator.prototype.addedClass = function (clazz) {
+    this.olcModelerHook.olcModeler.addOlc(clazz.name, clazz.id);
+}
+
+Mediator.prototype.deletedClass = function (clazz) {
+    this.olcModelerHook.olcModeler.deleteOlc(clazz.id);
+}
+
+Mediator.prototype.renamedClass = function (clazz) {
+    this.olcModelerHook.olcModeler.renameOlc(clazz.name, clazz.id);
+}
+
 Mediator.prototype.addedState = function (olcState) {
     var clazz = olcState.$parent;
     console.log('added state named \"', olcState.name, '\" with id \"', olcState.id, '\" to class named \"', clazz.name, '\" with id \"', clazz.id, "\"");
@@ -92,8 +104,7 @@ Mediator.prototype.DataModelerHook = function (eventBus, dataModeler) {
         'shape.create'
     ], event => {
         if (is(event.context.shape, 'od:Class')) {
-            console.log(event);
-            //this.mediator.addedState(event.context.shape.businessObject);
+            this.mediator.addedClass(event.context.shape.businessObject);
         }
     });
 
@@ -110,8 +121,7 @@ Mediator.prototype.DataModelerHook = function (eventBus, dataModeler) {
         'shape.delete'
     ], event => {
         if (is(event.context.shape, 'od:Class')) {
-            console.log(event);
-            //this.mediator.deletedState(event.context.shape.businessObject);
+            this.mediator.deletedClass(event.context.shape.businessObject);
         }
     });
 
@@ -127,18 +137,18 @@ Mediator.prototype.DataModelerHook = function (eventBus, dataModeler) {
     this.executed([
         'element.updateLabel'
     ], event => {
-        if (is(event.context.element, 'od:Class') && event.context.element.businessObject.labelAttribute === 'name') {
-            console.log(event);
-            //this.mediator.renamedState(event.context.element.businessObject);
+        var changedLabel = event.context.element.businessObject.labelAttribute;
+        if (is(event.context.element, 'od:Class') && (changedLabel === 'name' || !changedLabel)) {
+            this.mediator.renamedClass(event.context.element.businessObject);
         }
     });
 
     this.reverted([
         'element.updateLabel'
     ], event => {
-        if (is(event.context.element, 'od:Class') && event.context.element.businessObject.labelAttribute === 'name') {
-            console.log(event);
-            //this.mediator.renamedState(event.context.element.businessObject);
+        var changedLabel = event.context.element.businessObject.labelAttribute;
+        if (is(event.context.element, 'od:Class') && (changedLabel === 'name' || !changedLabel)) {
+            this.mediator.renamedClass(event.context.element.businessObject);
         }
     });
 }

@@ -207,23 +207,48 @@ OlcModeler.prototype.showOlcById = function (id) {
     var olc = this._definitions.get('olcs').filter(olc => olc.get('id') === id)[0];
     if (olc) {
       this.showOlc(olc);
+    } else {
+      throw 'Unknown olc with class id \"'+id+'\"';
     }
   }
 }
 
-OlcModeler.prototype.addOlc = function (name='foobar', id) {
+OlcModeler.prototype.addOlc = function (name='<TBD>', id) {
   var olc = this.get('elementFactory').createBusinessObject('olc:Olc', { name: name, id: id });
   this._definitions.get('olcs').push(olc);
   this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: this._definitions });
   this.showOlc(olc);
 }
 
-OlcModeler.prototype.deleteOlc = function () {
-  var currentIndex = findIndex(this._definitions.olcs, this._olc);
+OlcModeler.prototype.deleteCurrentOlc = function () {
+  this.deleteOlc(this._olc.id);
+}
+
+OlcModeler.prototype.deleteOlc = function (id) {
+  var olc = this.getOlcById(id);
+  var currentIndex = findIndex(this._definitions.olcs, olc);
   var indexAfterRemoval = Math.min(currentIndex, this._definitions.olcs.length - 2);
-  this._definitions.olcs = without(this._definitions.olcs, this._olc);
+
+  this._definitions.olcs = without(this._definitions.olcs, olc);
   this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: this._definitions });
-  this.showOlc(this._definitions.olcs[indexAfterRemoval]);
+
+  if (olc === this._olc) {
+    this.showOlc(this._definitions.olcs[indexAfterRemoval]);
+  }
+}
+
+OlcModeler.prototype.renameOlc = function (name, id) {
+  var olc = this.getOlcById(id);
+  if (olc) {
+    olc.name = name;
+    this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: this._definitions });
+  } else {
+    throw 'Unknown olc with class id \"'+id+'\"';
+  }
+}
+
+OlcModeler.prototype.getOlcById = function(id) {
+  return this._definitions.olcs.filter(olc => olc.id === id)[0];
 }
 
 OlcModeler.prototype.saveXML = function (options) {

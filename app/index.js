@@ -95,7 +95,8 @@ async function openDiagram(bpmn_xml, datamodel_xml) {
 $(function() {
     createNewDiagram().then(() => {
       DummyData.dummyStateList.forEach(clazz => {
-        olcModeler.addOlc(clazz.name, clazz.id); // TODO: The clazz id should not become the olc id but a class ref in the end
+        var className = dataModeler.get('elementRegistry').get(clazz.id).businessObject.name;
+        olcModeler.addOlc(className, clazz.id); // TODO: The clazz id should not become the olc id but a class ref in the end
         // AddOlc Also implies that this olc is then selected
         var canvas = olcModeler.get('canvas');
         var diagramRoot = canvas.getRootElement();
