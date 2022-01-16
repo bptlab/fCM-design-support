@@ -181,6 +181,8 @@ function dragElement(elmnt) {
 
 document.getElementById("noteAreaToggleButton").addEventListener("click", toggleNoteArea, false)
 
+document.getElementById("note-area-close").addEventListener("click", toggleNoteArea, false)
+
 function toggleNoteArea() {
 
     var noteArea = document.getElementById("note-area-wrapper");
@@ -206,14 +208,25 @@ function toggleFocusModeler(elementToFocus) {
     
     console.log("toggleFocusCalled")
 
+    // get wrapper for element on right side
     var element_to_focus = document.getElementById(elementToFocus);
     
-    element_to_focus.children[0].classList.add("focus")
+    // hide button
+    element_to_focus.children[0].classList.add("hidden");
     
+    // get canvas on right side and add focus
+    element_to_focus.children[1].classList.add("focus");
+    
+    // get wrapper for element on left side
     var element_to_unfocus = document.getElementsByClassName("focus")[0].parentElement;
     
-    element_to_unfocus.children[0].classList.remove("focus")
+    // remove hidden button
+    element_to_unfocus.children[0].classList.remove("hidden");
     
+    // remove focus from canvas on left side
+    element_to_unfocus.children[1].classList.remove("focus");
+    
+    // switch wrappers
     var left_node_to_insert = element_to_unfocus.parentElement;
         
     var right_node_to_insert = element_to_focus.parentElement;
@@ -221,6 +234,8 @@ function toggleFocusModeler(elementToFocus) {
     left_node_to_insert.appendChild(element_to_focus);
     
     right_node_to_insert.appendChild(element_to_unfocus);
+    
+    
     
 }
 

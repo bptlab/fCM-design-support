@@ -31,13 +31,14 @@
         </div>
     </div>
     <div id="note-area-wrapper" class="hidden">
-        <div id="note-area-drag"><i class="material-icons">fullscreen</i></div>
+        <div id="note-area-drag" style="display:inline"><i class="material-icons">crop</i></div>
+        <div id="note-area-close" style="display:inline"><i class="material-icons">close</i></div>
         <textarea class="note-area"></textarea>
     </div>
     <div id="main" class="mainContent">
         <div class="content left">
             <div id="goalstate-wrapper">
-                <button id="toggleGoalstate">Toggle Focus</button>
+                <button id="toggleGoalstate">Focus</button>
                 <div id="goalstate-canvas"class="canvas focus">
                 </div>
             </div>    
@@ -48,8 +49,8 @@
         <div class="content right">
             <div class="content top">
                 <div id="datamodel-wrapper">
-                    <button id="toggleDatamodel">Toggle Focus</button>
-                    <div id="datamodel-canvas"class="canvas no-focus">
+                    <button id="toggleDatamodel">Focus</button>
+                    <div id="datamodel-canvas"class="canvas">
                     </div>
                 </div>
             </div>
@@ -59,8 +60,8 @@
             <div class="content bottom">
                 <div class="content top">
                     <div id="fragments-wrapper">
-                        <button id="toggleFragments">Toggle Focus</button>
-                        <div id="fragments-canvas"class="canvas no-focus">
+                        <button id="toggleFragments">Focus</button>
+                        <div id="fragments-canvas"class="canvas">
                         </div>
                     </div>
                 </div>
@@ -69,8 +70,8 @@
                 
                 <div class="content bottom">
                     <div id="olc-wrapper">
-                        <button id="toggleOlc">Toggle Focus</button>
-                        <div id="olc-canvas" class="canvas no-focus">
+                        <button id="toggleOlc">Focus</button>
+                        <div id="olc-canvas" class="canvas">
                         </div>
                     </div>
                 </div>
