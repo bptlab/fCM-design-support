@@ -192,6 +192,38 @@ function toggleNoteArea() {
     }
 }
 
+// function to toggle focus
+
+document.getElementById("toggleOlc").addEventListener("click", function() { toggleFocusModeler("olc-wrapper") }, false)
+
+document.getElementById("toggleGoalstate").addEventListener("click", function() { toggleFocusModeler("goalstate-wrapper") }, false)
+
+document.getElementById("toggleDatamodel").addEventListener("click", function() { toggleFocusModeler("datamodel-wrapper") }, false)
+
+document.getElementById("toggleFragments").addEventListener("click", function() { toggleFocusModeler("fragments-wrapper") }, false)
+
+function toggleFocusModeler(elementToFocus) {
+    
+    console.log("toggleFocusCalled")
+
+    var element_to_focus = document.getElementById(elementToFocus);
+    
+    element_to_focus.children[0].classList.add("focus")
+    
+    var element_to_unfocus = document.getElementsByClassName("focus")[0].parentElement;
+    
+    element_to_unfocus.children[0].classList.remove("focus")
+    
+    var left_node_to_insert = element_to_unfocus.parentElement;
+        
+    var right_node_to_insert = element_to_focus.parentElement;
+    
+    left_node_to_insert.appendChild(element_to_focus);
+    
+    right_node_to_insert.appendChild(element_to_unfocus);
+    
+}
+
 
 // function to make the error bar expand
 
@@ -237,7 +269,7 @@ function resizeErrorBar(elmnt) {
         document.onmouseup = null;
         document.onmousemove = null;
   }
-    
-    
 }
+
+
 

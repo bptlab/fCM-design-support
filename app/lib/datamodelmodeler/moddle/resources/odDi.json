@@ -60,6 +60,10 @@
           "type": "OdLabel"
         },
         {
+          "name": "label2",
+          "type": "OdLabel"
+        },
+        {
           "name": "boardElement",
           "isAttr": true,
           "isReference": true,

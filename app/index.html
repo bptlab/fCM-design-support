@@ -36,15 +36,21 @@
     </div>
     <div id="main" class="mainContent">
         <div class="content left">
-            <div id="goalstate-canvas"class="canvas">
-            </div>
+            <div id="goalstate-wrapper">
+                <button id="toggleGoalstate">Toggle Focus</button>
+                <div id="goalstate-canvas"class="canvas focus">
+                </div>
+            </div>    
         </div>
     
         <div class="divider vertical"></div>
         
         <div class="content right">
             <div class="content top">
-                <div id="datamodel-canvas"class="canvas">
+                <div id="datamodel-wrapper">
+                    <button id="toggleDatamodel">Toggle Focus</button>
+                    <div id="datamodel-canvas"class="canvas no-focus">
+                    </div>
                 </div>
             </div>
         
@@ -52,14 +58,20 @@
             
             <div class="content bottom">
                 <div class="content top">
-                    <div id="fragments-canvas"class="canvas">
+                    <div id="fragments-wrapper">
+                        <button id="toggleFragments">Toggle Focus</button>
+                        <div id="fragments-canvas"class="canvas no-focus">
+                        </div>
                     </div>
                 </div>
             
                 <div class="divider horizontal"></div>
                 
                 <div class="content bottom">
-                    <div id="olc-canvas" class="canvas">
+                    <div id="olc-wrapper">
+                        <button id="toggleOlc">Toggle Focus</button>
+                        <div id="olc-canvas" class="canvas no-focus">
+                        </div>
                     </div>
                 </div>
             </div>
