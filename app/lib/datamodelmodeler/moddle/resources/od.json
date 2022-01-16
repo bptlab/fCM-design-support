@@ -54,6 +54,16 @@
           "type": "String"
         },
         {
+          "name": "sourceCardinality",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "targetCardinality",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
           "name": "sourceRef",
           "isAttr": true,
           "isReference": true,

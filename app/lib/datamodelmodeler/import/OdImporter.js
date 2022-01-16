@@ -143,7 +143,6 @@ OdImporter.prototype.add = function(semantic, parentElement) {
     this.addLabel(semantic, element);
   }
 
-
   this._eventBus.fire('boardElement.added', { element: element });
 
   return element;
@@ -227,7 +226,7 @@ OdImporter.prototype.addLabel = function(semantic, element) {
     width: Math.round(bounds.width),
     height: Math.round(bounds.height)
   }));
-
+    
   return this._canvas.addShape(label, element.parent);
 };
 

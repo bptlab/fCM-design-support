@@ -4,7 +4,10 @@ function getLabelAttr(semantic) {
   if (semantic.labelAttribute) {
     return semantic.labelAttribute;
   }
-  if (isAny(semantic, [ 'od:TextBox', 'od:Association', 'od:Class' ])) {
+  if (isAny(semantic, ['od:Association',])) {
+    return 'targetCardinality';
+  }
+  if (isAny(semantic, [ 'od:TextBox', 'od:Class' ])) {
     return 'name';
   }
 }
@@ -12,7 +15,6 @@ function getLabelAttr(semantic) {
 export function getLabel(element) {
   var semantic = element.businessObject;
   var attr = getLabelAttr(semantic);
-
   if (attr) {
     return semantic[attr] || '';
   }

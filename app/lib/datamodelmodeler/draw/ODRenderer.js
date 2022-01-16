@@ -309,7 +309,6 @@ export default function ODRenderer(
 
       var attrs = {
         strokeLinejoin: 'round',
-        markerEnd: marker(fill, stroke),
         stroke: getStrokeColor(element, defaultStrokeColor)
       };
       return drawPath(parentGfx, pathData, attrs);

@@ -2,11 +2,11 @@
 <od:definitions xmlns:od="http://tk/schema/od" xmlns:odDi="http://tk/schema/odDi"
                 xmlns:dc="http://www.omg.org/spec/DD/20100524/DC">
     <od:odBoard id="Board_debug">
-        <od:association name="1:1" id="Association_Class2_Conference_to_Class1_Paper_type_components" type="components"
+        <od:association name="test" sourceCardinality="test2" targetCardinality="1..1" id="Association_Class2_Conference_to_Class1_Paper_type_components" type="components"
                  sourceRef="Class2_Conference" targetRef="Class1_Paper"/>
-        <od:association name="components" id="Association_Class2_Conference_to_Class3_Decision_type_components" type="components"
+        <od:association name="components" sourceCardinality="1..1" targetCardinality="1..1" id="Association_Class2_Conference_to_Class3_Decision_type_components" type="components"
                  sourceRef="Class2_Conference" targetRef="Class3_Decision"/>
-        <od:association name="components" id="Association_Class2_Conference_to_Class4_Unicorn_type_components" type="components"
+        <od:association name="components" sourceCardinality="test2" targetCardinality="1..1" id="Association_Class2_Conference_to_Class4_Unicorn_type_components" type="components"
                  sourceRef="Class2_Conference" targetRef="Class4_Unicorn"/>
         <od:class name="Conference" id="Class2_Conference"
                    attributeValues="cost=5&#10;name=&#34;Folding wall table&#34;">
