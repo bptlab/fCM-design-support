@@ -1,6 +1,7 @@
 import {
   remove as svgRemove
 } from 'tiny-svg';
+import { getLabelAttr } from './LabelUtil';
 
 var MARKER_HIDDEN = 'djs-element-hidden';
 
@@ -13,8 +14,10 @@ export default function LabelEditingPreview(
 
   eventBus.on('directEditing.activate', function(context) {
     var activeProvider = context.active;
+    var element = activeProvider.element;
 
-    element = activeProvider.element.label || activeProvider.element;
+    var editedAttribute = getLabelAttr(element);
+    element = element.labels.filter(label => label.labelAttribute === editedAttribute)[0] || element.label || element;
 
 
     if (element.labelTarget) {

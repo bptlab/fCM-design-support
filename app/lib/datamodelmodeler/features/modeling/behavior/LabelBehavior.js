@@ -110,13 +110,28 @@ export default function LabelBehavior(
       DEFAULT_LABEL_DIMENSIONS,
       getLabel(element)
     );
-
-    modeling.createLabel(element, labelCenter, {
-      id: businessObject.id + '_label',
-      businessObject: businessObject,
-      width: labelDimensions.width,
-      height: labelDimensions.height
-    });
+    
+    if (is(element, 'od:Association')) {
+      // See OdImporter addLabel
+      for (var labelAttribute of ['sourceCardinality', 'targetCardinality']) {
+        businessObject.labelAttribute = labelAttribute;
+        modeling.createLabel(element, labelCenter, {
+          id: businessObject.id + '_label' + '_' + labelAttribute,
+          labelAttribute: labelAttribute,
+          businessObject: businessObject,
+          width: labelDimensions.width,
+          height: labelDimensions.height
+        });
+      }
+      businessObject.labelAttribute = undefined;
+    } else {
+      modeling.createLabel(element, labelCenter, {
+        id: businessObject.id + '_label',
+        businessObject: businessObject,
+        width: labelDimensions.width,
+        height: labelDimensions.height
+      });
+    }
   });
 
   // update label after label shape was deleted
@@ -152,11 +167,8 @@ export default function LabelBehavior(
     businessObject = element.businessObject,
     di = businessObject.di;
 
-
     if (!di.label) {
-      di.label = odFactory.create('odDi:OdLabel', {
-        bounds: odFactory.create('dc:Bounds')
-      });
+      di.label = odFactory.createDiLabel(element);
     }
 
     assign(di.label.bounds, {

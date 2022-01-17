@@ -45,6 +45,10 @@ ODFactory.prototype._ensureId = function(element) {
 
 
 ODFactory.prototype.create = function(type, attrs) {
+  if (type === 'od:Association') {
+    //TODO put different default values here once ready
+    attrs = assign({sourceCardinality: 'src1..1', targetCardinality: 'trg1..1'}, attrs);
+  }
   var element = this._model.create(type, attrs || {});
   if (type === 'od:Class') {
     element.attributeValues = '';
