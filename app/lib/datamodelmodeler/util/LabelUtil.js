@@ -1,6 +1,7 @@
 import {
   assign
 } from 'min-dash';
+import { getLabelAttr } from '../features/label-editing/LabelUtil';
 
 import { is } from './ModelUtil';
 
@@ -96,14 +97,20 @@ export function getExternalLabelMid(element) {
   }
 }
 
-export function getLabelElementId(semantic) {
+export function getLabelElementId(element) {
 
-  const labelElementIdMap = {
+  var semantic = element.businessObject;
+  const labelAttributeToElementIdMap = {
     sourceCardinality: 'sourceLabel',
     targetCardinality: 'targetLabel' 
   }
 
-  var labelElementId = semantic.labelAttribute && labelElementIdMap[semantic.labelAttribute] || 'label';
+  const elementToLabelElementIdMap = {
+    'od:Association' : 'sourceLabel'
+  }
+  var labelAttribute = getLabelAttr(element);
+
+  var labelElementId = labelAttribute && labelAttributeToElementIdMap[labelAttribute] || elementToLabelElementIdMap[semantic.$type] || 'label';
   
 
   return labelElementId;
@@ -124,7 +131,7 @@ export function getExternalLabelBounds(semantic, element) {
       bounds;
 
   var di = semantic.di;
-  var label = di[getLabelElementId(semantic)];
+  var label = di[getLabelElementId(element)];
 
   if (label && label.bounds) {
     bounds = label.bounds;

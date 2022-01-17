@@ -1,6 +1,6 @@
 import { isAny } from '../modeling/util/ModelingUtil';
 
-function getLabelAttr(element) {
+export function getLabelAttr(element) {
   var semantic = element.businessObject;
   if (element.labelAttribute) {
     return element.labelAttribute;

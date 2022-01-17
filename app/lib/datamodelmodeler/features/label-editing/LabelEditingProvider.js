@@ -3,7 +3,7 @@ import {
 } from 'min-dash';
 
 import {
-  getLabel
+  getLabel, getLabelAttr
 } from './LabelUtil';
 
 import { isAny } from '../modeling/util/ModelingUtil';
@@ -191,7 +191,8 @@ LabelEditingProvider.prototype.activate = function(element) {
 LabelEditingProvider.prototype.getEditingBBox = function(element) {
   var canvas = this._canvas;
 
-  var target = element.label || element;
+  var editedAttribute = getLabelAttr(element);
+  var target = element.labels.filter(label => label.labelAttribute === editedAttribute)[0] || element.label || element;
 
   var bbox = canvas.getAbsoluteBBox(target);
 

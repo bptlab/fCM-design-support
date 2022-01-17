@@ -1,6 +1,7 @@
 import {
   setLabel,
-  getLabel
+  getLabel,
+  getLabelAttr
 } from '../LabelUtil';
 
 import {
@@ -32,7 +33,8 @@ export default function UpdateLabelHandler(modeling, textRenderer) {
   function setText(element, text) {
 
     // external label if present
-    var label = element.label || element;
+    var editedAttribute = getLabelAttr(element);
+    var label = element.labels.filter(label => label.labelAttribute === editedAttribute)[0] || element.label || element;
 
     var labelTarget = element.labelTarget || element;
 

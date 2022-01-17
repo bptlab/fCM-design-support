@@ -409,7 +409,7 @@ ODUpdater.prototype.updateDiConnection = function(di, newSource, newTarget) {
 ODUpdater.prototype._getLabel = function(shape) {
   var semantic = shape.businessObject;
   var di = semantic.di;
-  var labelElementId = getLabelElementId(semantic);
+  var labelElementId = getLabelElementId(shape);
 
   if (!di[labelElementId]) {
     di[labelElementId] = this._odFactory.createDiLabel(shape);
