@@ -56,12 +56,12 @@
       "name": "Association",
       "properties": [
         {
-          "name": "label",
-          "type": "OdLabel"
+          "name": "sourceLabel",
+          "type": "OdSourceLabel"
         },
         {
-          "name": "label2",
-          "type": "OdLabel"
+          "name": "targetLabel",
+          "type": "OdTargetLabel"
         },
         {
           "name": "boardElement",
@@ -107,6 +107,14 @@
         }
       ],
       "superClass": ["Label"]
+    },
+    {
+      "name": "OdSourceLabel",
+      "superClass": ["OdLabel"]
+    },
+    {
+      "name": "OdTargetLabel",
+      "superClass": ["OdLabel"]
     },
     {
       "name": "OdLabelStyle",

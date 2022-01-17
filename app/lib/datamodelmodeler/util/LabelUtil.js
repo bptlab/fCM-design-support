@@ -109,8 +109,15 @@ export function getExternalLabelBounds(semantic, element) {
   var mid,
       size,
       bounds,
-      di = semantic.di,
-      label = di.label;
+      di = semantic.di;
+
+  const labelElementClassMap = {
+    sourceCardinality: 'sourceLabel',
+    targetCardinality: 'targetLabel' 
+  }
+  var labelElementClass = semantic.labelAttribute && labelElementClassMap[semantic.labelAttribute];
+
+  var label = (labelElementClass && di[labelElementClass]) || di.label;
 
   if (label && label.bounds) {
     bounds = label.bounds;

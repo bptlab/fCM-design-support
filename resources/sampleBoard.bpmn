@@ -2,11 +2,11 @@
 <od:definitions xmlns:od="http://tk/schema/od" xmlns:odDi="http://tk/schema/odDi"
                 xmlns:dc="http://www.omg.org/spec/DD/20100524/DC">
     <od:odBoard id="Board_debug">
-        <od:association name="test" sourceCardinality="test2" targetCardinality="1..1" id="Association_Class2_Conference_to_Class1_Paper_type_components" type="components"
+        <od:association name="test" sourceCardinality="src" targetCardinality="trg1..1" id="Association_Class2_Conference_to_Class1_Paper_type_components" type="components"
                  sourceRef="Class2_Conference" targetRef="Class1_Paper"/>
-        <od:association name="components" sourceCardinality="1..1" targetCardinality="1..1" id="Association_Class2_Conference_to_Class3_Decision_type_components" type="components"
+        <od:association name="components" sourceCardinality="1src1" targetCardinality="trg1..1" id="Association_Class2_Conference_to_Class3_Decision_type_components" type="components"
                  sourceRef="Class2_Conference" targetRef="Class3_Decision"/>
-        <od:association name="components" sourceCardinality="test2" targetCardinality="1..1" id="Association_Class2_Conference_to_Class4_Unicorn_type_components" type="components"
+        <od:association name="components" sourceCardinality="src" targetCardinality="trg1..1" id="Association_Class2_Conference_to_Class4_Unicorn_type_components" type="components"
                  sourceRef="Class2_Conference" targetRef="Class4_Unicorn"/>
         <od:class name="Conference" id="Class2_Conference"
                    attributeValues="cost=5&#10;name=&#34;Folding wall table&#34;">
@@ -26,9 +26,12 @@
                 <odDi:waypoint x="566.1" y="233.60000000000002"/>
                 <odDi:waypoint x="652.5" y="233.60000000000002"/>
                 <odDi:waypoint x="652.5" y="296.6"/>
-                <odDi:odLabel>
+                <odDi:odSourceLabel>
                     <dc:Bounds x="560" y="240" width="82" height="18"/>
-                </odDi:odLabel>
+                </odDi:odSourceLabel>
+                <odDi:odTargetLabel>
+                    <dc:Bounds x="560" y="270" width="82" height="18"/>
+                </odDi:odTargetLabel>
             </odDi:association>
             <odDi:association id="Association_Class2_Conference_to_Class3_Decision_type_components_di"
                        boardElement="Association_Class2_Conference_to_Class3_Decision_type_components">
@@ -36,9 +39,12 @@
                 <odDi:waypoint x="610.3" y="223.60000000000002"/>
                 <odDi:waypoint x="869.5" y="223.60000000000002"/>
                 <odDi:waypoint x="869.5" y="296.6"/>
-                <odDi:odLabel>
+                <odDi:odSourceLabel>
                     <dc:Bounds x="699" y="199" width="82" height="18"/>
-                </odDi:odLabel>
+                </odDi:odSourceLabel>
+                <odDi:odTargetLabel>
+                    <dc:Bounds x="699" y="230" width="82" height="18"/>
+                </odDi:odTargetLabel>
             </odDi:association>
             <odDi:association id="Association_Class2_Conference_to_Class4_Unicorn_type_components_di"
                        boardElement="Association_Class2_Conference_to_Class4_Unicorn_type_components">
@@ -46,9 +52,12 @@
                 <odDi:waypoint x="521.9" y="233.60000000000002"/>
                 <odDi:waypoint x="435.5" y="233.60000000000002"/>
                 <odDi:waypoint x="435.5" y="296.6"/>
-                <odDi:odLabel>
+                <odDi:odSourceLabel>
                     <dc:Bounds x="450" y="240" width="82" height="18"/>
-                </odDi:odLabel>
+                </odDi:odSourceLabel>
+                <odDi:odTargetLabel>
+                    <dc:Bounds x="450" y="270" width="82" height="18"/>
+                </odDi:odTargetLabel>
             </odDi:association>
             <odDi:odShape id="Class2_Conference_di" boardElement="Class2_Conference">
                 <dc:Bounds x="434" y="120" width="221" height="78"/>

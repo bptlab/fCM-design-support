@@ -140,6 +140,9 @@ OdImporter.prototype.add = function(semantic, parentElement) {
 
   // (optional) LABEL
   if (isLabelExternal(semantic) && getLabel(element)) {
+    semantic.labelAttribute = 'sourceCardinality';
+    this.addLabel(semantic, element);
+    semantic.labelAttribute = 'targetCardinality';
     this.addLabel(semantic, element);
   }
 
@@ -217,7 +220,7 @@ OdImporter.prototype.addLabel = function(semantic, element) {
   }
 
   label = this._elementFactory.createLabel(elementData(semantic, {
-    id: semantic.id + '_label',
+    id: semantic.id + '_label' + '_' + semantic.labelAttribute,
     labelTarget: element,
     type: 'label',
     hidden: element.hidden || !getLabel(element),
