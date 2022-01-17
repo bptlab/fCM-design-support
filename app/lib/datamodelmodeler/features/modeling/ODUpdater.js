@@ -19,6 +19,7 @@ import {
 } from '../../util/ModelUtil';
 
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
+import { getLabelElementId } from '../../util/LabelUtil';
 
 /**
  * A handler responsible for updating the underlying OD XML + DI
@@ -260,10 +261,7 @@ ODUpdater.prototype.updateParent = function(element, oldParent) {
 
 ODUpdater.prototype.updateBounds = function(shape) {
 
-  var di = shape.businessObject.di;
-
-  var target = (shape instanceof Label) ? this._getLabel(di) : di;
-
+  var target = (shape instanceof Label) ? this._getLabel(shape) : shape.businessObject.di;
   var bounds = target.bounds;
 
   if (!bounds) {
@@ -408,12 +406,16 @@ ODUpdater.prototype.updateDiConnection = function(di, newSource, newTarget) {
 
 // helpers //////////////////////
 
-ODUpdater.prototype._getLabel = function(di) {
-  if (!di.label) {
-    di.label = this._odFactory.createDiLabel();
+ODUpdater.prototype._getLabel = function(shape) {
+  var semantic = shape.businessObject;
+  var di = semantic.di;
+  var labelElementId = getLabelElementId(semantic);
+
+  if (!di[labelElementId]) {
+    di[labelElementId] = this._odFactory.createDiLabel(shape);
   }
 
-  return di.label;
+  return di[labelElementId];
 };
 
 

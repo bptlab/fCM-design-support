@@ -1,20 +1,21 @@
 import { isAny } from '../modeling/util/ModelingUtil';
 
-function getLabelAttr(semantic) {
-  if (semantic.labelAttribute) {
+function getLabelAttr(element) {
+  var semantic = element.businessObject;
+  if (element.labelAttribute) {
+    return element.labelAttribute;
+  } else if (semantic.labelAttribute) {
     return semantic.labelAttribute;
-  }
-  if (isAny(semantic, ['od:Association',])) {
+  } else if (isAny(semantic, ['od:Association',])) {
     return 'targetCardinality';
-  }
-  if (isAny(semantic, [ 'od:TextBox', 'od:Class' ])) {
+  }else if (isAny(semantic, [ 'od:TextBox', 'od:Class' ])) {
     return 'name';
   }
 }
 
 export function getLabel(element) {
   var semantic = element.businessObject;
-  var attr = getLabelAttr(semantic);
+  var attr = getLabelAttr(element);
   if (attr) {
     return semantic[attr] || '';
   }
@@ -23,7 +24,7 @@ export function getLabel(element) {
 
 export function setLabel(element, text) {
   var semantic = element.businessObject,
-      attr = getLabelAttr(semantic);
+      attr = getLabelAttr(element);
 
   if (attr) {
     semantic[attr] = text;

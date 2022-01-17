@@ -139,11 +139,13 @@ OdImporter.prototype.add = function(semantic, parentElement) {
   }
 
   // (optional) LABEL
-  if (isLabelExternal(semantic) && getLabel(element)) {
+  if (is(semantic, 'od:Association')) {
+    //TODO this could be done nicer without explicitely setting labelAttribute
     semantic.labelAttribute = 'sourceCardinality';
     this.addLabel(semantic, element);
     semantic.labelAttribute = 'targetCardinality';
     this.addLabel(semantic, element);
+    semantic.labelAttribute = undefined;
   }
 
   this._eventBus.fire('boardElement.added', { element: element });

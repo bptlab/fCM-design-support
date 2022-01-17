@@ -56,8 +56,13 @@ ODFactory.prototype.create = function(type, attrs) {
 };
 
 
-ODFactory.prototype.createDiLabel = function() {
-  return this.create('odDi:OdLabel', {
+ODFactory.prototype.createDiLabel = function(shape) {
+  const labelElementClassMap = {
+    sourceCardinality: 'odDi:OdSourceLabel',
+    targetCardinality: 'odDi:OdTargetLabel'
+  }
+  var labelElementClass = shape.labelAttribute && labelElementClassMap[shape.labelAttribute] || 'odDi:OdLabel';
+  return this.create(labelElementClass, {
     bounds: this.createDiBounds()
   });
 };

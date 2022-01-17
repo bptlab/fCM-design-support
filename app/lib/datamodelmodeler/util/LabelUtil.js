@@ -96,6 +96,19 @@ export function getExternalLabelMid(element) {
   }
 }
 
+export function getLabelElementId(semantic) {
+
+  const labelElementIdMap = {
+    sourceCardinality: 'sourceLabel',
+    targetCardinality: 'targetLabel' 
+  }
+
+  var labelElementId = semantic.labelAttribute && labelElementIdMap[semantic.labelAttribute] || 'label';
+  
+
+  return labelElementId;
+}
+
 
 /**
  * Returns the bounds of an elements label, parsed from the elements DI or
@@ -108,16 +121,10 @@ export function getExternalLabelBounds(semantic, element) {
 
   var mid,
       size,
-      bounds,
-      di = semantic.di;
+      bounds;
 
-  const labelElementClassMap = {
-    sourceCardinality: 'sourceLabel',
-    targetCardinality: 'targetLabel' 
-  }
-  var labelElementClass = semantic.labelAttribute && labelElementClassMap[semantic.labelAttribute];
-
-  var label = (labelElementClass && di[labelElementClass]) || di.label;
+  var di = semantic.di;
+  var label = di[getLabelElementId(semantic)];
 
   if (label && label.bounds) {
     bounds = label.bounds;
