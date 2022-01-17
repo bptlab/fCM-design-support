@@ -196,35 +196,24 @@ function toggleNoteArea() {
 
 // function to toggle focus
 
-document.getElementById("toggleOlc").addEventListener("click", function() { toggleFocusModeler("olc-wrapper") }, false)
+console.log(document.getElementsByClassName("focusButton"));
+Array.from(document.getElementsByClassName("focusButton")).forEach(button => button.addEventListener("click", function(event) { toggleFocusModeler(event.target) }, false));
 
-document.getElementById("toggleGoalstate").addEventListener("click", function() { toggleFocusModeler("goalstate-wrapper") }, false)
-
-document.getElementById("toggleDatamodel").addEventListener("click", function() { toggleFocusModeler("datamodel-wrapper") }, false)
-
-document.getElementById("toggleFragments").addEventListener("click", function() { toggleFocusModeler("fragments-wrapper") }, false)
-
-function toggleFocusModeler(elementToFocus) {
+function toggleFocusModeler(button) {
     
     console.log("toggleFocusCalled")
 
     // get wrapper for element on right side
-    var element_to_focus = document.getElementById(elementToFocus);
-    
-    // hide button
-    element_to_focus.children[0].classList.add("hidden");
+    var element_to_focus = button.parentElement;
     
     // get canvas on right side and add focus
-    element_to_focus.children[1].classList.add("focus");
+    element_to_focus.classList.add("focus");
     
     // get wrapper for element on left side
-    var element_to_unfocus = document.getElementsByClassName("focus")[0].parentElement;
-    
-    // remove hidden button
-    element_to_unfocus.children[0].classList.remove("hidden");
+    var element_to_unfocus = document.getElementsByClassName("focus")[0];
     
     // remove focus from canvas on left side
-    element_to_unfocus.children[1].classList.remove("focus");
+    element_to_unfocus.classList.remove("focus");
     
     // switch wrappers
     var left_node_to_insert = element_to_unfocus.parentElement;
@@ -234,9 +223,6 @@ function toggleFocusModeler(elementToFocus) {
     left_node_to_insert.appendChild(element_to_focus);
     
     right_node_to_insert.appendChild(element_to_unfocus);
-    
-    
-    
 }
 
 

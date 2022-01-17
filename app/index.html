@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    
+
     <div class="topBar">
         <div class="debugButton">
             <button id="exportOlc" class="button">Export Olc as Xml</button>
@@ -37,48 +37,40 @@
     </div>
     <div id="main" class="mainContent">
         <div class="content left">
-            <div id="goalstate-wrapper">
-                <button id="toggleGoalstate">Focus</button>
-                <div id="goalstate-canvas"class="canvas focus">
-                </div>
-            </div>    
+            <div id="goalstate-canvas" class="canvas focus">
+                <button id="toggleGoalstate" class="focusButton">Focus</button>
+            </div>
         </div>
-    
+
         <div class="divider vertical"></div>
-        
+
         <div class="content right">
             <div class="content top">
-                <div id="datamodel-wrapper">
-                    <button id="toggleDatamodel">Focus</button>
-                    <div id="datamodel-canvas"class="canvas">
-                    </div>
+                <div id="datamodel-canvas" class="canvas">
+                    <button id="toggleDatamodel" class="focusButton">Focus</button>
                 </div>
             </div>
-        
+
             <div class="divider horizontal"></div>
-            
+
             <div class="content bottom">
                 <div class="content top">
-                    <div id="fragments-wrapper">
-                        <button id="toggleFragments">Focus</button>
-                        <div id="fragments-canvas"class="canvas">
-                        </div>
+                    <div id="fragments-canvas" class="canvas">
+                        <button id="toggleFragments" class="focusButton">Focus</button>
                     </div>
                 </div>
-            
+
                 <div class="divider horizontal"></div>
-                
+
                 <div class="content bottom">
-                    <div id="olc-wrapper">
-                        <button id="toggleOlc">Focus</button>
-                        <div id="olc-canvas" class="canvas">
-                        </div>
+                    <div id="olc-canvas" class="canvas">
+                        <button id="toggleOlc" class="focusButton">Focus</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <div id="errorBar">
         <div>
             <a class="barButton"> Errors: 0 </a>
