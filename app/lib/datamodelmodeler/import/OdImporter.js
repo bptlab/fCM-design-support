@@ -222,6 +222,7 @@ OdImporter.prototype.addLabel = function(semantic, element) {
   label = this._elementFactory.createLabel(elementData(semantic, {
     id: semantic.id + '_label' + '_' + semantic.labelAttribute,
     labelTarget: element,
+    labelAttribute: semantic.labelAttribute,
     type: 'label',
     hidden: element.hidden || !getLabel(element),
     x: Math.round(bounds.x),

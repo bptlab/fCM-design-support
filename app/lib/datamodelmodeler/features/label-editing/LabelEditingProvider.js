@@ -14,6 +14,7 @@ import {
   hasExternalLabel,
   isLabel
 } from '../../util/LabelUtil';
+import { is } from '../../util/ModelUtil';
 
 
 export default function LabelEditingProvider(
@@ -29,12 +30,17 @@ export default function LabelEditingProvider(
 
   function decideIfTitelOrAttributesClicked(event) {
     var zoom = canvas.zoom();
-    var titel_attribute_divider_y_coordinate = (event.element.y + 30 - canvas._cachedViewbox.y) * zoom;
-    var click_y_coordinate = event.originalEvent.offsetY;
-    if (click_y_coordinate >= titel_attribute_divider_y_coordinate) {
-      event.element.businessObject.labelAttribute = 'attributeValues';
-    } else {
-      event.element.businessObject.labelAttribute = 'name';
+    var businessObject = event.element.businessObject;
+    if (is(businessObject, 'od:Class')) {
+      var titel_attribute_divider_y_coordinate = (event.element.y + 30 - canvas._cachedViewbox.y) * zoom;
+      var click_y_coordinate = event.originalEvent.offsetY;
+      if (click_y_coordinate >= titel_attribute_divider_y_coordinate) {
+        businessObject.labelAttribute = 'attributeValues';
+      } else {
+        businessObject.labelAttribute = 'name';
+      }
+    } else if (is(businessObject, 'od:Association')) {
+      businessObject.labelAttribute = event.element.labelAttribute;
     }
   }
 
