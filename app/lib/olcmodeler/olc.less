@@ -1,10 +1,27 @@
 .olc-buttonbar {
     position: absolute;
-    top: 20px;
+    top: 10px;
     right: 20px;
     overflow: hidden;
-    background-color: rgba(255, 255, 255, 0.9);
-    // border: solid 1px #CCC;
-    // border-radius: 2px;
+    background-color: #29487D;
+    border-radius: 15px;
     box-sizing: border-box;
+    padding-left: 10px;
+}
+
+.olc-buttonbar * {
+    background-color: #29487D;
+    border-color: #29487D;
+    color: white;
+    font-size: 16px;
+}
+
+.olc-buttonbar *:focus {
+    border-color:  #29487D !important;
+}
+
+.olc-buttonbar > select {
+    border-style: inset;
+    border-width: 0px;
+    outline: #29487D;
 }

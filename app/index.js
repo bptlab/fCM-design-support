@@ -196,33 +196,35 @@ function toggleNoteArea() {
 
 // function to toggle focus
 
-console.log(document.getElementsByClassName("focusButton"));
 Array.from(document.getElementsByClassName("focusButton")).forEach(button => button.addEventListener("click", function(event) { toggleFocusModeler(event.target) }, false));
+
+Array.from(document.getElementsByClassName("focusHeader")).forEach(button => button.addEventListener("click", function(event) { toggleFocusModeler(event.target) }, false));
 
 function toggleFocusModeler(button) {
     
-    console.log("toggleFocusCalled")
-
-    // get wrapper for element on right side
-    var element_to_focus = button.parentElement;
-    
-    // get canvas on right side and add focus
-    element_to_focus.classList.add("focus");
-    
-    // get wrapper for element on left side
-    var element_to_unfocus = document.getElementsByClassName("focus")[0];
-    
-    // remove focus from canvas on left side
-    element_to_unfocus.classList.remove("focus");
-    
-    // switch wrappers
-    var left_node_to_insert = element_to_unfocus.parentElement;
+    if (!button.parentElement.classList.contains("focus")){
         
-    var right_node_to_insert = element_to_focus.parentElement;
-    
-    left_node_to_insert.appendChild(element_to_focus);
-    
-    right_node_to_insert.appendChild(element_to_unfocus);
+        // get wrapper for element on right side
+        var element_to_focus = button.parentElement;
+
+        // canvas on right side add class focus
+        element_to_focus.classList.add("focus");
+
+        // get wrapper for element on left side
+        var element_to_unfocus = document.getElementsByClassName("focus")[0];
+
+        // remove focus from canvas on left side
+        element_to_unfocus.classList.remove("focus");
+
+        // switch wrappers
+        var left_node_to_insert = element_to_unfocus.parentElement;
+
+        var right_node_to_insert = element_to_focus.parentElement;
+
+        left_node_to_insert.appendChild(element_to_focus);
+
+        right_node_to_insert.appendChild(element_to_unfocus);
+    }
 }
 
 

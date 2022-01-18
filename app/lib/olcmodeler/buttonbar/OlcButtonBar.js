@@ -8,7 +8,7 @@ import {
 import OlcEvents from '../OlcEvents';
 
 export default function OlcButtonBar(canvas, eventBus, olcModeler) {
-    var container = canvas.getContainer();
+    var container = canvas.getContainer().parentElement;
     var buttonBar = document.createElement('div');
     domClasses(buttonBar).add('olc-buttonbar');
     container.appendChild(buttonBar);

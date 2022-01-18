@@ -39,6 +39,7 @@ body {
   height: 100%;
   overflow: hidden;
   background-color: white;
+  padding: 10px;
 }
 
 .button {
@@ -111,6 +112,11 @@ body {
     cursor: grabbing;
 }
 
+#note-area-close {
+    cursor: pointer;
+    float:right
+}
+
 .note-area {
     height: 400px;
     width: 770px;
@@ -147,4 +153,31 @@ body {
 
 .focus>.focusButton {
   display: none;
+}
+
+.focusButton {
+  background-color: #29487D;
+  color:white;
+  border-radius: 15px;
+  display: none;
+}
+
+.focusHeader {
+  background-color: #29487D;
+  color:white;
+  border-radius: 15px;
+  padding-right: 20px;
+  padding-left: 20px;
+  padding-top:1px;
+  padding-bottom: 1px;
+  cursor: pointer;
+}
+
+.focus>.focusHeader {
+  cursor: default;
+}
+
+
+h3 {
+    display: inline;
 }
