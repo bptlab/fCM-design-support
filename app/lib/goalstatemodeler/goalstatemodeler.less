@@ -1,5 +1,6 @@
 .gs-root {
     padding: 10px;
+    font-size: 16px;
 }
 
 .gs-conjunction > .gs-operands > .operand:not(:first-of-type):before {
@@ -14,10 +15,28 @@
     display: inline;
 }
 
+.gs-literal > button {
+    background-color: #29487D;
+    color:white;
+    border-width: 0px;
+}
+
+.gs-operands {
+    margin-right: 20px;
+}
+
+.gs-operation >  button {
+    background-color: #29487D;
+    color: white;
+    border-width: 0px;
+    margin-right: 2px;
+}
+
 .gs-operation, .gs-literal {
     //border: 1px solid gray;
     padding: 1px;
     margin: 1px;
+    margin-top: 5px;
     width: fit-content;
     background-color: white;
 }
@@ -27,6 +46,10 @@
     padding: 1px;
     position: relative;
     cursor: default;
+}
+
+.gs-datastate{
+    margin-right:5px;
 }
 
 .gs-dataclass:hover, .gs-datastate:hover {

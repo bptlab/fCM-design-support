@@ -44,7 +44,7 @@ GoalStateModeler.prototype.createDisjunctionElement = function (parentElement, d
 GoalStateModeler.prototype.createConjunctionElement = function (parentElement, conjunction) {
     var element = this.createOperationElement(parentElement, conjunction);
     var addLiteralButton = document.createElement('button');
-    addLiteralButton.innerHTML = '*';
+    addLiteralButton.innerHTML = '+';
     addLiteralButton.addEventListener('click', event => {
         var newLiteral = { type: 'literal', class: this.getClassList()[0], states: [] };
         conjunction.operands.push(newLiteral);
