@@ -111,6 +111,7 @@ $(function() {
           };
           var stateVisual = olcModeler.get('elementFactory').createShape(attrs);
           diagramRoot.businessObject.get('Elements').push(stateVisual.businessObject);
+          stateVisual.businessObject.$parent = diagramRoot.businessObject;
           canvas.addShape(stateVisual, diagramRoot);
         }
       });
@@ -227,6 +228,7 @@ function toggleFocusModeler(button) {
     }
 }
 
+document.getElementById("toggleDatamodel").click(); //TODO only for debug reasons
 
 // function to make the error bar expand
 

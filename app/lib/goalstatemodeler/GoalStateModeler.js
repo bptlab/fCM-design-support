@@ -227,6 +227,15 @@ GoalStateModeler.prototype.handleStateRenamed = function (state) {
     });
 }
 
+GoalStateModeler.prototype.handleStateDeleted = function (state) {
+    this.forEachLiteral(literal => {
+        if (literal.states.includes(state)) {
+            literal.states = without(literal.states, state);
+            this.populateLiteral(literal, literal.element);
+        }
+    });
+}
+
 GoalStateModeler.prototype.forEachLiteral = function(consumer) {
     var statementsToVisit = [this._goalState];
     while (statementsToVisit.length > 0) {

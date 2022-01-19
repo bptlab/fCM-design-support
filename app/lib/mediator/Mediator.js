@@ -38,6 +38,7 @@ Mediator.prototype.addedState = function (olcState) {
 Mediator.prototype.deletedState = function (olcState) {
     var clazz = olcState.$parent;
     console.log('removed state named \"', olcState.name, '\" with id \"', olcState.id, '\" from class named \"', clazz.name, '\" with id \"', clazz.id, "\"");
+    this.goalStateModelerHook.goalStateModeler.handleStateDeleted(olcState);
     this.fragmentModelerHook.fragmentModeler.handleStateDeleted(olcState);
 }
 
@@ -148,7 +149,7 @@ Mediator.prototype.DataModelerHook = function (eventBus, dataModeler) {
     ], event => {
         event.context.elements = event.context.elements.filter(element => {
             if (is(element, 'od:Class')) {
-                this.mediator.confirmClassDeletion(element.businessObject);
+                return this.mediator.confirmClassDeletion(element.businessObject);
             } else {
                 return true;
             }
