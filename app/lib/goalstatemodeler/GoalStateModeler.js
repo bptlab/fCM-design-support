@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import { without } from 'min-dash';
 import { is } from '../datamodelmodeler/util/ModelUtil';
+import { formatStates } from '../util/Util';
 
 export default function GoalStateModeler(container) {
     var root = document.createElement('div');
@@ -108,6 +109,7 @@ GoalStateModeler.prototype.createLiteralElement = function (parentElement, liter
 GoalStateModeler.prototype.populateLiteral = function (literal, element) {
     var { classElement, stateElement } = element;
 
+    // TODO replace dropdown with common component
     classElement.innerText = literal.class.name;
     classElement.dropdown.innerHTML = '';
     classElement.addEventListener('mouseenter', event => {
@@ -131,7 +133,7 @@ GoalStateModeler.prototype.populateLiteral = function (literal, element) {
     });
     classElement.appendChild(classElement.dropdown);
 
-    stateElement.innerText = '[' + (literal.states.length > 0 ? literal.states.map(state => state.name).join('|') : '<empty>') + ']';
+    stateElement.innerText = formatStates(literal.states);    
     stateElement.dropdown.innerHTML = '';
     stateElement.addEventListener('mouseenter', event => {
         stateElement.dropdown.innerHTML = '';
