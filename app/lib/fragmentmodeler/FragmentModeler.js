@@ -1,25 +1,34 @@
 import inherits from 'inherits';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import fragmentPaletteModule from './palette';
+import customModelingModule from './modeling';
+import bpmnExtension from './moddle/bpmnextension.json';
 
 
 export default function FragmentModeler(options) {
-    var customModules = [
+    const customModules = [
         fragmentPaletteModule,
+        customModelingModule,
         {
             fragmentModeler: ['value', this]
         }
     ];
+
     options.additionalModules = [
         ...customModules,
         ...(options.additionalModules || [])
     ];
+
+    options.moddleExtensions = {
+        fcm: bpmnExtension
+    };
+
     BpmnModeler.call(this, options);
 }
 inherits(FragmentModeler, BpmnModeler);
 
 FragmentModeler.prototype.handleOlcListChanged = function (classes, dryRun=false) {
-    // TODO called when olc list changes, i.e. a class is deleted or added, will later be replaced by events from the class modeler
+    this._classes = classes;
 }
 
 FragmentModeler.prototype.handleStateRenamed = function (state) {

@@ -1,0 +1,30 @@
+{
+    "name": "HPI fCM",
+    "prefix": "fcm",
+    "uri": "http://bptlab/schema/fcm",
+    "xml": {
+        "tagAlias": "lowerCase"
+    },
+    "associations": [],
+    "types": [
+        {
+            "name": "DataConfiguration",
+            "extends": ["bpmn:DataObjectReference"],
+            "properties": [
+                {
+                    "name": "dataclass",
+                    "isAttr": true,
+                    "type": "String"
+                },
+                {
+                    "name": "states",
+                    "isAttr": true,
+                    "type": "String",
+                    "isMany": true
+                }
+            ]
+
+        }
+    ],
+    "enumerations": []
+}
