@@ -105,12 +105,30 @@ export function findNewLabelLineStartIndex(oldWaypoints, newWaypoints, attachmen
  * @return {Point} delta
  */
 export function getLabelAdjustment(label, newWaypoints, oldWaypoints, hints) {
+    
+  console.log(newWaypoints);
 
   var x = 0,
       y = 0;
+    
+  if (label.labelAttribute == 'sourceCardinality') {
+        console.log("position set to", newWaypoints[0])
+          return {
+        x: newWaypoints[0].x - oldWaypoints[0].x,
+        y: newWaypoints[0].y - oldWaypoints[0].y
+      };
+  }
+
+  if (label.labelAttribute == 'targetCardinality') {
+      console.log("position set to", newWaypoints[1])
+            return {
+        x: newWaypoints.at(-1).x - oldWaypoints.at(-1).x,
+        y: newWaypoints.at(-1).y - oldWaypoints.at(-1).y
+      };
+  }
 
   var labelPosition = getLabelMid(label);
-
+    
   // get closest attachment
   var attachment = getAttachment(labelPosition, oldWaypoints),
       oldLabelLineIndex = attachment.segmentIndex,

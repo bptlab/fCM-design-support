@@ -97,8 +97,36 @@ export function getExternalLabelMid(element) {
   }
 }
 
-export function getLabelElementId(element) {
+export function getSourceLabelPosition(element) {
+  if (element.waypoints) {
+    return {x: element.waypoints[0].x, 
+            y: element.waypoints[0].y + 10 
+           };
+    // return getFlowLabelPosition(element.waypoints);
+  } else {
+    return {
+      x: element.x + element.width / 2,
+      y: element.y + element.height + DEFAULT_LABEL_SIZE.height / 2
+    };
+  }
+}
 
+export function getTargetLabelPosition(element) {
+  if (element.waypoints) {
+    return {x: element.waypoints.at(-1).x, 
+            y: element.waypoints.at(-1).y + 10 
+           };
+    // return getFlowLabelPosition(element.waypoints);
+  } else {
+    return {
+      x: element.x + element.width / 2,
+      y: element.y + element.height + DEFAULT_LABEL_SIZE.height / 2
+    };
+  }
+}
+
+export function getLabelElementId(element) {
+    
   var semantic = element.businessObject;
   const labelAttributeToElementIdMap = {
     sourceCardinality: 'sourceLabel',
@@ -109,10 +137,10 @@ export function getLabelElementId(element) {
     'od:Association' : 'sourceLabel'
   }
   var labelAttribute = getLabelAttr(element);
+    
 
   var labelElementId = labelAttribute && labelAttributeToElementIdMap[labelAttribute] || elementToLabelElementIdMap[semantic.$type] || 'label';
   
-
   return labelElementId;
 }
 

@@ -12,6 +12,8 @@ import {
 import {
   isLabelExternal,
   getExternalLabelMid,
+  getSourceLabelPosition,
+  getTargetLabelPosition,
   hasExternalLabel,
   isLabel
 } from '../../../util/LabelUtil';
@@ -104,6 +106,8 @@ export default function LabelBehavior(
     }
 
     var labelCenter = getExternalLabelMid(element);
+    var sourceLabelPosition = getSourceLabelPosition(element);
+    var targetLabelPostion = getTargetLabelPosition(element);
 
     // we don't care about x and y
     var labelDimensions = textRenderer.getExternalLabelBounds(
@@ -114,6 +118,11 @@ export default function LabelBehavior(
     if (is(element, 'od:Association')) {
       // See OdImporter addLabel
       for (var labelAttribute of ['sourceCardinality', 'targetCardinality']) {
+        if (labelAttribute == 'sourceCardinality') {
+            labelCenter = sourceLabelPosition;
+        } else if (labelAttribute == 'targetCardinality'){
+            labelCenter = targetLabelPostion;
+        }
         businessObject.labelAttribute = labelAttribute;
         modeling.createLabel(element, labelCenter, {
           id: businessObject.id + '_label' + '_' + labelAttribute,
@@ -170,7 +179,7 @@ export default function LabelBehavior(
     if (!di.label) {
       di.label = odFactory.createDiLabel(element);
     }
-
+      
     assign(di.label.bounds, {
       x: element.x,
       y: element.y,
@@ -179,11 +188,11 @@ export default function LabelBehavior(
     });
   });
 
-  function getVisibleLabelAdjustment(event) {
+  function getVisibleLabelAdjustment(event, label) {
 
     var context = event.context,
         connection = context.connection,
-        label = connection.label,
+        // label = connection.label,
         hints = assign({}, context.hints),
         newWaypoints = context.newWaypoints || connection.waypoints,
         oldWaypoints = context.oldWaypoints;
@@ -211,22 +220,23 @@ export default function LabelBehavior(
       return;
     }
 
-    var connection = context.connection,
-        label = connection.label,
-        labelAdjustment;
+    var connection = context.connection;
 
-    // handle missing label as well as the case
-    // that the label parent does not exist (yet),
-    // because it is being pasted / created via multi element create
-    //
-    // Cf. https://github.com/bpmn-io/bpmn-js/pull/1227
-    if (!label || !label.parent) {
-      return;
+    for (var label of connection.labels) {
+     
+        // handle missing label as well as the case
+        // that the label parent does not exist (yet),
+        // because it is being pasted / created via multi element create
+        //
+        // Cf. https://github.com/bpmn-io/bpmn-js/pull/1227
+        if (!label || !label.parent) {
+          return;
+        }
+        var labelAdjustment = getVisibleLabelAdjustment(event, label);
+
+        modeling.moveShape(label, labelAdjustment);
     }
 
-    labelAdjustment = getVisibleLabelAdjustment(event);
-
-    modeling.moveShape(label, labelAdjustment);
   });
 
 

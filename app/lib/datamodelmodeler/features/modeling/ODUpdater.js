@@ -127,7 +127,7 @@ export default function ODUpdater(
   // update bounds
   function updateBounds(e) {
     var shape = e.context.shape;
-
+      
     if (!is(shape, 'od:BoardElement')) {
       return;
     }
@@ -260,21 +260,23 @@ ODUpdater.prototype.updateParent = function(element, oldParent) {
 
 
 ODUpdater.prototype.updateBounds = function(shape) {
+    
+      var target = (shape instanceof Label) ? this._getLabel(shape) : shape.businessObject.di;
 
-  var target = (shape instanceof Label) ? this._getLabel(shape) : shape.businessObject.di;
-  var bounds = target.bounds;
+      var bounds = target.bounds;
 
-  if (!bounds) {
-    bounds = this._odFactory.createDiBounds();
-    target.set('bounds', bounds);
-  }
+      if (!bounds) {
+        bounds = this._odFactory.createDiBounds();
+        target.set('bounds', bounds);
+      }
 
-  assign(bounds, {
-    x: shape.x,
-    y: shape.y,
-    width: shape.width,
-    height: shape.height
-  });
+      assign(bounds, {
+        x: shape.x,
+        y: shape.y,
+        width: shape.width,
+        height: shape.height
+      });
+  
 };
 
 
@@ -414,7 +416,7 @@ ODUpdater.prototype._getLabel = function(shape) {
   if (!di[labelElementId]) {
     di[labelElementId] = this._odFactory.createDiLabel(shape);
   }
-
+    
   return di[labelElementId];
 };
 
