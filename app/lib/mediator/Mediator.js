@@ -2,6 +2,7 @@ import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 import inherits from 'inherits';
 import { is } from '../datamodelmodeler/util/ModelUtil';
 import OlcEvents from '../olcmodeler/OlcEvents';
+import { meaningful_state_lables } from '../guidelines/olc_guidelines/olc_checking';
 
 export default function Mediator() {
     [this.OlcModelerHook, this.DataModelerHook, this.FragmentModelerHook, this.GoalStateModelerHook].forEach(hook => {
@@ -33,6 +34,9 @@ Mediator.prototype.renamedClass = function (clazz) {
 Mediator.prototype.addedState = function (olcState) {
     var clazz = olcState.$parent;
     console.log('added state named \"', olcState.name, '\" with id \"', olcState.id, '\" to class named \"', clazz.name, '\" with id \"', clazz.id, "\"");
+    
+    // check for meaningful label?
+    meaningful_state_lables(olcState);
 }
 
 Mediator.prototype.deletedState = function (olcState) {
@@ -45,6 +49,8 @@ Mediator.prototype.deletedState = function (olcState) {
 Mediator.prototype.renamedState = function (olcState) {
     this.goalStateModelerHook.goalStateModeler.handleStateRenamed(olcState);
     this.fragmentModelerHook.fragmentModeler.handleStateRenamed(olcState);
+     // check for meaningful label?
+    meaningful_state_lables(olcState);
 }
 
 Mediator.prototype.olcListChanged = function (olcs) {
