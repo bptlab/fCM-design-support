@@ -76,13 +76,21 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                         updateStateSelection();
                     });
                 }
-                this._classDropdown.populate(olcs, (olc, element) => {
-                    this.updateClass(olc.classRef, element);
-                    updateClassSelection();
-                }, e.element);
 
-                updateClassSelection();
-                updateStateSelection();
+                const populateClassDropdown = () => {
+                    this._classDropdown.populate(olcs, (olc, element) => {
+                        this.updateClass(olc.classRef, element);
+                        updateClassSelection();
+                    }, e.element);
+                    this._classDropdown.addCreateElementInput(event => {
+                        this.createDataclass(event.target.value);
+                        populateClassDropdown();
+                    });
+                    updateClassSelection();
+                    updateStateSelection();
+                }
+
+                populateClassDropdown();
 
                 // Show the menu(e)
                 this._overlayId = overlays.add(e.element.id, 'classSelection', {
@@ -131,6 +139,12 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
         this._eventBus.fire(FragmentEvents.CREATED_STATE, {
             name,
             olc
+        });
+    }
+
+    createDataclass(name) {
+        this._eventBus.fire(FragmentEvents.CREATED_DATACLASS, {
+            name
         });
     }
 }

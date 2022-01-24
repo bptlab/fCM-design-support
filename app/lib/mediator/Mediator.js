@@ -63,6 +63,10 @@ Mediator.prototype.createState = function (name, olc) {
     this.olcModelerHook.olcModeler.createState(name, olc);
 }
 
+Mediator.prototype.createDataclass = function (name) {
+    this.dataModelerHook.dataModeler.createDataclass(name);
+}
+
 // === Olc Modeler Hook
 Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
     CommandInterceptor.call(this, eventBus);
@@ -203,6 +207,10 @@ Mediator.prototype.FragmentModelerHook = function (eventBus, fragmentModeler) {
 
     eventBus.on(FragmentEvents.CREATED_STATE, event => {
         this.mediator.createState(event.name, event.olc);
+    });
+
+    eventBus.on(FragmentEvents.CREATED_DATACLASS, event => {
+        this.mediator.createDataclass(event.name);
     });
 }
 inherits(Mediator.prototype.FragmentModelerHook, CommandInterceptor);

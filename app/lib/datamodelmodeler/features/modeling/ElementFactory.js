@@ -61,7 +61,7 @@ ElementFactory.prototype.createOdElement = function(elementType, attrs) {
       throw new Error(translate('no shape type specified'));
     }
 
-    businessObject = this._odFactory.create(attrs.type);
+    businessObject = this._odFactory.create(attrs.type, attrs);
   }
 
   if (!businessObject.di) {

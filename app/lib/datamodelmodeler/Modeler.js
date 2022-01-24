@@ -121,3 +121,14 @@ Modeler.prototype._modules = [].concat(
   Modeler.prototype._interactionModules,
   Modeler.prototype._modelingModules
 );
+
+Modeler.prototype.createDataclass = function (name) {
+  const modeling = this.get('modeling');
+  const canvas = this.get('canvas');
+  const diagramRoot = canvas.getRootElement();
+
+  modeling.createShape({
+    type: 'od:Class',
+    name: name
+  }, { x: 0, y: 0 }, diagramRoot);
+}
