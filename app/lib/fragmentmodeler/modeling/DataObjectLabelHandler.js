@@ -26,7 +26,7 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
         eventBus.on('element.changed', function (e) {
             if (is(e.element, 'bpmn:DataObjectReference')) {
                 const businessObject = e.element.businessObject;
-                const name = `${businessObject.dataclass}\n${formatStates(businessObject.get('states'))}`;
+                const name = `${businessObject.dataclass?.name}\n${formatStates(businessObject.get('states'))}`;
                 if (businessObject.name !== name) {
                     modeling.updateLabel(e.element, name, undefined, {
                         dataObjectLabelUpdate: true
@@ -49,7 +49,7 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
 
         eventBus.on(['element.dblclick' ], e => {
             if (is(e.element, 'bpmn:DataObjectReference')) {
-                const classes = this._fragmentModeler._classes;
+                const olcs = this._fragmentModeler._olcs;
                 const dataObject = e.element.businessObject;
 
                 const updateStateSelection = () => {
@@ -63,17 +63,16 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                 }
 
                 const updateClassSelection = () => {
-                    let currentClass = classes.filter(clazz => clazz.name === dataObject.dataclass)[0];
-                    if (!currentClass) {
-                        currentClass = classes[0];
-                        this.updateClass(currentClass, e.element);
+                    if (!dataObject.dataclass) {
+                        this.updateClass(olcs[0].classRef, e.element);
                     }
-                    this._classDropdown.getEntries().forEach(entry => entry.setSelected(entry.option === currentClass));
-                    const states = currentClass.get('Elements').filter(element => is(element, 'olc:State'));
+                    let currentOlc = olcs.filter(olc => olc.classRef === dataObject.dataclass)[0];
+                    this._classDropdown.getEntries().forEach(entry => entry.setSelected(entry.option === currentOlc));
+                    const states = currentOlc.get('Elements').filter(element => is(element, 'olc:State'));
                     populateStates(states)
                 }
-                this._classDropdown.populate(classes, (newClass, element) => {
-                    this.updateClass(newClass, element);
+                this._classDropdown.populate(olcs, (olc, element) => {
+                    this.updateClass(olc.classRef, element);
                     updateClassSelection();
                 }, e.element);
                 
@@ -104,7 +103,7 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
     }
 
     updateClass(newClass, element) {
-        element.businessObject.dataclass = newClass.name;
+        element.businessObject.dataclass = newClass;
         element.businessObject.states = [];
         this._eventBus.fire('element.changed', {
             element

@@ -27,8 +27,8 @@ export default function FragmentModeler(options) {
 }
 inherits(FragmentModeler, BpmnModeler);
 
-FragmentModeler.prototype.handleOlcListChanged = function (classes, dryRun=false) {
-    this._classes = classes;
+FragmentModeler.prototype.handleOlcListChanged = function (olcs, dryRun=false) {
+    this._olcs = olcs;
 }
 
 FragmentModeler.prototype.handleStateRenamed = function (state) {

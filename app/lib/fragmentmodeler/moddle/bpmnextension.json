@@ -14,7 +14,8 @@
                 {
                     "name": "dataclass",
                     "isAttr": true,
-                    "type": "String"
+                    "isReference": true,
+                    "type": "od:Class"
                 },
                 {
                     "name": "states",
