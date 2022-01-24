@@ -251,8 +251,8 @@ OlcModeler.prototype.getOlcById = function(id) {
   return this._definitions.olcs.filter(olc => olc.id === id)[0];
 }
 
-OlcModeler.prototype.createState = function (newStateName, dataClass) {
-  this.showOlcById(dataClass.id);
+OlcModeler.prototype.createState = function (name, olc) {
+  this.showOlcById(olc.id);
 
   const modeling = this.get('modeling');
   const canvas = this.get('canvas');
@@ -260,7 +260,7 @@ OlcModeler.prototype.createState = function (newStateName, dataClass) {
 
   modeling.createShape({
     type: 'olc:State',
-    name: newStateName,
+    name: name,
     x: parseInt(0),
     y: parseInt(0)
   }, { x: 0, y: 0 }, diagramRoot);
