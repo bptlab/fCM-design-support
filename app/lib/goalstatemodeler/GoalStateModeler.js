@@ -2,6 +2,7 @@ import $ from 'jquery';
 import { without } from 'min-dash';
 import { is } from '../datamodelmodeler/util/ModelUtil';
 import { formatStates } from '../util/Util';
+import getDropdown from '../util/Dropdown';
 
 export default function GoalStateModeler(container) {
     var root = document.createElement('div');
@@ -93,13 +94,8 @@ GoalStateModeler.prototype.createLiteralElement = function (parentElement, liter
     element.stateElement = stateElement;
     parentElement.append(element);
 
-    var classDropDownMenu = document.createElement('div');
-    classDropDownMenu.classList.add('gs-dropdown-menu');
-    classElement.dropdown = classDropDownMenu;
-
-    var stateDropDownMenu = document.createElement('div');
-    stateDropDownMenu.classList.add('gs-dropdown-menu');
-    stateElement.dropdown = stateDropDownMenu;
+    classElement.dropdown = getDropdown();
+    stateElement.dropdown = getDropdown();
 
     this.populateLiteral(literal, element);
 

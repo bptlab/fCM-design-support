@@ -13,7 +13,7 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
         this._modeling = modeling;
         this._directEditing = directEditing;
         this._dropdownContainer = document.createElement('div');
-        this._dropdownContainer.style.display = 'flex';
+        this._dropdownContainer.classList.add('dropdown-multicontainer');
         this._classDropdown = getDropdown();
         this._dropdownContainer.appendChild(this._classDropdown);
         this._stateDropdown = getDropdown();

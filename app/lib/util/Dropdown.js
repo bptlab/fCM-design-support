@@ -1,9 +1,6 @@
 export default function getDropdown() {
     const dropdownMenu = document.createElement('div');
     dropdownMenu.classList.add('gs-dropdown-menu');
-    dropdownMenu.style.display = 'block';
-    dropdownMenu.style.position = 'relative';
-    dropdownMenu.style.width = '50%';
 
     dropdownMenu.populate = function (options, onChange, element, labelFunc = x => x.name || x) {
         dropdownMenu.innerHTML = '';
