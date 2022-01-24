@@ -11,7 +11,7 @@ export default function Mediator() {
 }
 
 Mediator.prototype.addedClass = function (clazz) {
-    this.olcModelerHook.olcModeler.addOlc(clazz.name, clazz.id);
+    this.olcModelerHook.olcModeler.addOlc(clazz);
 }
 
 Mediator.prototype.confirmClassDeletion = function (clazz) {

@@ -30,14 +30,14 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     //TODO tooltip addOlcButton.innerHTML = 'Add Olc';
     //TODO allow to choose class name from class list
     addOlcButton.addEventListener('click', () => olcModeler.addOlc('foobar'));
-    buttonBar.appendChild(addOlcButton);
+    //TODO buttonBar.appendChild(addOlcButton);
 
     // Delete olc button
     var deleteOlcButton = document.createElement('button');
     deleteOlcButton.innerHTML = '🗑️';
     //TODO tooltip deleteOlcButton.innerHTML = 'Delete Current Olc';
     deleteOlcButton.addEventListener('click', () => olcModeler.deleteCurrentOlc());
-    buttonBar.appendChild(deleteOlcButton);
+    //TODO buttonBar.appendChild(deleteOlcButton);
 
     function repopulate(olcs) {
         var valueBefore = selectOlcMenu.value;
