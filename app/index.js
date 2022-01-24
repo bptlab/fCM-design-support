@@ -55,7 +55,7 @@ var olcModeler = new OlcModeler({
 var dataModeler = new DataModelModeler({
     container: '#datamodel-canvas',
     keyboard: {
-        bindTo: window
+        bindTo: document.querySelector('#datamodel-canvas')
     },
     additionalModules: [{
       __init__ : ['mediator'],
@@ -65,7 +65,7 @@ var dataModeler = new DataModelModeler({
 
 var fragmentModeler = new FragmentModeler({
     container: '#fragments-canvas',
-    keyboard: { bindTo: document },
+    keyboard: { bindTo: document.querySelector('#fragments-canvas') },
     additionalModules: [{
       __init__ : ['mediator'],
       mediator : ['type', mediator.FragmentModelerHook]
@@ -133,6 +133,14 @@ document.getElementById('exportOlc').addEventListener('click', function() {
 document.getElementById('importOlc').addEventListener('click', function() {
   upload(xml => olcModeler.importXML(xml));
 });
+
+Array.from(document.getElementsByClassName("canvas")).forEach(element => {
+  element.tabIndex = 0;
+  element.addEventListener('mouseenter', event => {
+    element.focus();
+  });
+});
+
 
 
 
