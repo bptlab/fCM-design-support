@@ -50,18 +50,35 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
         eventBus.on(['element.dblclick' ], e => {
             if (is(e.element, 'bpmn:DataObjectReference')) {
                 const classes = this._fragmentModeler._classes;
+                const dataObject = e.element.businessObject;
+
+                const updateStateSelection = () => {
+                    this._stateDropdown.getEntries().forEach(entry => entry.setSelected(dataObject.get('states').includes(entry.option)));
+                }
                 const populateStates = (states) => {
-                    this._stateDropdown.populate(states, (newState, element) => this.updateState(newState, element), e.element);
+                    this._stateDropdown.populate(states, (newState, element) => {
+                        this.updateState(newState, element);
+                        updateStateSelection();
+                    }, e.element);
                 }
 
+                const updateClassSelection = () => {
+                    let currentClass = classes.filter(clazz => clazz.name === dataObject.dataclass)[0];
+                    if (!currentClass) {
+                        currentClass = classes[0];
+                        this.updateClass(currentClass, e.element);
+                    }
+                    this._classDropdown.getEntries().forEach(entry => entry.setSelected(entry.option === currentClass));
+                    const states = currentClass.get('Elements').filter(element => is(element, 'olc:State'));
+                    populateStates(states)
+                }
                 this._classDropdown.populate(classes, (newClass, element) => {
                     this.updateClass(newClass, element);
-                    const states = newClass.get('Elements').filter(element => is(element, 'olc:State'));
-                    populateStates(states);
+                    updateClassSelection();
                 }, e.element);
-
-                const states = classes[0].get('Elements').filter(element => is(element, 'olc:State'));
-                populateStates(states);
+                
+                updateClassSelection();
+                updateStateSelection();
 
                 // Show the menu(e)
                 this._overlayId = overlays.add(e.element.id, 'classSelection', {
