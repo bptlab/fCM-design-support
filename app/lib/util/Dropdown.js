@@ -3,7 +3,7 @@ export default function getDropdown() {
     dropdownMenu.classList.add('dd-dropdown-menu');
 
     dropdownMenu.populate = function (options, onChange, element, labelFunc = x => x.name || x) {
-        dropdownMenu.innerHTML = '';
+        this.innerHTML = '';
         for (const option of options) {
             const entry = document.createElement('div');
             entry.option = option;
@@ -19,7 +19,7 @@ export default function getDropdown() {
                     this.classList.remove('dd-dropdown-entry-selected');
                 }
             }
-            dropdownMenu.appendChild(entry);
+            this.appendChild(entry);
         }
     } 
 
@@ -29,6 +29,20 @@ export default function getDropdown() {
 
     dropdownMenu.getEntry = function(option) {
         return this.getEntries().filter(entry => entry.option === option)[0];
+    }
+
+    dropdownMenu.addCreateElementInput = function (onConfirm) {
+        const createNewStateEditorContainer = document.createElement('div');
+        createNewStateEditorContainer.classList.add('dd-dropdown-create-input');
+        const createNewStateEditor = document.createElement('input');
+        createNewStateEditor.type = 'text';
+        createNewStateEditor.addEventListener('keypress', event => {
+            if (event.key === 'Enter') {
+                onConfirm(event);
+            }
+        });
+        createNewStateEditorContainer.appendChild(createNewStateEditor);
+        this.appendChild(createNewStateEditorContainer);
     }
 
     return dropdownMenu;

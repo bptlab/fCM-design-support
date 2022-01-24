@@ -5,6 +5,7 @@ import {
 import { without } from 'min-dash';
 import getDropdown from "../../util/Dropdown";
 import { formatStates } from "../../util/Util";
+import FragmentEvents from "../FragmentEvents";
 
 export default class DataObjectLabelHandler extends CommandInterceptor {
     constructor(eventBus, modeling, directEditing, overlays, fragmentModeler) {
@@ -13,7 +14,7 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
         this._modeling = modeling;
         this._directEditing = directEditing;
         this._dropdownContainer = document.createElement('div');
-        this._dropdownContainer.classList.add('dropdown-multicontainer');
+        this._dropdownContainer.classList.add('dd-dropdown-multicontainer');
         this._classDropdown = getDropdown();
         this._dropdownContainer.appendChild(this._classDropdown);
         this._stateDropdown = getDropdown();
@@ -55,12 +56,6 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                 const updateStateSelection = () => {
                     this._stateDropdown.getEntries().forEach(entry => entry.setSelected(dataObject.get('states').includes(entry.option)));
                 }
-                const populateStates = (states) => {
-                    this._stateDropdown.populate(states, (newState, element) => {
-                        this.updateState(newState, element);
-                        updateStateSelection();
-                    }, e.element);
-                }
 
                 const updateClassSelection = () => {
                     if (!dataObject.dataclass) {
@@ -69,13 +64,23 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                     let currentOlc = olcs.filter(olc => olc.classRef === dataObject.dataclass)[0];
                     this._classDropdown.getEntries().forEach(entry => entry.setSelected(entry.option === currentOlc));
                     const states = currentOlc.get('Elements').filter(element => is(element, 'olc:State'));
-                    populateStates(states)
+                   
+                    this._stateDropdown.populate(states, (newState, element) => {
+                        this.updateState(newState, element);
+                        updateStateSelection();
+                    }, e.element);
+
+                    this._stateDropdown.addCreateElementInput(event => {
+                        this.createState(event.target.value, currentOlc);
+                        updateClassSelection();
+                        updateStateSelection();
+                    });
                 }
                 this._classDropdown.populate(olcs, (olc, element) => {
                     this.updateClass(olc.classRef, element);
                     updateClassSelection();
                 }, e.element);
-                
+
                 updateClassSelection();
                 updateStateSelection();
 
@@ -119,6 +124,13 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
         }
         this._eventBus.fire('element.changed', {
             element
+        });
+    }
+
+    createState(name, olc) {
+        this._eventBus.fire(FragmentEvents.CREATED_STATE, {
+            name,
+            olc
         });
     }
 }

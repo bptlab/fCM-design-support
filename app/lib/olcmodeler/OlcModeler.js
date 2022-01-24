@@ -251,6 +251,21 @@ OlcModeler.prototype.getOlcById = function(id) {
   return this._definitions.olcs.filter(olc => olc.id === id)[0];
 }
 
+OlcModeler.prototype.createState = function (newStateName, dataClass) {
+  this.showOlcById(dataClass.id);
+
+  const modeling = this.get('modeling');
+  const canvas = this.get('canvas');
+  const diagramRoot = canvas.getRootElement();
+
+  modeling.createShape({
+    type: 'olc:State',
+    name: newStateName,
+    x: parseInt(0),
+    y: parseInt(0)
+  }, { x: 0, y: 0 }, diagramRoot);
+}
+
 OlcModeler.prototype.saveXML = function (options) {
 
   options = options || {};

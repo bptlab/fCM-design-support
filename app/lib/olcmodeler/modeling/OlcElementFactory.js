@@ -39,6 +39,7 @@ OlcElementFactory.prototype.createShape = function(attrs) {
 OlcElementFactory.prototype.create = function (elementType, attrs) {
 
     attrs = attrs || {};
+    attrs = assign(defaultSizeForType(attrs.type), attrs);
 
     var businessObject = attrs.businessObject;
 

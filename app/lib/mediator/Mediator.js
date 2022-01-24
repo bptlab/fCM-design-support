@@ -2,6 +2,7 @@ import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 import inherits from 'inherits';
 import { is } from '../datamodelmodeler/util/ModelUtil';
 import OlcEvents from '../olcmodeler/OlcEvents';
+import FragmentEvents from '../fragmentmodeler/FragmentEvents';
 import { meaningful_state_lables } from '../guidelines/olc_guidelines/olc_checking';
 
 export default function Mediator() {
@@ -56,6 +57,10 @@ Mediator.prototype.renamedState = function (olcState) {
 Mediator.prototype.olcListChanged = function (olcs) {
     this.goalStateModelerHook.goalStateModeler.handleOlcListChanged(olcs);
     this.fragmentModelerHook.fragmentModeler.handleOlcListChanged(olcs);
+}
+
+Mediator.prototype.createState = function (name, olc) {
+    this.olcModelerHook.olcModeler.createState(name, olc);
 }
 
 // === Olc Modeler Hook
@@ -195,6 +200,10 @@ Mediator.prototype.FragmentModelerHook = function (eventBus, fragmentModeler) {
     this.mediator.fragmentModelerHook = this;
     this._eventBus = eventBus;
     this.fragmentModeler = fragmentModeler;
+
+    eventBus.on(FragmentEvents.CREATED_STATE, event => {
+        this.mediator.createState(event.name, event.olc);
+    });
 }
 inherits(Mediator.prototype.FragmentModelerHook, CommandInterceptor);
 
