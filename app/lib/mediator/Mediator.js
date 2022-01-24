@@ -60,11 +60,11 @@ Mediator.prototype.olcListChanged = function (olcs) {
 }
 
 Mediator.prototype.createState = function (name, olc) {
-    this.olcModelerHook.olcModeler.createState(name, olc);
+    return this.olcModelerHook.olcModeler.createState(name, olc);
 }
 
 Mediator.prototype.createDataclass = function (name) {
-    this.dataModelerHook.dataModeler.createDataclass(name);
+    return this.dataModelerHook.dataModeler.createDataclass(name);
 }
 
 // === Olc Modeler Hook
@@ -206,11 +206,11 @@ Mediator.prototype.FragmentModelerHook = function (eventBus, fragmentModeler) {
     this.fragmentModeler = fragmentModeler;
 
     eventBus.on(FragmentEvents.CREATED_STATE, event => {
-        this.mediator.createState(event.name, event.olc);
+        return this.mediator.createState(event.name, event.olc);
     });
 
     eventBus.on(FragmentEvents.CREATED_DATACLASS, event => {
-        this.mediator.createDataclass(event.name);
+        return this.mediator.createDataclass(event.name);
     });
 }
 inherits(Mediator.prototype.FragmentModelerHook, CommandInterceptor);

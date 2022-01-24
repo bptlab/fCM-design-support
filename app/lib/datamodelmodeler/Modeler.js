@@ -127,8 +127,9 @@ Modeler.prototype.createDataclass = function (name) {
   const canvas = this.get('canvas');
   const diagramRoot = canvas.getRootElement();
 
-  modeling.createShape({
+  const shape = modeling.createShape({
     type: 'od:Class',
     name: name
   }, { x: 0, y: 0 }, diagramRoot);
+  return shape.businessObject;
 }

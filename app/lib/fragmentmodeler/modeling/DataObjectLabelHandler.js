@@ -71,7 +71,8 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                     }, e.element);
 
                     this._stateDropdown.addCreateElementInput(event => {
-                        this.createState(event.target.value, currentOlc);
+                        const state = this.createState(event.target.value, currentOlc);
+                        this.updateState(state, e.element);
                         updateClassSelection();
                         updateStateSelection();
                     });
@@ -83,7 +84,8 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                         updateClassSelection();
                     }, e.element);
                     this._classDropdown.addCreateElementInput(event => {
-                        this.createDataclass(event.target.value);
+                        const clazz = this.createDataclass(event.target.value);
+                        this.updateClass(clazz, e.element);
                         populateClassDropdown();
                     });
                     updateClassSelection();
@@ -136,14 +138,14 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
     }
 
     createState(name, olc) {
-        this._eventBus.fire(FragmentEvents.CREATED_STATE, {
+        return this._eventBus.fire(FragmentEvents.CREATED_STATE, {
             name,
             olc
         });
     }
 
     createDataclass(name) {
-        this._eventBus.fire(FragmentEvents.CREATED_DATACLASS, {
+        return this._eventBus.fire(FragmentEvents.CREATED_DATACLASS, {
             name
         });
     }
