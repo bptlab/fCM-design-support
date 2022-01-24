@@ -1,22 +1,22 @@
 export default function getDropdown() {
     const dropdownMenu = document.createElement('div');
-    dropdownMenu.classList.add('gs-dropdown-menu');
+    dropdownMenu.classList.add('dd-dropdown-menu');
 
     dropdownMenu.populate = function (options, onChange, element, labelFunc = x => x.name || x) {
         dropdownMenu.innerHTML = '';
         for (const option of options) {
             const entry = document.createElement('div');
             entry.option = option;
-            entry.classList.add('gs-dropdown-entry');
+            entry.classList.add('dd-dropdown-entry');
             entry.innerHTML = labelFunc(option);
             entry.addEventListener('click', event => {
                 onChange(option, element)
             });
             entry.setSelected = function(isSelected) {
                 if (isSelected) {
-                    this.classList.add('gs-dropdown-entry-selected');
+                    this.classList.add('dd-dropdown-entry-selected');
                 } else {
-                    this.classList.remove('gs-dropdown-entry-selected');
+                    this.classList.remove('dd-dropdown-entry-selected');
                 }
             }
             dropdownMenu.appendChild(entry);
@@ -24,7 +24,7 @@ export default function getDropdown() {
     } 
 
     dropdownMenu.getEntries = function() {
-        return Array.from(this.children).filter(child => child.classList.contains('gs-dropdown-entry'));
+        return Array.from(this.children).filter(child => child.classList.contains('dd-dropdown-entry'));
     }
 
     dropdownMenu.getEntry = function(option) {

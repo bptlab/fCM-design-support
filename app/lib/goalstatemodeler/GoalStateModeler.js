@@ -105,22 +105,13 @@ GoalStateModeler.prototype.createLiteralElement = function (parentElement, liter
 GoalStateModeler.prototype.populateLiteral = function (literal, element) {
     var { classElement, stateElement } = element;
 
-    // TODO replace dropdown with common component
     classElement.innerText = literal.class.name;
     classElement.dropdown.innerHTML = '';
     classElement.addEventListener('mouseenter', event => {
-        classElement.dropdown.innerHTML = '';
-        for (var clazz of this.getClassList()) {
-            if (clazz === literal.class) continue;
-            var entry = document.createElement('div');
-            const innerClass = clazz;
-            entry.classList.add('gs-dropdown-entry');
-            entry.innerHTML = clazz.name;
-            entry.addEventListener('click', event => {
-                this.changeClass(innerClass, literal);
-            });
-            classElement.dropdown.appendChild(entry);
-        }
+        classElement.dropdown.populate(
+            without(this.getClassList(), literal.class),
+            (clazz, element) => this.changeClass(clazz, literal)
+        );
         classElement.dropdown.style.display = 'block';
     });
     classElement.addEventListener('mouseleave', event => {
@@ -132,20 +123,17 @@ GoalStateModeler.prototype.populateLiteral = function (literal, element) {
     stateElement.innerText = formatStates(literal.states);    
     stateElement.dropdown.innerHTML = '';
     stateElement.addEventListener('mouseenter', event => {
-        stateElement.dropdown.innerHTML = '';
-        for (var state of this.getStateList(literal.class)) {
-            var entry = document.createElement('div');
-            const innerState = state;
-            entry.classList.add('gs-dropdown-entry');
-            if (literal.states.includes(state)) {
-                entry.classList.add('gs-dropdown-entry-selected');
-            }
-            entry.innerHTML = state.name;
-            entry.addEventListener('click', event => {
-                this.toggleState(innerState, literal);
-            });
-            stateElement.dropdown.appendChild(entry);
+        const updateStateSelection = () => {
+            stateElement.dropdown.getEntries().forEach(entry => entry.setSelected(literal.states.includes(entry.option)));
         }
+        stateElement.dropdown.populate(
+            this.getStateList(literal.class),
+            (state, element) => {
+                this.toggleState(state, literal);
+                updateStateSelection();
+            }
+        );
+        updateStateSelection();
         stateElement.dropdown.style.display = 'block';
     });
     stateElement.addEventListener('mouseleave', event => {
