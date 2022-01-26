@@ -39,7 +39,13 @@ export default function UpdateLabelHandler(modeling, textRenderer) {
 
         if (!(text.match(check_re_1)) && !(text.match(check_re_2))   ) {
           text = oldText;
-        }  
+        }
+        
+        const text_parts = text.split('\n⬧');
+        if (text_parts[0] == text_parts[1]) {
+            text = text_parts[0];
+        }
+        
     }
         
     // external label if present

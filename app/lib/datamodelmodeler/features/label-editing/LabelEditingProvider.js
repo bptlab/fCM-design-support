@@ -310,7 +310,7 @@ LabelEditingProvider.prototype.getEditingBBox = function(element) {
 
 
 LabelEditingProvider.prototype.update = function(element, newLabel) {
-    
+
 
   if (isEmptyText(newLabel)) {
     newLabel = null;

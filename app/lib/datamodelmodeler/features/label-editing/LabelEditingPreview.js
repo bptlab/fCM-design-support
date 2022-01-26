@@ -18,7 +18,16 @@ export default function LabelEditingPreview(
 
     var editedAttribute = getLabelAttr(element);
     element = element.labels.filter(label => label.labelAttribute === editedAttribute)[0] || element.label || element;
+      
+    var cardinality = element.labelAttribute;
+      
+    var label_text = element.businessObject[cardinality];
+      
+    if (!label_text.includes("⬧")) {
+        var previewDiv = document.getElementsByClassName("djs-direct-editing-content")[0];
 
+        previewDiv.innerHTML = label_text + " <br>⬧" + label_text;
+    }
 
     if (element.labelTarget) {
       canvas.addMarker(element, MARKER_HIDDEN);
