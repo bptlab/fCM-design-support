@@ -133,3 +133,7 @@ Modeler.prototype.createDataclass = function (name) {
   }, { x: 0, y: 0 }, diagramRoot);
   return shape.businessObject;
 }
+
+Modeler.prototype.renameClass = function (clazz, name) {
+  this.get('modeling').updateLabel(this.get('elementRegistry').get(clazz.id), name);
+}

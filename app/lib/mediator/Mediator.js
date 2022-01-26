@@ -59,6 +59,10 @@ Mediator.prototype.olcListChanged = function (olcs) {
     this.fragmentModelerHook.fragmentModeler.handleOlcListChanged(olcs);
 }
 
+Mediator.prototype.olcRenamed = function (olc, name) {
+    this.dataModelerHook.dataModeler.renameClass(olc.classRef, name);
+}
+
 Mediator.prototype.createState = function (name, olc) {
     return this.olcModelerHook.olcModeler.createState(name, olc);
 }
@@ -108,6 +112,10 @@ Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
 
     eventBus.on(OlcEvents.DEFINITIONS_CHANGED, event => {
         this.mediator.olcListChanged(event.definitions.olcs);
+    });
+
+    eventBus.on(OlcEvents.OLC_RENAME, event => {
+        this.mediator.olcRenamed(event.olc, event.name);
     });
 }
 inherits(Mediator.prototype.OlcModelerHook, CommandInterceptor);
