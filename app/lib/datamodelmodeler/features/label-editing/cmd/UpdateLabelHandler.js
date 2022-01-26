@@ -30,8 +30,18 @@ export default function UpdateLabelHandler(modeling, textRenderer) {
    * @param {djs.model.Base} element
    * @param {String} text
    */
-  function setText(element, text) {
+  function setText(element, text, oldText = '') {
 
+    if (element.businessObject.$type == 'od:Association') {
+        // check if text fulfills required form
+        var check_re_1 = /\d..\d\n⬧\d..\d/;
+        var check_re_2 = /^\d..\d$/;
+
+        if (!(text.match(check_re_1)) && !(text.match(check_re_2))   ) {
+          text = oldText;
+        }  
+    }
+        
     // external label if present
     var editedAttribute = getLabelAttr(element);
     var label = element.labels.filter(label => label.labelAttribute === editedAttribute)[0] || element.label || element;
@@ -72,7 +82,7 @@ export default function UpdateLabelHandler(modeling, textRenderer) {
 
   function execute(ctx) {
     ctx.oldLabel = getLabel(ctx.element);
-    return setText(ctx.element, ctx.newLabel);
+    return setText(ctx.element, ctx.newLabel, ctx.oldLabel);
   }
 
   function revert(ctx) {
