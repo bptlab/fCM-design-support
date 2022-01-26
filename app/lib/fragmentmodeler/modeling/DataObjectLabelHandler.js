@@ -48,10 +48,11 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
             }
         });
 
-        eventBus.on(['element.dblclick' ], e => {
-            if (is(e.element, 'bpmn:DataObjectReference')) {
+        eventBus.on(['element.dblclick', 'create.end'], e => {
+            const element = e.element || e.elements[0];
+            if (is(element, 'bpmn:DataObjectReference')) {
                 const olcs = this._fragmentModeler._olcs;
-                const dataObject = e.element.businessObject;
+                const dataObject = element.businessObject;
 
                 const updateStateSelection = () => {
                     this._stateDropdown.getEntries().forEach(entry => entry.setSelected(dataObject.get('states').includes(entry.option)));
@@ -59,7 +60,7 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
 
                 const updateClassSelection = () => {
                     if (!dataObject.dataclass) {
-                        this.updateClass(olcs[0].classRef, e.element);
+                        this.updateClass(olcs[0].classRef, element);
                     }
                     let currentOlc = olcs.filter(olc => olc.classRef === dataObject.dataclass)[0];
                     this._classDropdown.getEntries().forEach(entry => entry.setSelected(entry.option === currentOlc));
@@ -68,11 +69,11 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                     this._stateDropdown.populate(states, (newState, element) => {
                         this.updateState(newState, element);
                         updateStateSelection();
-                    }, e.element);
+                    }, element);
 
                     this._stateDropdown.addCreateElementInput(event => {
                         const state = this.createState(event.target.value, currentOlc);
-                        this.updateState(state, e.element);
+                        this.updateState(state, element);
                         updateClassSelection();
                         updateStateSelection();
                     });
@@ -82,10 +83,10 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                     this._classDropdown.populate(olcs, (olc, element) => {
                         this.updateClass(olc.classRef, element);
                         updateClassSelection();
-                    }, e.element);
+                    }, element);
                     this._classDropdown.addCreateElementInput(event => {
                         const clazz = this.createDataclass(event.target.value);
-                        this.updateClass(clazz, e.element);
+                        this.updateClass(clazz, element);
                         populateClassDropdown();
                     });
                     updateClassSelection();
@@ -95,7 +96,7 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                 populateClassDropdown();
 
                 // Show the menu(e)
-                this._overlayId = overlays.add(e.element.id, 'classSelection', {
+                this._overlayId = overlays.add(element.id, 'classSelection', {
                     position: {
                         bottom: 0,
                         right: 0
@@ -104,7 +105,7 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                     html: this._dropdownContainer
                 });
 
-                this._currentDropdownTarget = e.element.businessObject;
+                this._currentDropdownTarget = element.businessObject;
             }
         });
     }
