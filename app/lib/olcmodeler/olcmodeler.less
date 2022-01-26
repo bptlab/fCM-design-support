@@ -2,11 +2,19 @@
     position: absolute;
     top: 10px;
     right: 20px;
-    overflow: hidden;
     background-color: #29487D;
     border-radius: 15px;
     box-sizing: border-box;
     padding-left: 10px;
+    padding-right: 10px;
+}
+
+.olc-buttonbar > *:first-child {
+    border-radius: 5px 0px 0px 5px;
+}
+
+.olc-buttonbar > *:last-child {
+    border-radius: 0px 15px 15px 0px;
 }
 
 .olc-buttonbar * {
@@ -24,4 +32,8 @@
     border-style: inset;
     border-width: 0px;
     outline: #29487D;
+}
+
+.valueDisplay::before {
+    content: attr(data-value);
 }

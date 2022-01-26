@@ -248,7 +248,11 @@ OlcModeler.prototype.renameOlc = function (name, id) {
 }
 
 OlcModeler.prototype.getOlcById = function(id) {
-  return this._definitions.olcs.filter(olc => olc.id === id)[0];
+  return this.getOlcs().filter(olc => olc.id === id)[0];
+}
+
+OlcModeler.prototype.getOlcs = function() {
+  return this._definitions.get('olcs');
 }
 
 OlcModeler.prototype.createState = function (name, olc) {

@@ -5,6 +5,8 @@ import {
     query as domQuery
 } from 'min-dom';
 
+import getDropdown from '../../util/Dropdown'
+
 import OlcEvents from '../OlcEvents';
 
 export default function OlcButtonBar(canvas, eventBus, olcModeler) {
@@ -16,13 +18,24 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
 
     // Select olc Menu
     // TODO allow to change current (class-)name and add new olc from bottom of list -> use unified class list component here?
-    var selectOlcMenu = document.createElement('select');
-    selectOlcMenu.addEventListener('change', event => {
-        if(selectOlcMenu.value) {
-            olcModeler.showOlcById(selectOlcMenu.value);
+    
+    var selectOlcButton = document.createElement('span');
+    selectOlcButton.classList.add('valueDisplay');
+    selectOlcButton.showValue = function(olc) {
+        this.value = olc;
+        this.dataset.value = this.value?.classRef?.name
+    }
+    var selectOlcMenu = getDropdown();
+    selectOlcButton.addEventListener('mousedown', event => {
+        if (event.target === selectOlcButton) {
+            repopulate(olcModeler.getOlcs());
+            selectOlcMenu.style.display = 'block';
+        } else {
+            return;
         }
     });
-    buttonBar.appendChild(selectOlcMenu);
+    selectOlcButton.appendChild(selectOlcMenu);
+    buttonBar.appendChild(selectOlcButton);
 
     // Add olc button
     var addOlcButton = document.createElement('button');
@@ -40,19 +53,23 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     //TODO buttonBar.appendChild(deleteOlcButton);
 
     function repopulate(olcs) {
-        var valueBefore = selectOlcMenu.value;
-        for(var i = 0; i < olcs.length; i++) {
-            selectOlcMenu.options[i] = new Option(olcs[i].get('name'), olcs[i].get('id'));
-        }
-        for(var i = selectOlcMenu.options.length; i > olcs.length; i--) {
-            delete selectOlcMenu.remove(i-1);
-        }
+        var valueBefore = selectOlcButton.value;
+        selectOlcMenu.populate(olcs, olc => {
+            olcModeler.showOlc(olc);
+            hideSelectOlcMenu();
+        });
         deleteOlcButton.disabled = olcs.length === 0;
-        selectOlcMenu.value = valueBefore;
+        selectOlcButton.showValue(valueBefore);
+    }
+
+    function hideSelectOlcMenu() {
+        selectOlcMenu.innerHTML = '';
+        selectOlcMenu.style.display = 'none';
     }
 
     eventBus.on([OlcEvents.DEFINITIONS_CHANGED], event => repopulate(event.definitions.get('olcs')));
-    eventBus.on([OlcEvents.SELECTED_OLC_CHANGED], event => selectOlcMenu.value = event.olc && event.olc.get('id'));
+    eventBus.on([OlcEvents.SELECTED_OLC_CHANGED], event => selectOlcButton.showValue(event.olc));
+    eventBus.on('element.click', event => hideSelectOlcMenu())
 
 }
 
