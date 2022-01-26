@@ -2,21 +2,21 @@
 <od:definitions xmlns:od="http://tk/schema/od" xmlns:odDi="http://tk/schema/odDi"
                 xmlns:dc="http://www.omg.org/spec/DD/20100524/DC">
     <od:odBoard id="Board_debug">
-        <od:association name="test" sourceCardinality="src" targetCardinality="trg1..1" id="Association_Class2_Conference_to_Class1_Paper_type_components" type="components"
+        <od:association name="test" sourceCardinality="0..0" targetCardinality="1..1" id="Association_Class2_Conference_to_Class1_Paper_type_components" type="components"
                  sourceRef="Class2_Conference" targetRef="Class1_Paper"/>
-        <od:association name="components" sourceCardinality="1src1" targetCardinality="trg1..1" id="Association_Class2_Conference_to_Class3_Decision_type_components" type="components"
+        <od:association name="components" sourceCardinality="0..0" targetCardinality="1..1" id="Association_Class2_Conference_to_Class3_Decision_type_components" type="components"
                  sourceRef="Class2_Conference" targetRef="Class3_Decision"/>
-        <od:association name="components" sourceCardinality="src" targetCardinality="trg1..1" id="Association_Class2_Conference_to_Class4_Unicorn_type_components" type="components"
+        <od:association name="components" sourceCardinality="0..0" targetCardinality="1..1" id="Association_Class2_Conference_to_Class4_Unicorn_type_components" type="components"
                  sourceRef="Class2_Conference" targetRef="Class4_Unicorn"/>
         <od:class name="Conference" id="Class2_Conference"
-                   attributeValues="cost=5&#10;name=&#34;Folding wall table&#34;">
+                   attributeValues="cost: integer">
             <od:associations>Association_Class2_Conference_to_Class1_Paper_type_components</od:associations>
             <od:associations>Association_Class2_Conference_to_Class3_Decision_type_components</od:associations>
             <od:associations>Association_Class2_Conference_to_Class4_Unicorn_type_components</od:associations>
         </od:class>
-        <od:class name="Paper" id="Class1_Paper" attributeValues="quantity=4"/>
-        <od:class name="Decision" id="Class3_Decision" attributeValues="quantity=10"/>
-        <od:class name="Unicorn" id="Class4_Unicorn" attributeValues="quantity=1"/>
+        <od:class name="Paper" id="Class1_Paper" attributeValues="quantity: string"/>
+        <od:class name="Decision" id="Class3_Decision" attributeValues="quantity: string"/>
+        <od:class name="Unicorn" id="Class4_Unicorn" attributeValues="quantity: string"/>
     </od:odBoard>
     <odDi:odRootBoard id="RootBoard_debug">
         <odDi:odPlane id="Plane_debug" boardElement="Board_debug">
