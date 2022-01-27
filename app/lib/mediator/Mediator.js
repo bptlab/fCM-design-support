@@ -5,10 +5,25 @@ import OlcEvents from '../olcmodeler/OlcEvents';
 import FragmentEvents from '../fragmentmodeler/FragmentEvents';
 import { meaningful_state_lables } from '../guidelines/olc_guidelines/olc_checking';
 
+// Test: var a = new Mediator(); var b = new Mediator; assert new a.XYHook().mediator === a;
+// a = new Mediator(); b = new Mediator(); new a.foobar().mediator === a
+
 export default function Mediator() {
-    [this.OlcModelerHook, this.DataModelerHook, this.FragmentModelerHook, this.GoalStateModelerHook].forEach(hook => {
-        hook.mediator = this
-    });
+    var self = this;
+    for (let propName in this) {
+        let prototypeProp = this[propName];
+        if (typeof prototypeProp === 'function' && prototypeProp.isHook) {
+            this[propName] = function(...args) {
+                if (new.target) {
+                    this.mediator = self;
+                }
+                return prototypeProp.call(this, ...args);
+            }
+            this[propName].$inject = prototypeProp.$inject;
+            this[propName].isHook = true;
+            inherits(this[propName], prototypeProp);
+        }
+    }
 }
 
 Mediator.prototype.getHooks = function() {
@@ -89,7 +104,6 @@ Mediator.prototype.createDataclass = function (name) {
 // === Olc Modeler Hook
 Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
     CommandInterceptor.call(this, eventBus);
-    this.mediator = this.__proto__.constructor.mediator;
     this.mediator.olcModelerHook = this;
     this._eventBus = eventBus;
     this.modeler = olcModeler;
@@ -149,10 +163,11 @@ Mediator.prototype.OlcModelerHook.$inject = [
     'olcModeler'
 ];
 
+Mediator.prototype.OlcModelerHook.isHook = true;
+
 // === Data Modeler Hook
 Mediator.prototype.DataModelerHook = function (eventBus, dataModeler) {
     CommandInterceptor.call(this, eventBus);
-    this.mediator = this.__proto__.constructor.mediator;
     this.mediator.dataModelerHook = this;
     this._eventBus = eventBus;
     this.modeler = dataModeler;
@@ -229,10 +244,11 @@ Mediator.prototype.DataModelerHook.$inject = [
     'dataModeler'
 ];
 
+Mediator.prototype.DataModelerHook.isHook = true;
+
 // === Fragment Modeler Hook
 Mediator.prototype.FragmentModelerHook = function (eventBus, fragmentModeler) {
     CommandInterceptor.call(this, eventBus);
-    this.mediator = this.__proto__.constructor.mediator;
     this.mediator.fragmentModelerHook = this;
     this._eventBus = eventBus;
     this.modeler = fragmentModeler;
@@ -252,9 +268,12 @@ Mediator.prototype.FragmentModelerHook.$inject = [
     'fragmentModeler'
 ];
 
+Mediator.prototype.FragmentModelerHook.isHook = true;
+
 // === Goal State Modeler Hook
 Mediator.prototype.GoalStateModelerHook = function (goalStateModeler) {
-    this.mediator = this.__proto__.constructor.mediator;
     this.modeler = goalStateModeler;
     this.mediator.goalStateModelerHook = this;
 }
+
+Mediator.prototype.GoalStateModelerHook.isHook = true;
