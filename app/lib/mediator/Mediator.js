@@ -14,7 +14,7 @@ export default function Mediator() {
     for (let propName in this) {
         let prototypeProp = this[propName];
         if (typeof prototypeProp === 'function' && prototypeProp.isHook) {
-            this[propName] = function(...args) {
+            this[propName] = function (...args) {
                 if (new.target) {
                     this.mediator = self;
                     this.name = propName;
@@ -32,21 +32,21 @@ export default function Mediator() {
     }
 }
 
-Mediator.prototype.getHooks = function() {
+Mediator.prototype.getHooks = function () {
     return [this.olcModelerHook, this.dataModelerHook, this.fragmentModelerHook, this.goalStateModelerHook];
 }
 
-Mediator.prototype.getModelers = function() {
+Mediator.prototype.getModelers = function () {
     return this.getHooks().map(hook => hook.modeler);
 }
 
-Mediator.prototype.handleHookCreated = function(hook) {
+Mediator.prototype.handleHookCreated = function (hook) {
     //Propagate mouse events in order to defocus elements and close menus
     hook.eventBus?.on(['element.mousedown', 'element.mouseup', 'element.click'], event => {
         if (!event.handledByMediator) {
-            const {originalEvent, element} = event;
+            const { originalEvent, element } = event;
             without(this.getHooks(), hook).forEach(propagateHook => {
-                propagateHook.eventBus?.fire(event.type, {originalEvent, element, handledByMediator : true});
+                propagateHook.eventBus?.fire(event.type, { originalEvent, element, handledByMediator: true });
             });
         }
     });
@@ -76,7 +76,7 @@ Mediator.prototype.renamedClass = function (clazz) {
 Mediator.prototype.addedState = function (olcState) {
     var clazz = olcState.$parent;
     console.log('added state named \"', olcState.name, '\" with id \"', olcState.id, '\" to class named \"', clazz.name, '\" with id \"', clazz.id, "\"");
-    
+
     // check for meaningful label?
     meaningful_state_lables(olcState);
 }
@@ -91,7 +91,7 @@ Mediator.prototype.deletedState = function (olcState) {
 Mediator.prototype.renamedState = function (olcState) {
     this.goalStateModelerHook.modeler.handleStateRenamed(olcState);
     this.fragmentModelerHook.modeler.handleStateRenamed(olcState);
-     // check for meaningful label?
+    // check for meaningful label?
     meaningful_state_lables(olcState);
 }
 
@@ -169,7 +169,7 @@ Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
         this.mediator.olcDeletionRequested(event.olc);
         return false; // Deletion should never be directly done in olc modeler, will instead propagate from data modeler
     });
-    
+
     eventBus.on(OlcEvents.DATACLASS_CREATION_REQUESTED, event => {
         return this.mediator.createDataclass(event.name);
     });
