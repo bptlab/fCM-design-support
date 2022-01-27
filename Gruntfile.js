@@ -89,7 +89,7 @@ module.exports = function(grunt) {
       },
       styles: {
         files: {
-          'dist/css/index.css': ['app/styles/index.less', 'app/styles/dividers.less'],
+          'dist/css/index.css': ['app/styles/index.less', 'app/styles/dividers.less', 'app/styles/dropdown.less'],
           'dist/css/lib.css': ['app/lib/**/*.less'],
           'dist/css/start.css': 'app/styles/start.less',
           'dist/css/checking.css': 'app/styles/checking.less'
