@@ -1,5 +1,6 @@
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 import inherits from 'inherits';
+import { without } from 'min-dash';
 import { is } from '../datamodelmodeler/util/ModelUtil';
 import OlcEvents from '../olcmodeler/OlcEvents';
 import FragmentEvents from '../fragmentmodeler/FragmentEvents';
@@ -16,8 +17,13 @@ export default function Mediator() {
             this[propName] = function(...args) {
                 if (new.target) {
                     this.mediator = self;
+                    this.name = propName;
                 }
-                return prototypeProp.call(this, ...args);
+                const callresult = prototypeProp.call(this, ...args);
+                if (new.target) {
+                    this.mediator.handleHookCreated(this);
+                }
+                return callresult;
             }
             this[propName].$inject = prototypeProp.$inject;
             this[propName].isHook = true;
@@ -32,6 +38,18 @@ Mediator.prototype.getHooks = function() {
 
 Mediator.prototype.getModelers = function() {
     return this.getHooks().map(hook => hook.modeler);
+}
+
+Mediator.prototype.handleHookCreated = function(hook) {
+    //Propagate mouse events in order to defocus elements and close menus
+    hook.eventBus?.on(['element.mousedown', 'element.mouseup', 'element.click'], event => {
+        if (!event.handledByMediator) {
+            const {originalEvent, element} = event;
+            without(this.getHooks(), hook).forEach(propagateHook => {
+                propagateHook.eventBus?.fire(event.type, {originalEvent, element, handledByMediator : true});
+            });
+        }
+    });
 }
 
 Mediator.prototype.addedClass = function (clazz) {
@@ -105,7 +123,7 @@ Mediator.prototype.createDataclass = function (name) {
 Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
     CommandInterceptor.call(this, eventBus);
     this.mediator.olcModelerHook = this;
-    this._eventBus = eventBus;
+    this.eventBus = eventBus;
     this.modeler = olcModeler;
 
     this.executed([
@@ -169,7 +187,7 @@ Mediator.prototype.OlcModelerHook.isHook = true;
 Mediator.prototype.DataModelerHook = function (eventBus, dataModeler) {
     CommandInterceptor.call(this, eventBus);
     this.mediator.dataModelerHook = this;
-    this._eventBus = eventBus;
+    this.eventBus = eventBus;
     this.modeler = dataModeler;
 
     this.executed([
@@ -250,7 +268,7 @@ Mediator.prototype.DataModelerHook.isHook = true;
 Mediator.prototype.FragmentModelerHook = function (eventBus, fragmentModeler) {
     CommandInterceptor.call(this, eventBus);
     this.mediator.fragmentModelerHook = this;
-    this._eventBus = eventBus;
+    this.eventBus = eventBus;
     this.modeler = fragmentModeler;
 
     eventBus.on(FragmentEvents.CREATED_STATE, event => {
