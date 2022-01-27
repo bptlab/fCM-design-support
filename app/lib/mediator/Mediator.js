@@ -129,6 +129,10 @@ Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
         this.mediator.olcDeletionRequested(event.olc);
         return false; // Deletion should never be directly done in olc modeler, will instead propagate from data modeler
     });
+    
+    eventBus.on(OlcEvents.DATACLASS_CREATION_REQUESTED, event => {
+        return this.mediator.createDataclass(event.name);
+    });
 }
 inherits(Mediator.prototype.OlcModelerHook, CommandInterceptor);
 

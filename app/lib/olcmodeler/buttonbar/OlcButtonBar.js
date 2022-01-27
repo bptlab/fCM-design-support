@@ -5,7 +5,7 @@ import {
     query as domQuery
 } from 'min-dom';
 
-import getDropdown from '../../util/Dropdown'
+import getDropdown from '../../util/Dropdown';
 
 import OlcEvents from '../OlcEvents';
 
@@ -30,7 +30,7 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     var selectOlcMenu = getDropdown();
     selectOlcComponent.addEventListener('click', event => {
         if (event.target === selectOlcComponent || event.target === selectedOlcSpan) {
-            repopulate(olcModeler.getOlcs());
+            repopulate();
             selectOlcMenu.style.display = 'block';
         } else {
             return;
@@ -63,14 +63,6 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     selectOlcComponent.appendChild(selectOlcMenu);
     buttonBar.appendChild(selectOlcComponent);
 
-    // Add olc button
-    var addOlcButton = document.createElement('button');
-    addOlcButton.innerHTML = '➕';
-    //TODO tooltip addOlcButton.innerHTML = 'Add Olc';
-    //TODO allow to choose class name from class list
-    addOlcButton.addEventListener('click', () => olcModeler.addOlc('foobar'));
-    //TODO buttonBar.appendChild(addOlcButton);
-
     // Delete olc button
     var deleteOlcButton = document.createElement('button');
     deleteOlcButton.innerHTML = '🗑️';
@@ -85,11 +77,18 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     });
     buttonBar.appendChild(deleteOlcButton);
 
-    function repopulate(olcs) {
+    function repopulate() {
+        var olcs = olcModeler.getOlcs();
         var valueBefore = selectOlcComponent.value;
         selectOlcMenu.populate(olcs, olc => {
             olcModeler.showOlc(olc);
             hideSelectOlcMenu();
+        });
+        selectOlcMenu.addCreateElementInput(event => {
+            var className = event.target.value;
+            eventBus.fire(OlcEvents.DATACLASS_CREATION_REQUESTED, {
+                name: className
+            });
         });
         deleteOlcButton.disabled = olcs.length === 0;
         selectOlcComponent.showValue(valueBefore);
@@ -100,7 +99,7 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
         selectOlcMenu.style.display = 'none';
     }
 
-    eventBus.on([OlcEvents.DEFINITIONS_CHANGED], event => repopulate(event.definitions.get('olcs')));
+    eventBus.on([OlcEvents.DEFINITIONS_CHANGED], event => repopulate());
     eventBus.on([OlcEvents.SELECTED_OLC_CHANGED], event => selectOlcComponent.showValue(event.olc));
     eventBus.on('element.click', event => hideSelectOlcMenu())
 
