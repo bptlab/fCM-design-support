@@ -32,7 +32,8 @@ export default function UpdateLabelHandler(modeling, textRenderer) {
    */
   function setText(element, text, oldText = '') {
 
-    if (element.businessObject.$type == 'od:Association') {
+    // Text can be set to null on deletion
+    if (text !== null && element.businessObject.$type == 'od:Association') {
         // check if text fulfills required form
         var check_re_1 = /\d..\d\n⬧\d..\d/;
         var check_re_2 = /^\d..\d$/;

@@ -1,6 +1,7 @@
 import {
   remove as svgRemove
 } from 'tiny-svg';
+import { is } from '../../util/ModelUtil';
 import { getLabelAttr } from './LabelUtil';
 
 var MARKER_HIDDEN = 'djs-element-hidden';
@@ -19,14 +20,16 @@ export default function LabelEditingPreview(
     var editedAttribute = getLabelAttr(element);
     element = element.labels.filter(label => label.labelAttribute === editedAttribute)[0] || element.label || element;
       
-    var cardinality = element.labelAttribute;
+    if (is(element, 'od:Association')) {
+      var cardinality = element.labelAttribute;
       
-    var label_text = element.businessObject[cardinality];
-      
-    if (!label_text.includes("⬧")) {
-        var previewDiv = document.getElementsByClassName("djs-direct-editing-content")[0];
-
-        previewDiv.innerHTML = label_text + " <br>⬧" + label_text;
+      var label_text = element.businessObject[cardinality];
+        
+      if (!label_text.includes("⬧")) {
+          var previewDiv = document.getElementsByClassName("djs-direct-editing-content")[0];
+  
+          previewDiv.innerHTML = label_text + " <br>⬧" + label_text;
+      }
     }
 
     if (element.labelTarget) {
