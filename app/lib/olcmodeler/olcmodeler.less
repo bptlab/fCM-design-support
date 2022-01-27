@@ -28,10 +28,17 @@
     border-color:  #29487D !important;
 }
 
-.olc-buttonbar > select {
-    border-style: inset;
-    border-width: 0px;
-    outline: #29487D;
+.olc-buttonbar > button {
+    border-style: none;
+}
+
+.olc-select-component {
+    display: inline;
+}
+
+.olc-select-component::after {
+    content: '▼';
+    padding-left: 3px;
 }
 
 .olc-select-component > input {

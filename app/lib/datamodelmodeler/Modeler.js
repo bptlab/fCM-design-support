@@ -137,3 +137,7 @@ Modeler.prototype.createDataclass = function (name) {
 Modeler.prototype.renameClass = function (clazz, name) {
   this.get('modeling').updateLabel(this.get('elementRegistry').get(clazz.id), name);
 }
+
+Modeler.prototype.deleteClass = function (clazz) {
+  this.get('modeling').removeShape(this.get('elementRegistry').get(clazz.id));
+}

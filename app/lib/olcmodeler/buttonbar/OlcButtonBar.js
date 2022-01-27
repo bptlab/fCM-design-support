@@ -74,9 +74,16 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     // Delete olc button
     var deleteOlcButton = document.createElement('button');
     deleteOlcButton.innerHTML = '🗑️';
-    //TODO tooltip deleteOlcButton.innerHTML = 'Delete Current Olc';
-    deleteOlcButton.addEventListener('click', () => olcModeler.deleteCurrentOlc());
-    //TODO buttonBar.appendChild(deleteOlcButton);
+    deleteOlcButton.title = 'Delete Current Olc';
+    deleteOlcButton.addEventListener('click', () => {
+        var olcToDelete = selectOlcComponent.value;
+        var shouldDelete = eventBus.fire(OlcEvents.OLC_DELETION_REQUESTED, {olc: olcToDelete});
+        if(shouldDelete !== false) {
+            // Deletion was not rejected and not handled somewhere else; should not happen when mediator is involved
+            olcModeler.deleteOlc(olcToDelete.id)
+        }
+    });
+    buttonBar.appendChild(deleteOlcButton);
 
     function repopulate(olcs) {
         var valueBefore = selectOlcComponent.value;
