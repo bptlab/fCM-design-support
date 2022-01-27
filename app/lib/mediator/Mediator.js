@@ -11,25 +11,33 @@ export default function Mediator() {
     });
 }
 
+Mediator.prototype.getHooks = function() {
+    return [this.olcModelerHook, this.dataModelerHook, this.fragmentModelerHook, this.goalStateModelerHook];
+}
+
+Mediator.prototype.getModelers = function() {
+    return this.getHooks().map(hook => hook.modeler);
+}
+
 Mediator.prototype.addedClass = function (clazz) {
-    this.olcModelerHook.olcModeler.addOlc(clazz);
+    this.olcModelerHook.modeler.addOlc(clazz);
 }
 
 Mediator.prototype.confirmClassDeletion = function (clazz) {
-    var affectedLiterals = this.goalStateModelerHook.goalStateModeler.getLiteralsWithClassId(clazz.id);
-    var affectedStates = this.olcModelerHook.olcModeler.getOlcById(clazz.id).get('Elements').filter(element => is(element, 'olc:State'));
+    var affectedLiterals = this.goalStateModelerHook.modeler.getLiteralsWithClassId(clazz.id);
+    var affectedStates = this.olcModelerHook.modeler.getOlcById(clazz.id).get('Elements').filter(element => is(element, 'olc:State'));
     return confirm('Do you really want to delete class \"' + clazz.name + '\" ?'
         + '\n' + affectedLiterals.length + ' literal(s) and ' + affectedStates.length + ' olc state(s) would be deleted as well.');
 }
 
 Mediator.prototype.deletedClass = function (clazz) {
-    this.olcModelerHook.olcModeler.deleteOlc(clazz.id);
-    this.fragmentModelerHook.fragmentModeler.handleClassDeleted(clazz);
+    this.olcModelerHook.modeler.deleteOlc(clazz.id);
+    this.fragmentModelerHook.modeler.handleClassDeleted(clazz);
 }
 
 Mediator.prototype.renamedClass = function (clazz) {
-    this.olcModelerHook.olcModeler.renameOlc(clazz.name, clazz.id);
-    this.fragmentModelerHook.fragmentModeler.handleClassRenamed(clazz);
+    this.olcModelerHook.modeler.renameOlc(clazz.name, clazz.id);
+    this.fragmentModelerHook.modeler.handleClassRenamed(clazz);
 }
 
 Mediator.prototype.addedState = function (olcState) {
@@ -43,39 +51,39 @@ Mediator.prototype.addedState = function (olcState) {
 Mediator.prototype.deletedState = function (olcState) {
     var clazz = olcState.$parent;
     console.log('removed state named \"', olcState.name, '\" with id \"', olcState.id, '\" from class named \"', clazz.name, '\" with id \"', clazz.id, "\"");
-    this.goalStateModelerHook.goalStateModeler.handleStateDeleted(olcState);
-    this.fragmentModelerHook.fragmentModeler.handleStateDeleted(olcState);
+    this.goalStateModelerHook.modeler.handleStateDeleted(olcState);
+    this.fragmentModelerHook.modeler.handleStateDeleted(olcState);
 }
 
 Mediator.prototype.renamedState = function (olcState) {
-    this.goalStateModelerHook.goalStateModeler.handleStateRenamed(olcState);
-    this.fragmentModelerHook.fragmentModeler.handleStateRenamed(olcState);
+    this.goalStateModelerHook.modeler.handleStateRenamed(olcState);
+    this.fragmentModelerHook.modeler.handleStateRenamed(olcState);
      // check for meaningful label?
     meaningful_state_lables(olcState);
 }
 
 Mediator.prototype.olcListChanged = function (olcs) {
-    this.goalStateModelerHook.goalStateModeler.handleOlcListChanged(olcs);
-    this.fragmentModelerHook.fragmentModeler.handleOlcListChanged(olcs);
+    this.goalStateModelerHook.modeler.handleOlcListChanged(olcs);
+    this.fragmentModelerHook.modeler.handleOlcListChanged(olcs);
 }
 
 Mediator.prototype.olcRenamed = function (olc, name) {
-    this.dataModelerHook.dataModeler.renameClass(olc.classRef, name);
+    this.dataModelerHook.modeler.renameClass(olc.classRef, name);
 }
 
 Mediator.prototype.olcDeletionRequested = function (olc) {
     const clazz = olc.classRef;
     if (this.confirmClassDeletion(clazz)) {
-        this.dataModelerHook.dataModeler.deleteClass(clazz);
+        this.dataModelerHook.modeler.deleteClass(clazz);
     }
 }
 
 Mediator.prototype.createState = function (name, olc) {
-    return this.olcModelerHook.olcModeler.createState(name, olc);
+    return this.olcModelerHook.modeler.createState(name, olc);
 }
 
 Mediator.prototype.createDataclass = function (name) {
-    return this.dataModelerHook.dataModeler.createDataclass(name);
+    return this.dataModelerHook.modeler.createDataclass(name);
 }
 
 // === Olc Modeler Hook
@@ -84,7 +92,7 @@ Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
     this.mediator = this.__proto__.constructor.mediator;
     this.mediator.olcModelerHook = this;
     this._eventBus = eventBus;
-    this.olcModeler = olcModeler;
+    this.modeler = olcModeler;
 
     this.executed([
         'shape.create'
@@ -147,7 +155,7 @@ Mediator.prototype.DataModelerHook = function (eventBus, dataModeler) {
     this.mediator = this.__proto__.constructor.mediator;
     this.mediator.dataModelerHook = this;
     this._eventBus = eventBus;
-    this.dataModeler = dataModeler;
+    this.modeler = dataModeler;
 
     this.executed([
         'shape.create'
@@ -227,7 +235,7 @@ Mediator.prototype.FragmentModelerHook = function (eventBus, fragmentModeler) {
     this.mediator = this.__proto__.constructor.mediator;
     this.mediator.fragmentModelerHook = this;
     this._eventBus = eventBus;
-    this.fragmentModeler = fragmentModeler;
+    this.modeler = fragmentModeler;
 
     eventBus.on(FragmentEvents.CREATED_STATE, event => {
         return this.mediator.createState(event.name, event.olc);
@@ -247,6 +255,6 @@ Mediator.prototype.FragmentModelerHook.$inject = [
 // === Goal State Modeler Hook
 Mediator.prototype.GoalStateModelerHook = function (goalStateModeler) {
     this.mediator = this.__proto__.constructor.mediator;
-    this.goalStateModeler = goalStateModeler;
+    this.modeler = goalStateModeler;
     this.mediator.goalStateModelerHook = this;
 }
