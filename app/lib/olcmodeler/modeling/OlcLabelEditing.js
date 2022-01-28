@@ -1,7 +1,8 @@
 
-export default function OlcLabelEditing(eventBus, directEditing, commandStack) {
+export default function OlcLabelEditing(eventBus, canvas, directEditing, commandStack) {
     directEditing.registerProvider(this);
     this._commandStack = commandStack;
+    this._canvas = canvas;
 
     eventBus.on('element.dblclick', function (event) {
         directEditing.activate(event.element);
@@ -36,14 +37,28 @@ OlcLabelEditing.prototype.activate = function (element) {
         centerVertically: true,
         autoResize: true
     };
+    
+    var canvas = this._canvas; 
+    var zoom = canvas.zoom();
+    var target = element;
+    var bbox = canvas.getAbsoluteBBox(target);
+    
+    var mid = {
+        x: bbox.x + bbox.width / 2,
+        y: bbox.y + bbox.height / 2
+    };
+    
+    var width = 90 * zoom,
+    paddingTop = 7 * zoom,
+    paddingBottom = 4 * zoom;
 
     var bounds = {
-        width: element.width,
-        height: element.height,
-        x: element.x,
-        y: element.y,
+        width: width,
+        height: bbox.height + paddingTop + paddingBottom,
+        x: mid.x - width / 2,
+        y: bbox.y - paddingTop
     };
-
+    
     var style = {
         // TODO make look nice
     };
@@ -69,6 +84,7 @@ OlcLabelEditing.prototype.update = function (element, newLabel) {
 
 OlcLabelEditing.$inject = [
     'eventBus',
+    'canvas',
     'directEditing',
     'commandStack'
 ];
