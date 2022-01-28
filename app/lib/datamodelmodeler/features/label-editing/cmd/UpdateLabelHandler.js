@@ -48,6 +48,14 @@ export default function UpdateLabelHandler(modeling, textRenderer) {
         }
         
     }
+     
+    // Check format for Attribute labels
+    if (text !== null && element.businessObject.$type == 'od:Class' && element.businessObject.labelAttribute === 'attributeValues') {
+        var check_re_class = /[A-Za-z]+: string|String|integer|Integer|int|Int|Str|str|Float|float|Boolean|boolean|bool|Bool$/
+        if (!text.match(check_re_class)) {
+            text = oldText;
+        }
+    }
         
     // external label if present
     var editedAttribute = getLabelAttr(element);
