@@ -1,9 +1,16 @@
-export default function getDropdown() {
+export default function getDropdown(name = '') {
     const dropdownMenu = document.createElement('div');
     dropdownMenu.classList.add('dd-dropdown-menu');
-
+    
     dropdownMenu.populate = function (options, onChange, element, labelFunc = x => x.name || x) {
         this.innerHTML = '';
+        
+        if (name != '') {
+            const dropdownTitle = document.createElement('div');
+            dropdownTitle.classList.add('dd-dropdown-title');
+            dropdownTitle.innerHTML = name;
+            this.appendChild(dropdownTitle);
+        }
         for (const option of options) {
             const entry = document.createElement('div');
             entry.option = option;
