@@ -3,6 +3,8 @@ import BpmnModeler from 'bpmn-js/lib/Modeler';
 import fragmentPaletteModule from './palette';
 import customModelingModule from './modeling';
 import bpmnExtension from './moddle/bpmnextension.json';
+import { is } from 'bpmn-js/lib/util/ModelUtil';
+import { without } from 'min-dash';
 
 
 export default function FragmentModeler(options) {
@@ -31,18 +33,50 @@ FragmentModeler.prototype.handleOlcListChanged = function (olcs, dryRun=false) {
     this._olcs = olcs;
 }
 
-FragmentModeler.prototype.handleStateRenamed = function (state) {
-    // TODO called when an olc state is renamed
+FragmentModeler.prototype.handleStateRenamed = function (olcState) {
+    this.getDataObjectReferencesInState(olcState).forEach((element, gfx) =>
+        this.get('eventBus').fire('element.changed', {
+            element
+        })
+    );
 }
 
-FragmentModeler.prototype.handleStateDeleted = function (state) {
-    // TODO called when an olc state is deleted
+FragmentModeler.prototype.handleStateDeleted = function (olcState) {
+    this.getDataObjectReferencesInState(olcState).forEach((element, gfx) => {
+        element.businessObject.states = without(element.businessObject.states, olcState);
+        this.get('eventBus').fire('element.changed', {
+            element
+        });
+    });
 }
 
 FragmentModeler.prototype.handleClassRenamed = function (clazz) {
-    // TODO called when a data class is renamed
+    this.getDataObjectReferencesOfClass(clazz).forEach((element, gfx) =>
+        this.get('eventBus').fire('element.changed', {
+            element
+        })
+    );
 }
 
 FragmentModeler.prototype.handleClassDeleted = function (clazz) {
-    // TODO called when a data class is deleted
+    this.getDataObjectReferencesOfClass(clazz).forEach((element, gfx) =>
+        this.get('modeling').removeElements([element])
+    );
+}
+
+FragmentModeler.prototype.getDataObjectReferencesInState = function (olcState) {
+    return this.get('elementRegistry').filter((element, gfx) =>
+        is(element, 'bpmn:DataObjectReference') &&
+        element.type !== 'label' &&
+        element.businessObject.dataclass.id === olcState.$parent.classRef.id &&
+        element.businessObject.states.includes(olcState)
+    );
+}
+
+FragmentModeler.prototype.getDataObjectReferencesOfClass = function (clazz) {
+    return this.get('elementRegistry').filter((element, gfx) => 
+        is(element, 'bpmn:DataObjectReference') &&
+        element.type !== 'label' &&
+        element.businessObject.dataclass.id === clazz.id
+    );
 }
