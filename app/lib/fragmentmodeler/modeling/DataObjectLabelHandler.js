@@ -23,9 +23,10 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
         this._overlayId = undefined;
         this._overlays = overlays;
         this._fragmentModeler = fragmentModeler;
+        this._currentElement = undefined;
 
         eventBus.on('element.changed', function (e) {
-            if (is(e.element, 'bpmn:DataObjectReference')) {
+            if (is(e.element, 'bpmn:DataObjectReference') && e.element.parent) {
                 const businessObject = e.element.businessObject;
                 const name = `${businessObject.dataclass?.name}\n${formatStates(businessObject.get('states'))}`;
                 if (businessObject.name !== name) {
@@ -53,30 +54,40 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
             if (is(element, 'bpmn:DataObjectReference')) {
                 const olcs = this._fragmentModeler._olcs;
                 const dataObject = element.businessObject;
+                this._currentElement = element;
 
                 const updateStateSelection = () => {
                     this._stateDropdown.getEntries().forEach(entry => entry.setSelected(dataObject.get('states').includes(entry.option)));
                 }
 
                 const updateClassSelection = () => {
-                    if (!dataObject.dataclass) {
-                        this.updateClass(olcs[0].classRef, element);
-                    }
-                    let currentOlc = olcs.filter(olc => olc.classRef === dataObject.dataclass)[0];
-                    this._classDropdown.getEntries().forEach(entry => entry.setSelected(entry.option === currentOlc));
-                    const states = currentOlc.get('Elements').filter(element => is(element, 'olc:State'));
-                   
-                    this._stateDropdown.populate(states, (newState, element) => {
-                        this.updateState(newState, element);
-                        updateStateSelection();
-                    }, element);
+                    if (olcs.length > 0) {
+                        let states = [];
+                        let currentOlc = undefined;
+                        if (dataObject.dataclass) {
+                            console.log('executed');
+                            currentOlc = olcs.filter(olc => olc.classRef === dataObject.dataclass)[0];
+                            this._classDropdown.getEntries().forEach(entry => entry.setSelected(entry.option === currentOlc));
+                            states = currentOlc.get('Elements').filter(element => is(element, 'olc:State'));
+                        }
+                    
+                        this._stateDropdown.populate(states, (newState, element) => {
+                            this.updateState(newState, element);
+                            updateStateSelection();
+                        }, element);
 
-                    this._stateDropdown.addCreateElementInput(event => {
-                        const state = this.createState(event.target.value, currentOlc);
-                        this.updateState(state, element);
-                        updateClassSelection();
-                        updateStateSelection();
-                    });
+                        this._stateDropdown.addCreateElementInput(event => {
+                            const state = this.createState(event.target.value, currentOlc);
+                            this.updateState(state, element);
+                            updateClassSelection();
+                            updateStateSelection();
+                        });
+                    } else {
+                        this._stateDropdown.populate([], (newState, element) => {
+                            this.updateState(newState, element);
+                            updateStateSelection();
+                        }, element);
+                    }
                 }
 
                 const populateClassDropdown = () => {
@@ -111,11 +122,15 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
     }
 
     cancel() {
-        this._currentDropdownTarget = undefined;
         if (this._overlayId) {
             this._overlays.remove(this._overlayId);
             this._overlayId = undefined;
         }
+        if (this._currentDropdownTarget.dataclass === undefined) {
+            this._modeling.removeElements([this._currentElement]);
+        }
+        this._currentElement = undefined;
+        this._currentDropdownTarget = undefined;
     }
 
     updateClass(newClass, element) {
