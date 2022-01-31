@@ -37,3 +37,13 @@ FragmentReplaceMenuProvider.prototype.getPopupMenuEntries = function(element) {
         return entries;
     }
 }
+
+FragmentReplaceMenuProvider.prototype.getPopupMenuHeaderEntries = function(element) {
+    return function(entries) {
+        if (is(element, 'bpmn:Activity')) {
+            return {};
+        } else {
+            return entries;
+        }
+    }
+}
