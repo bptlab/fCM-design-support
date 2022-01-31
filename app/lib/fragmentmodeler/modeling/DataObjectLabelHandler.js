@@ -65,7 +65,6 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                         let states = [];
                         let currentOlc = undefined;
                         if (dataObject.dataclass) {
-                            console.log('executed');
                             currentOlc = olcs.filter(olc => olc.classRef === dataObject.dataclass)[0];
                             this._classDropdown.getEntries().forEach(entry => entry.setSelected(entry.option === currentOlc));
                             states = currentOlc.get('Elements').filter(element => is(element, 'olc:State'));
