@@ -43,6 +43,7 @@ export default function getDropdown(name = '') {
         createNewStateEditorContainer.classList.add('dd-dropdown-create-input');
         const createNewStateEditor = document.createElement('input');
         createNewStateEditor.type = 'text';
+        createNewStateEditor.placeholder = 'Create new'
         createNewStateEditor.addEventListener('keypress', event => {
             if (event.key === 'Enter') {
                 onConfirm(event);
