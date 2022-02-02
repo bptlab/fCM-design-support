@@ -5,8 +5,8 @@ import { is } from '../datamodelmodeler/util/ModelUtil';
 import OlcEvents from '../olcmodeler/OlcEvents';
 import FragmentEvents from '../fragmentmodeler/FragmentEvents';
 import { meaningful_state_lables } from '../guidelines/olc_guidelines/olc_checking';
-import Guidelines from './Guidelines';
-import { SEVERITY } from './Guidelines';
+import Guidelines from '../guidelines/Guidelines';
+import { SEVERITY } from '../guidelines/Guidelines';
 
 // Test: var a = new Mediator(); var b = new Mediator; assert new a.XYHook().mediator === a;
 // a = new Mediator(); b = new Mediator(); new a.foobar().mediator === a
