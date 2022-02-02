@@ -1,6 +1,6 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
-export default function FragmentReplaceMenuProvider(popupMenu, bpmnReplace, translate) {
+export default function FragmentReplaceMenuProvider(popupMenu) {
     popupMenu.registerProvider('bpmn-replace', this);
 }
 
@@ -35,5 +35,15 @@ FragmentReplaceMenuProvider.prototype.getPopupMenuEntries = function(element) {
         }
 
         return entries;
+    }
+}
+
+FragmentReplaceMenuProvider.prototype.getPopupMenuHeaderEntries = function(element) {
+    return function(entries) {
+        if (is(element, 'bpmn:Activity')) {
+            return {};
+        } else {
+            return entries;
+        }
     }
 }
