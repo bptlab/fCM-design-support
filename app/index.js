@@ -236,7 +236,7 @@ function toggleFocusModeler(button) {
     }
 }
 
-document.getElementById("toggleDatamodel").click(); //TODO only for debug reasons
+// document.getElementById("toggleDatamodel").click(); //TODO only for debug reasons
 
 // function to make the error bar expand
 
