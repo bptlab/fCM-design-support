@@ -68,7 +68,6 @@ FragmentModeler.prototype.getDataObjectReferencesInState = function (olcState) {
     return this.get('elementRegistry').filter((element, gfx) =>
         is(element, 'bpmn:DataObjectReference') &&
         element.type !== 'label' &&
-        element.businessObject.dataclass.id === olcState.$parent.classRef.id &&
         element.businessObject.states.includes(olcState)
     );
 }

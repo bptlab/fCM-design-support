@@ -56,14 +56,14 @@ Mediator.prototype.handleHookCreated = function (hook) {
     if (hook.executed) {
         hook.executed(['shape.create', 'shape.delete', 'element.updateLabel'], event => {
             guidelines.forEach(guideline => {
-                const violations = guideline.getViolatingElements(this);
-                violations.forEach(({element, message}) => {
-                    if (!element.violations) {
-                        element.violations = {};
-                    }
-                    element.violations[guideline] = message;
-                    console.log(element);
-                });
+                // const violations = guideline.getViolatingElements(this);
+                // violations.forEach(({element, message, gfx}) => {
+                //     if (!element.violations) {
+                //         element.violations = {};
+                //     }
+                //     element.violations[guideline] = message;
+                //     gfx.classList.add('errorElement');
+                // });
             });
         });
     }
@@ -93,13 +93,9 @@ Mediator.prototype.renamedClass = function (clazz) {
 }
 
 Mediator.prototype.addedState = function (olcState) {
-    var clazz = olcState.$parent;
-    console.log('added state named \"', olcState.name, '\" with id \"', olcState.id, '\" to class named \"', clazz.name, '\" with id \"', clazz.id, "\"");
 }
 
 Mediator.prototype.deletedState = function (olcState) {
-    var clazz = olcState.$parent;
-    console.log('removed state named \"', olcState.name, '\" with id \"', olcState.id, '\" from class named \"', clazz.name, '\" with id \"', clazz.id, "\"");
     this.goalStateModelerHook.modeler.handleStateDeleted(olcState);
     this.fragmentModelerHook.modeler.handleStateDeleted(olcState);
 }

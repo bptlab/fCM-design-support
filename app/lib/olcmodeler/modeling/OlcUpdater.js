@@ -1,6 +1,11 @@
 import inherits from 'inherits';
 
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
+import OlcModeler from '../OlcModeler';
+
+import {
+  remove as collectionRemove
+} from 'diagram-js/lib/util/Collections';
 
 
 export default function OlcUpdater(eventBus, connectionDocking) {
@@ -37,10 +42,19 @@ export default function OlcUpdater(eventBus, connectionDocking) {
         'connection.create'
     ], (event) => {
         var context = event.context,
-            element = context.shape || context.connection,
-            oldParent = context.oldParent;
+            element = context.shape || context.connection;
 
         linkToBusinessObjectParent(element)
+    });
+
+    this.executed([
+        'shape.delete',
+        'connection.delete'
+    ], (event) => {
+        var context = event.context,
+            element = context.shape || context.connection;
+
+        removeFromBusinessObjectParent(element);
     });
 
     this.executed([
@@ -86,6 +100,14 @@ function linkToBusinessObjectParent(element) {
 
     parentBusinessObject.get('Elements').push(businessObject);
     businessObject.$parent = parentBusinessObject;
+}
+
+function removeFromBusinessObjectParent(element) {
+    var businessObject = element.businessObject,
+        parentBusinessObject = businessObject.$parent;
+
+    collectionRemove(parentBusinessObject.get('Elements'), businessObject);
+    businessObject.$parent = undefined;
 }
 
 inherits(OlcUpdater, CommandInterceptor);
