@@ -1,6 +1,6 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
-export default function FragmentReplaceMenuProvider(popupMenu, bpmnReplace, translate) {
+export default function FragmentReplaceMenuProvider(popupMenu) {
     popupMenu.registerProvider('bpmn-replace', this);
 }
 
