@@ -14,7 +14,7 @@ export default [
     {
         title : 'Development Guideline',
         id : 'eins',
-        getViolatingElements(mediator) {
+        getViolations(mediator) {
             var olc = mediator.olcModelerHook.modeler.getCurrentOlc();
             var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
             return states.filter(state => !state.name?.endsWith('cake')).map(state => ({
@@ -29,7 +29,7 @@ export default [
     {
         title : 'Development Guideline #2',
         id : 'zwei',
-        getViolatingElements(mediator) {
+        getViolations(mediator) {
             const olcModeler = mediator.olcModelerHook.modeler;
             var olc = olcModeler.getCurrentOlc();
             var states = olc.get('Elements').filter(element => is(element, 'olc:State'));

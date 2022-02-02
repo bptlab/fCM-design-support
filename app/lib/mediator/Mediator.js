@@ -4,9 +4,6 @@ import { without } from 'min-dash';
 import { is } from '../datamodelmodeler/util/ModelUtil';
 import OlcEvents from '../olcmodeler/OlcEvents';
 import FragmentEvents from '../fragmentmodeler/FragmentEvents';
-import { meaningful_state_lables } from '../guidelines/olc_guidelines/olc_checking';
-import Guidelines from '../guidelines/Guidelines';
-import { SEVERITY } from '../guidelines/Guidelines';
 
 // Test: var a = new Mediator(); var b = new Mediator; assert new a.XYHook().mediator === a;
 // a = new Mediator(); b = new Mediator(); new a.foobar().mediator === a
@@ -32,6 +29,7 @@ export default function Mediator() {
             inherits(this[propName], prototypeProp);
         }
     }
+    this._executed = [];
 }
 
 Mediator.prototype.getHooks = function () {
@@ -53,38 +51,20 @@ Mediator.prototype.handleHookCreated = function (hook) {
         }
     });
 
-    const guidelines = Guidelines;
-    const guidelinePerId = {}; guidelines.forEach(guideline => guidelinePerId[guideline.id] = guideline);
-    const errorList = {};
-    const mediator = this;
+    this._executed.forEach(({events, callback}) => {
+        if (hook.executed) {
+            hook.executed(events, callback);
+        }
+    })
+}
 
-    function reevaluateGuideline(guideline) {
-        errorList[guideline.id]?.forEach(({element, gfx}) => {
-            delete element.violations[guideline.id];
-            const violatedGuidelines = Object.keys(element.violations);
-            Object.keys(SEVERITY).forEach(key => {
-                const severity = SEVERITY[key];
-                if (violatedGuidelines.filter(guidelineId => guidelinePerId[guidelineId].severity === severity).length === 0) {
-                    gfx.classList.remove(severity.cssClass);
-                }
-            });
-        });
-        const violations = guideline.getViolatingElements(mediator);
-        violations.forEach(({element, message, gfx}) => {
-            if (!element.violations) {
-                element.violations = {};
-            }
-            element.violations[guideline.id] = message;
-            gfx.classList.add(guideline.severity.cssClass);
-        });
-        errorList[guideline.id] = violations;
-    }
-
-    if (hook.executed) {
-        hook.executed(['shape.create', 'shape.delete', 'element.updateLabel'], event => {
-            guidelines.forEach(guideline => reevaluateGuideline(guideline));
-        });
-    }
+Mediator.prototype.executed = function(events, callback) {
+    this._executed.push({events, callback});
+    this.getHooks().forEach(hook => {
+        if (hook.executed) {
+            hook.executed(events, callback);
+        }
+    })
 }
 
 Mediator.prototype.addedClass = function (clazz) {
