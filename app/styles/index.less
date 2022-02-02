@@ -203,13 +203,22 @@ body {
   cursor: default;
 }
 
-.warningElement {
-  filter: drop-shadow(2px 0 0 antiquewhite) drop-shadow(-2px 0 0 antiquewhite) drop-shadow(0 2px 0 antiquewhite) drop-shadow(0 -2px 0 antiquewhite) drop-shadow(1px 0 0 yellow) drop-shadow(-1px 0 0 yellow) drop-shadow(0 -1px 0 yellow) drop-shadow(0 1px 0 yellow);
+.highlightedElement {
+  filter: drop-shadow(2px 0 0 antiquewhite) drop-shadow(-2px 0 0 antiquewhite) drop-shadow(0 2px 0 antiquewhite) drop-shadow(0 -2px 0 antiquewhite) drop-shadow(1px 0 0 var(--highlight-color)) drop-shadow(-1px 0 0 var(--highlight-color)) drop-shadow(0 -1px 0 var(--highlight-color)) drop-shadow(0 1px 0 var(--highlight-color));
 }
 
-.errorElement {
-  filter: drop-shadow(2px 0 0 antiquewhite) drop-shadow(-2px 0 0 antiquewhite) drop-shadow(0 2px 0 antiquewhite) drop-shadow(0 -2px 0 antiquewhite) drop-shadow(1px 0 0 red) drop-shadow(-1px 0 0 red) drop-shadow(0 -1px 0 red) drop-shadow(0 1px 0 red) !important;
+.violationRow {
+  color: var(--highlight-color);
 }
+
+.warningElement {
+  --highlight-color : yellow;
+  }
+
+.errorElement {
+  --highlight-color : red !important;
+}
+
 .errorTable {
     font-size: 16px;
     color: white;

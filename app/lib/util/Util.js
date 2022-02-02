@@ -10,3 +10,7 @@ export function getBusinessObject(element) {
 export function formatStates(states, emptyValue='<empty>', mapper= x => x.name || x) {
     return '[' + (states.length > 0 ? states.map(mapper).join(' | ') : emptyValue) + ']';
 }
+
+export function root(element) {
+    return element.parent || element;
+}

@@ -36,7 +36,7 @@ export default [
             return states.filter(state => state.name !== 'Cheesecake').map(state => ({
                 element : olcModeler.get('elementRegistry').get(state.id),
                 message : 'Please make state ' + state.name + ' more delicious.',
-                fixes : [
+                quickFixes : [
                     {
                         label : 'Change title of state to cheesecake',
                         action : () => olcModeler.get('modeling').updateLabel(olcModeler.get('elementRegistry').get(state.id), 'Cheesecake')

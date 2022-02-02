@@ -9,6 +9,7 @@ import DummyData from './DummyData';
 import $ from 'jquery';
 import Mediator from './lib/mediator/Mediator';
 import Checker from './lib/guidelines/Checker';
+import ErrorBar from './lib/guidelines/ErrorBar';
 
 
 
@@ -80,8 +81,8 @@ new mediator.GoalStateModelerHook(goalStateModeler);
 
 
 
-
-const checker = new Checker(mediator);
+const errorBar = new ErrorBar(document.getElementById("errorBar"));
+const checker = new Checker(mediator, errorBar);
 
 async function createNewDiagram() {
     await openDiagram(diagramXML, datamodelXML);
