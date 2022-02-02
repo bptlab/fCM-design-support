@@ -95,6 +95,13 @@ Mediator.prototype.renamedClass = function (clazz) {
 Mediator.prototype.addedState = function (olcState) {
 }
 
+Mediator.prototype.confirmStateDeletion = function (olcState) {
+    const affectedLiterals = this.goalStateModelerHook.modeler.getLiteralsWithState(olcState);
+    const affectedDataObjectReferences = this.fragmentModelerHook.modeler.getDataObjectReferencesInState(olcState);
+    return confirm('Do you really want to delete state \"' + olcState.name + '\" ?'
+        + '\n' + 'It would be removed from ' + affectedLiterals.length + ' literal(s) and '+ affectedDataObjectReferences.length + ' data object reference(s).');
+}
+
 Mediator.prototype.deletedState = function (olcState) {
     this.goalStateModelerHook.modeler.handleStateDeleted(olcState);
     this.fragmentModelerHook.modeler.handleStateDeleted(olcState);
@@ -149,6 +156,18 @@ Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
         if (is(event.context.shape, 'olc:State')) {
             this.mediator.deletedState(event.context.shape.businessObject);
         }
+    });
+
+    this.preExecute([
+        'elements.delete'
+    ], event => {
+        event.context.elements = event.context.elements.filter(element => {
+            if (is(element, 'olc:State')) {
+                return this.mediator.confirmStateDeletion(element.businessObject);
+            } else {
+                return true;
+            }
+        });
     });
 
     this.executed([

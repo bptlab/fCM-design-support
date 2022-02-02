@@ -205,6 +205,16 @@ GoalStateModeler.prototype.getLiteralsWithClassId = function (id) {
     return literalsOfClass;
 }
 
+GoalStateModeler.prototype.getLiteralsWithState = function (state) {
+    const literalsWithState = [];
+    this.forEachLiteral(literal => {
+        if (literal.states.includes(state)) {
+            literalsWithState.push(literal);
+        }
+    });
+    return literalsWithState;
+}
+
 GoalStateModeler.prototype.handleStateRenamed = function (state) {
     this.forEachLiteral(literal => {
         if (literal.states.includes(state)) {
