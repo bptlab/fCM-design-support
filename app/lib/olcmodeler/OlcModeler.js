@@ -220,6 +220,10 @@ OlcModeler.prototype.addOlc = function (clazz) {
   this.showOlc(olc);
 }
 
+OlcModeler.prototype.getCurrentOlc = function () {
+  return this._olc;
+}
+
 OlcModeler.prototype.deleteCurrentOlc = function () {
   this.deleteOlc(this._olc.id);
 }

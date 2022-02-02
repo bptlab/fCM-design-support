@@ -5,6 +5,7 @@ import { is } from '../datamodelmodeler/util/ModelUtil';
 import OlcEvents from '../olcmodeler/OlcEvents';
 import FragmentEvents from '../fragmentmodeler/FragmentEvents';
 import { meaningful_state_lables } from '../guidelines/olc_guidelines/olc_checking';
+import Guidelines from './Guidelines';
 
 // Test: var a = new Mediator(); var b = new Mediator; assert new a.XYHook().mediator === a;
 // a = new Mediator(); b = new Mediator(); new a.foobar().mediator === a
@@ -50,6 +51,22 @@ Mediator.prototype.handleHookCreated = function (hook) {
             });
         }
     });
+
+    const guidelines = Guidelines;
+    if (hook.executed) {
+        hook.executed(['shape.create', 'shape.delete', 'element.updateLabel'], event => {
+            guidelines.forEach(guideline => {
+                const violations = guideline.getViolatingElements(this);
+                violations.forEach(({element, message}) => {
+                    if (!element.violations) {
+                        element.violations = {};
+                    }
+                    element.violations[guideline] = message;
+                    console.log(element);
+                });
+            });
+        });
+    }
 }
 
 Mediator.prototype.addedClass = function (clazz) {
@@ -76,9 +93,6 @@ Mediator.prototype.renamedClass = function (clazz) {
 Mediator.prototype.addedState = function (olcState) {
     var clazz = olcState.$parent;
     console.log('added state named \"', olcState.name, '\" with id \"', olcState.id, '\" to class named \"', clazz.name, '\" with id \"', clazz.id, "\"");
-
-    // check for meaningful label?
-    meaningful_state_lables(olcState);
 }
 
 Mediator.prototype.deletedState = function (olcState) {
@@ -91,8 +105,6 @@ Mediator.prototype.deletedState = function (olcState) {
 Mediator.prototype.renamedState = function (olcState) {
     this.goalStateModelerHook.modeler.handleStateRenamed(olcState);
     this.fragmentModelerHook.modeler.handleStateRenamed(olcState);
-    // check for meaningful label?
-    meaningful_state_lables(olcState);
 }
 
 Mediator.prototype.olcListChanged = function (olcs) {
