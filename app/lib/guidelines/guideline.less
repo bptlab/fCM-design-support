@@ -1,0 +1,44 @@
+.highlightedElement {
+    filter: drop-shadow(2px 0 0 antiquewhite) drop-shadow(-2px 0 0 antiquewhite) drop-shadow(0 2px 0 antiquewhite) drop-shadow(0 -2px 0 antiquewhite) drop-shadow(1px 0 0 var(--highlight-color)) drop-shadow(-1px 0 0 var(--highlight-color)) drop-shadow(0 -1px 0 var(--highlight-color)) drop-shadow(0 1px 0 var(--highlight-color));
+}
+
+.violationRow {
+    color: var(--highlight-color);
+}
+
+.warningElement {
+    --highlight-color: yellow;
+}
+
+.errorElement {
+    --highlight-color: red !important;
+}
+
+.errorTable {
+    overflow: auto;
+    display: flex;
+    height: 100%;
+}
+
+.hidingTable {
+    max-height: 40px;
+}
+
+.hidingTable .errorTable {
+    display: none;
+}
+
+#errorBar:not(.hidingTable) #toggleErrorTable {
+    background-color: rgba(0,0,0,0.2);
+}
+
+.errorBarControls {
+    display: flex;
+    flex: none;
+    height: 40px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    background-color: #29487D;
+    padding: 5px;
+}

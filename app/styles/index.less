@@ -27,12 +27,8 @@ body {
   display: flex;
   justify-content: flex-start;
   align-items: center; 
+  flex: none;
 }
-
-.mainContent {
-  height: calc(100% - 80px);
-}
-
 
 .canvas {
   width: 100%;
@@ -138,16 +134,14 @@ body {
 }
 
 #errorBar {
-  position: absolute;
   width: 100%;
-  bottom: 0px;
-  height: 40px;
+  height: 200px;
   background-color: #29487D;
   display: flex;
+  flex: none;
   justify-content: flex-start;
   align-items: flex-start; 
   z-index: 1000;
-  padding-top: 10px;
   flex-direction: column;
 }
 
@@ -162,6 +156,24 @@ body {
 .errorEntry {
     margin: 10px;
     color: white;
+}
+
+.errorTable {
+    font-size: 16px;
+    color: white;
+    border-color: white;
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 20px;
+}
+
+.errorTable tr {
+    border-bottom: 1px solid white;
+}
+
+.errorTable td, th {
+    padding: 10px;
 }
 
 .questionButton {
@@ -201,38 +213,4 @@ body {
 
 .focus>.focusHeader {
   cursor: default;
-}
-
-.highlightedElement {
-  filter: drop-shadow(2px 0 0 antiquewhite) drop-shadow(-2px 0 0 antiquewhite) drop-shadow(0 2px 0 antiquewhite) drop-shadow(0 -2px 0 antiquewhite) drop-shadow(1px 0 0 var(--highlight-color)) drop-shadow(-1px 0 0 var(--highlight-color)) drop-shadow(0 -1px 0 var(--highlight-color)) drop-shadow(0 1px 0 var(--highlight-color));
-}
-
-.violationRow {
-  color: var(--highlight-color);
-}
-
-.warningElement {
-  --highlight-color : yellow;
-  }
-
-.errorElement {
-  --highlight-color : red !important;
-}
-
-.errorTable {
-    font-size: 16px;
-    color: white;
-    border-color: white;
-    width: 90%;
-    margin-left: 5%;
-    margin-right: 5%;
-    margin-top: 20px;
-}
-
-.errorTable tr{
-    border-bottom: 1px solid white;
-}
-
-.errorTable td, th {
-    padding: 10px;
 }
