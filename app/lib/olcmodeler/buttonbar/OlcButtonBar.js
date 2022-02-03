@@ -6,6 +6,7 @@ import {
 } from 'min-dom';
 
 import getDropdown from '../../util/Dropdown';
+import {download, upload} from '../../util/FileUtil';
 
 import OlcEvents from '../OlcEvents';
 
@@ -15,15 +16,29 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     domClasses(buttonBar).add('olc-buttonbar');
     container.appendChild(buttonBar);
 
+    // Import export buttons (disabled)
 
-    // Select olc Menu
-    // TODO allow to change current (class-)name and add new olc from bottom of list -> use unified class list component here?
-    
+    const exportButton = document.createElement('button');
+    exportButton.innerHTML = 'Export Olc as Xml'
+    exportButton.addEventListener('click', function () {
+        olcModeler.saveXML({ format: true }).then(result => {
+            download('foobar.xml', result.xml);
+        });
+    });
+    // buttonBar.appendChild(exportButton);
+    const importButton = document.createElement('button');
+    importButton.innerHTML = 'Import Olc from Xml'
+    importButton.addEventListener('click', function () {
+        upload(xml => olcModeler.importXML(xml));
+    });
+    // buttonBar.appendChild(importButton);
+
+    // Select olc Menu    
     var selectOlcComponent = document.createElement('div');
     selectOlcComponent.classList.add('olc-select-component');
     var selectedOlcSpan = document.createElement('span');
     selectedOlcSpan.style.userSelect = 'none';
-    selectOlcComponent.showValue = function(olc) {
+    selectOlcComponent.showValue = function (olc) {
         this.value = olc;
         selectedOlcSpan.innerHTML = this.value?.classRef.name;
     }
@@ -41,14 +56,14 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
             hideSelectOlcMenu();
             var renameOlcInput = document.createElement('input');
             renameOlcInput.value = selectOlcComponent.value.classRef.name;
-            renameOlcInput.addEventListener("change", function(event) {
+            renameOlcInput.addEventListener("change", function (event) {
                 renameOlcInput.blur();
                 eventBus.fire(OlcEvents.OLC_RENAME, {
                     olc: selectOlcComponent.value,
                     name: renameOlcInput.value
                 });
             });
-            renameOlcInput.addEventListener("focusout", function(event) {
+            renameOlcInput.addEventListener("focusout", function (event) {
                 selectOlcComponent.replaceChild(selectedOlcSpan, renameOlcInput);
             });
 
@@ -69,8 +84,8 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     deleteOlcButton.title = 'Delete Current Olc';
     deleteOlcButton.addEventListener('click', () => {
         var olcToDelete = selectOlcComponent.value;
-        var shouldDelete = eventBus.fire(OlcEvents.OLC_DELETION_REQUESTED, {olc: olcToDelete});
-        if(shouldDelete !== false) {
+        var shouldDelete = eventBus.fire(OlcEvents.OLC_DELETION_REQUESTED, { olc: olcToDelete });
+        if (shouldDelete !== false) {
             // Deletion was not rejected and not handled somewhere else; should not happen when mediator is involved
             olcModeler.deleteOlc(olcToDelete.id)
         }
