@@ -1,13 +1,23 @@
 
 import { is } from '../datamodelmodeler/util/ModelUtil';
 
-export var SEVERITY = {
+export const SEVERITY = {
     ERROR : {
-        cssClass : 'errorElement'
+        cssClass : 'errorElement',
+        label : 'Errors'
     },
     WARNING : {
-        cssClass : 'warningElement'
+        cssClass : 'warningElement',
+        label : 'Warnings'
     }
+}
+const severityKeys = Object.keys(SEVERITY)
+severityKeys.forEach(key => SEVERITY[key].key = key);
+SEVERITY.forEach = function(lambda) {
+    return severityKeys.map(key => SEVERITY[key]).forEach(lambda);
+}
+SEVERITY.filter = function(lambda) {
+    return severityKeys.map(key => SEVERITY[key]).filter(lambda);
 }
 
 export default [

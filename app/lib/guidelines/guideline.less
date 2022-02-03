@@ -14,10 +14,52 @@
     --highlight-color: red !important;
 }
 
+
+
+#errorBar {
+    width: 100%;
+    height: 200px;
+    background-color: #29487D;
+    display: flex;
+    flex: none;
+    justify-content: flex-start;
+    align-items: flex-start; 
+    z-index: 1000;
+    flex-direction: column;
+}
+
+#errorBar:not(.hidingTable):hover {
+    cursor: grab;
+}
+
+#errorBar:active {
+    cursor: grabbing;
+}
+
 .errorTable {
     overflow: auto;
     display: flex;
     height: 100%;
+    font-size: 14px;
+    color: white;
+    border-color: white;
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 20px;
+}
+
+.errorTable tr {
+    border-bottom: 1px solid white;
+}
+
+.errorTable th {
+    padding-bottom: 10px;
+}
+
+.errorTable th,td {
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .hidingTable {
@@ -28,8 +70,16 @@
     display: none;
 }
 
-#errorBar:not(.hidingTable) #toggleErrorTable {
+#errorBar:not(.hidingTable) #toggleErrorTable , #errorBar .strong {
     background-color: rgba(0,0,0,0.2);
+}
+
+#errorBar:not(.hidingTable) #toggleErrorTable:after {
+    content: 'Hide List';
+}
+
+#errorBar.hidingTable #toggleErrorTable:after {
+    content: 'Show List';
 }
 
 .errorBarControls {
@@ -41,4 +91,9 @@
     width: 100%;
     background-color: #29487D;
     padding: 5px;
+}
+
+.errorBarControls div,a {
+    font-size: 14px;
+    color: white;
 }

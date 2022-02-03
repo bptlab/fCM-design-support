@@ -7,12 +7,14 @@ export default class ErrorBar {
         this.toggleTableButton.addEventListener('click', event => {
             this.toggleTable();
         });
+        this.numberOfViolations = document.getElementById('numberOfViolations');
     }
 
     clear() {
         while (this.table.rows.length > 1) {
             this.table.deleteRow(1);
         }
+        this.numberOfViolations.innerHTML = '';
     }
 
     displayRow({ severity, element, artifact, message, link, quickFixes }) {
@@ -38,6 +40,14 @@ export default class ErrorBar {
 
     toggleTable() {
         this.element.classList.toggle('hidingTable');
+    }
+
+    displayNumberOfViolations(severity, number){
+        const display = document.createElement('span');
+        display.innerHTML = severity.label + ': ' + number;
+        display.classList.add('barButton');
+        this.numberOfViolations.appendChild(display);
+        return display;
     }
 
 }
