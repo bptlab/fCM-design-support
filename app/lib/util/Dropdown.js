@@ -17,7 +17,7 @@ export default function getDropdown(name = '') {
             entry.classList.add('dd-dropdown-entry');
             entry.innerHTML = labelFunc(option);
             entry.addEventListener('click', event => {
-                onChange(option, element)
+                onChange(option, element, event)
             });
             entry.setSelected = function(isSelected) {
                 if (isSelected) {

@@ -31,6 +31,7 @@ export default [
                 element : mediator.olcModelerHook.modeler.get('elementRegistry').get(state.id),
                 message : 'Please make state ' + state.name + ' a cake.',
                 gfx : mediator.olcModelerHook.modeler.get('elementRegistry').getGraphics(state.id),
+                hook: mediator.olcModelerHook,
             }));
         },
         severity : SEVERITY.ERROR,
@@ -57,6 +58,7 @@ export default [
                     }
                 ],
                 gfx : olcModeler.get('elementRegistry').getGraphics(state.id),
+                hook: mediator.olcModelerHook,
             }));
         },
         severity : SEVERITY.WARNING,

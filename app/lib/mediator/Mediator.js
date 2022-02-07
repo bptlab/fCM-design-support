@@ -32,6 +32,7 @@ export default function Mediator() {
         }
     }
     this._executed = [];
+    this._on = [];
 }
 
 Mediator.prototype.getHooks = function () {
@@ -60,7 +61,11 @@ Mediator.prototype.handleHookCreated = function (hook) {
         if (hook.executed) {
             hook.executed(events, callback);
         }
-    })
+    });
+
+    this._on.forEach(({events, callback}) => {
+        hook.eventBus?.on(events, callback);
+    });
 }
 
 Mediator.prototype.executed = function(events, callback) {
@@ -69,6 +74,13 @@ Mediator.prototype.executed = function(events, callback) {
         if (hook.executed) {
             hook.executed(events, callback);
         }
+    })
+}
+
+Mediator.prototype.on = function(events, callback) {
+    this._on.push({events, callback});
+    this.getHooks().forEach(hook => {
+        hook.eventBus?.on(events, callback);
     })
 }
 
