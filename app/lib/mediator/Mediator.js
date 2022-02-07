@@ -5,6 +5,8 @@ import { is } from '../datamodelmodeler/util/ModelUtil';
 import OlcEvents from '../olcmodeler/OlcEvents';
 import FragmentEvents from '../fragmentmodeler/FragmentEvents';
 
+const DEFAULT_EVENT_PRIORITY = 1000; //From diagram-js/lib/core/EventBus.DEFAULT_PRIORITY
+
 // Test: var a = new Mediator(); var b = new Mediator; assert new a.XYHook().mediator === a;
 // a = new Mediator(); b = new Mediator(); new a.foobar().mediator === a
 
@@ -42,12 +44,15 @@ Mediator.prototype.getModelers = function () {
 
 Mediator.prototype.handleHookCreated = function (hook) {
     //Propagate mouse events in order to defocus elements and close menus
-    hook.eventBus?.on(['element.mousedown', 'element.mouseup', 'element.click'], event => {
+    hook.eventBus?.on(['element.mousedown', 'element.mouseup', 'element.click'], DEFAULT_EVENT_PRIORITY - 1, event => {
         if (!event.handledByMediator) {
             const { originalEvent, element } = event;
             without(this.getHooks(), hook).forEach(propagateHook => {
                 propagateHook.eventBus?.fire(event.type, { originalEvent, element, handledByMediator: true });
             });
+        } else {
+            // Do not propagate handle these events by low priority listeners such as canvas-move
+            event.cancelBubble = true;
         }
     });
 
