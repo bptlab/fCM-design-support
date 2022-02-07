@@ -1,6 +1,6 @@
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 import inherits from 'inherits';
-import { without } from 'min-dash';
+import { isFunction, without } from 'min-dash';
 import { is } from '../datamodelmodeler/util/ModelUtil';
 import OlcEvents from '../olcmodeler/OlcEvents';
 import FragmentEvents from '../fragmentmodeler/FragmentEvents';
@@ -12,6 +12,7 @@ const DEFAULT_EVENT_PRIORITY = 1000; //From diagram-js/lib/core/EventBus.DEFAULT
 
 export default function Mediator() {
     var self = this;
+    this._hooks = [];
     for (let propName in this) {
         let prototypeProp = this[propName];
         if (typeof prototypeProp === 'function' && prototypeProp.isHook) {
@@ -33,19 +34,9 @@ export default function Mediator() {
     }
     this._executed = [];
     this._on = [];
-}
 
-Mediator.prototype.getHooks = function () {
-    return [this.olcModelerHook, this.dataModelerHook, this.fragmentModelerHook, this.goalStateModelerHook];
-}
-
-Mediator.prototype.getModelers = function () {
-    return this.getHooks().map(hook => hook.modeler);
-}
-
-Mediator.prototype.handleHookCreated = function (hook) {
     //Propagate mouse events in order to defocus elements and close menus
-    hook.eventBus?.on(['element.mousedown', 'element.mouseup', 'element.click'], DEFAULT_EVENT_PRIORITY - 1, event => {
+    this.on(['element.mousedown', 'element.mouseup', 'element.click'], DEFAULT_EVENT_PRIORITY - 1, (event, hook) => {
         if (!event.handledByMediator) {
             const { originalEvent, element } = event;
             without(this.getHooks(), hook).forEach(propagateHook => {
@@ -56,6 +47,18 @@ Mediator.prototype.handleHookCreated = function (hook) {
             event.cancelBubble = true;
         }
     });
+}
+
+Mediator.prototype.getHooks = function () {
+    return this._hooks;
+}
+
+Mediator.prototype.getModelers = function () {
+    return this.getHooks().map(hook => hook.modeler);
+}
+
+Mediator.prototype.handleHookCreated = function (hook) {
+    this._hooks.push(hook);
 
     this._executed.forEach(({events, callback}) => {
         if (hook.executed) {
@@ -63,8 +66,8 @@ Mediator.prototype.handleHookCreated = function (hook) {
         }
     });
 
-    this._on.forEach(({events, callback}) => {
-        hook.eventBus?.on(events, callback);
+    this._on.forEach(({events, priority, callback}) => {
+        hook.eventBus?.on(events, priority, wrapCallback(callback, hook));
     });
 }
 
@@ -74,14 +77,22 @@ Mediator.prototype.executed = function(events, callback) {
         if (hook.executed) {
             hook.executed(events, callback);
         }
-    })
+    });
 }
 
-Mediator.prototype.on = function(events, callback) {
-    this._on.push({events, callback});
+Mediator.prototype.on = function(events, priority, callback) {
+    if (isFunction(priority)) {
+        callback = priority;
+        priority = DEFAULT_EVENT_PRIORITY;
+    }
+    this._on.push({events, priority, callback});
     this.getHooks().forEach(hook => {
-        hook.eventBus?.on(events, callback);
-    })
+        hook.eventBus?.on(events, priority, wrapCallback(callback, hook));
+    });
+}
+
+function wrapCallback(callback, hook) {
+    return (...args) => callback(...args, hook);
 }
 
 Mediator.prototype.addedClass = function (clazz) {
