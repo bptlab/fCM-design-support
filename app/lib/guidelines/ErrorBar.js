@@ -21,6 +21,7 @@ export default class ErrorBar {
         const row = this.table.insertRow(-1);
         row.classList.add(severity.cssClass);
         row.classList.add('violationRow');
+        row.height = "20px";
         const elementCell = row.insertCell(-1), artifactCell = row.insertCell(-1), messageCell = row.insertCell(-1), linkCell = row.insertCell(-1), quickFixesCell = row.insertCell(-1);
         elementCell.innerHTML = element.name;
         artifactCell.innerHTML = artifact;
@@ -48,6 +49,11 @@ export default class ErrorBar {
         display.classList.add('barButton');
         this.numberOfViolations.appendChild(display);
         return display;
+    }
+    
+    addLastRow() {
+        const lastRow = this.table.insertRow(-1)
+        lastRow.classList.add("lastRow");
     }
 
 }

@@ -155,6 +155,7 @@ export default class Checker {
                 this.repopulateErrorBar();
             });
         });
+        this.errorBar.addLastRow();
     }
 
 }
