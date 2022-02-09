@@ -1,4 +1,3 @@
-
 import { is } from '../datamodelmodeler/util/ModelUtil';
 
 export const SEVERITY = {
@@ -20,6 +19,7 @@ SEVERITY.filter = function(lambda) {
     return severityKeys.map(key => SEVERITY[key]).filter(lambda);
 }
 
+// TODO let guidelines return businessobject instead of elements
 export default [
     {
         title : 'Development Guideline',
@@ -59,6 +59,22 @@ export default [
                 ],
                 gfx : olcModeler.get('elementRegistry').getGraphics(state.id),
                 hook: mediator.olcModelerHook,
+            }));
+        },
+        severity : SEVERITY.WARNING,
+        link : 'https://de.wikipedia.org/wiki/Käsekuchen'
+    },
+    {
+        title : 'Development Guideline #3',
+        id : 'drei',
+        getViolations(mediator) {
+            const dataModeler = mediator.dataModelerHook.modeler;
+
+            return dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class')).map(clazz => ({
+                element : clazz,
+                message : 'XX',
+                gfx : dataModeler.get('elementRegistry').getGraphics(clazz.id),
+                hook: mediator.dataModelerHook,
             }));
         },
         severity : SEVERITY.WARNING,
