@@ -63,5 +63,22 @@ export default [
         },
         severity : SEVERITY.WARNING,
         link : 'https://de.wikipedia.org/wiki/Käsekuchen'
-    }
+    },
+    {
+        title : 'O4: Define meaningful state lables',
+        id : 'O4',
+        getViolations(mediator) {
+            var olc = mediator.olcModelerHook.modeler.getCurrentOlc();
+            var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
+            var ex = new RegExp("(ed$|ready|initial)");
+            return states.filter(state => !state.name.match(ex)).map(state => ({
+                element : mediator.olcModelerHook.modeler.get('elementRegistry').get(state.id),
+                message : 'State "' + state.name + '" has no meaningful state label. Consider changing it to past tense',
+                gfx : mediator.olcModelerHook.modeler.get('elementRegistry').getGraphics(state.id),
+                hook: mediator.olcModelerHook,
+            }));
+        },
+        severity : SEVERITY.WARNING,
+        link : 'https://github.com/bptlab/fCM-design-support/wiki/Object-Lifecycle-(OLC)#o4---define-meaningful-state-labels'
+    },
 ]
