@@ -16,8 +16,7 @@ export default class Checker {
         });
         this.errorBar = errorBar;
         this.hiddenSeverities = {};
-        this.errorDropdown = getDropdown();
-        this.warningDropdown = getDropdown();
+        this.messageDropdown = getDropdown();
         mediator.on(['element.click', 'create.start'], event => {
             this.hideDropdowns();
         });
@@ -30,6 +29,13 @@ export default class Checker {
     
     getViolationsOfSeverity(severity) {
         return this.getViolatedGuidelinesOfSeverity(severity).flatMap(guideline => this.errorList[guideline.id]);
+    }
+
+    getGuidelinesOfSeverity(guidelines, severity) {
+        return Object.keys(guidelines).filter(key => guidelinePerId[key].severity === severity).reduce((obj, key) => {
+            obj[key] = guidelines[key];
+            return obj;
+        }, {});
     }
 
     reevaluateGuideline(guideline) {
@@ -55,57 +61,64 @@ export default class Checker {
     
     highlightViolation(element, hook, gfx, severity) {
         gfx.classList.add(severity.cssClass);
-        element.errorMarker?.classList.add(severity.cssClass);
         gfx.classList.add('highlightedElement');
-        if (!element.errorMarker) {
-            this.createErrorMarker(element, hook);
+
+        if (!element.markerContainer) {
+            element.markerContainer = document.createElement('div');
+            element.markerContainer.classList.add('markerContainer');
+            hook.modeler.get('overlays').add(element.id, 'violationMarkers', {
+                position: {
+                    bottom: 0,
+                    right: 0
+                },
+                html: element.markerContainer
+            });
         }
-        element.errorMarker.innerHTML = Object.keys(element.violations).length;
+        if (!element.markers) {
+            element.markers = {};
+        }
+        if (!element.markers[severity.key]) {
+            element.markers[severity.key] = this.createMarkerForSeverity(element, severity);
+            element.markerContainer.appendChild(element.markers[severity.key]);
+        }
+        element.markers[severity.key].innerHTML = Object.keys(this.getGuidelinesOfSeverity(element.violations, severity)).length;
     }
 
-    createErrorMarker = (element, hook) => {
+    createMarkerForSeverity = (element, severity) => {
         const marker = document.createElement('div');
-        marker.classList.add('errorMarker');
+        marker.classList.add('violationMarker');
+        marker.classList.add(severity.cssClass);
         marker.addEventListener('click', event => {
-            this.openErrorDropdown(marker, element.violations);
+            this.openMessageDropdown(marker, this.getGuidelinesOfSeverity(element.violations, severity));
         });
-
-        hook.modeler.get('overlays').add(element.id, 'errorMarker', {
-            position: {
-                bottom: 0,
-                right: 0
-            },
-            html: marker
-        });
-
-        element.errorMarker = marker;
+        return marker;
     }
 
-    openErrorDropdown = (parent, violations) => {
+    openMessageDropdown = (parent, violations) => {
         this.hideDropdowns();
-        this.errorDropdown.populate(Object.keys(violations), (guideline, element, event) => {
+        this.messageDropdown.populate(Object.keys(violations), (guideline, element, event) => {
             event.stopPropagation();
         }, parent, (guideline) => violations[guideline]);
-        this.errorDropdown.style.display = 'block';
-        parent.appendChild(this.errorDropdown);
+        this.messageDropdown.style.display = 'block';
+        parent.appendChild(this.messageDropdown);
     }
 
     hideDropdowns = () => {
-        this.errorDropdown.parentElement?.removeChild(this.errorDropdown);
-        this.warningDropdown.parentElement?.removeChild(this.warningDropdown);
+        this.messageDropdown.parentElement?.removeChild(this.messageDropdown);
     }
     
     unhighlightViolation(element, hook, gfx, severity) {
         const violatedGuidelines = Object.keys(element.violations || {});
         if (this.hiddenSeverities[severity.key] || violatedGuidelines.filter(guidelineId => guidelinePerId[guidelineId].severity === severity).length === 0) {
             gfx.classList.remove(severity.cssClass);
-            element.errorMarker.classList.remove(severity.cssClass);
-            hook.modeler.get('overlays').remove({ element: element.id, type: 'errorMarker' });
-            element.errorMarker = undefined;
-        }
+            element.markerContainer.removeChild(element.markers[severity.key]);
+            element.markers[severity.key] = undefined;
 
-        if (SEVERITY.filter(severity => gfx.classList.contains(severity.cssClass)) === 0) {
-            gfx.classList.remove('highlightedElement');
+            if (SEVERITY.filter(severity => gfx.classList.contains(severity.cssClass)).length === 0) {
+                gfx.classList.remove('highlightedElement');
+                hook.modeler.get('overlays').remove({ element: element.id, type: 'violationMarkers' });
+                element.markerContainer = undefined;
+            }
         }
     }
 

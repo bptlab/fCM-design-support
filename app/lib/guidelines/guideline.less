@@ -19,18 +19,24 @@
 
 .warningElement {
     --highlight-color: yellow;
+    order: 2;
 }
 
 .errorElement {
     --highlight-color: red !important;
-      background-color: var(--highlight-color);
+    background-color: var(--highlight-color);
+    order: 1;
 }
 
-.errorMarker {
+.violationMarker {
     width: 10px;
     height: 15px;
     background-color: var(--highlight-color);
 }
+.markerContainer {
+    display: flex;
+}
+
 
 .errorMarker .dd-dropdown-menu .dd-dropdown-entry:hover  {
     background-color: #29487D;
