@@ -87,7 +87,7 @@ export default [
             var olc = mediator.olcModelerHook.modeler.getCurrentOlc();
             var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
             var ex = new RegExp("(ed$|ready|initial)");
-            return states.filter(state => !state.name.match(ex)).map(state => ({
+            return states.filter(state => !(state.name || '').match(ex)).map(state => ({
                 element : mediator.olcModelerHook.modeler.get('elementRegistry').get(state.id),
                 message : 'State "' + state.name + '" has no meaningful state label. Consider changing it to past tense',
                 gfx : mediator.olcModelerHook.modeler.get('elementRegistry').getGraphics(state.id),
