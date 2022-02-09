@@ -26,6 +26,7 @@ import OlcButtonBarModule from './buttonbar';
 
 import OlcModdle from './moddle';
 import OlcEvents from './OlcEvents';
+import { root } from '../util/Util';
 
 var emptyDiagram =
   `<?xml version="1.0" encoding="UTF-8"?>
@@ -325,3 +326,14 @@ OlcModeler.prototype.saveXML = function (options) {
 OlcModeler.prototype._emit = function (type, event) {
   return this.get('eventBus').fire(type, event);
 };
+
+OlcModeler.prototype.ensureElementIsOnCanvas = function (element) {
+  if (!this.get('elementRegistry').get(element.id)) {
+    const rootElement = root(element.businessObject);
+    if (this.getOlcs().includes(rootElement)) {
+      this.showOlc(rootElement);
+    } else {
+      throw 'Cannot display element. Is not part of a known olc';
+    }
+  }
+}

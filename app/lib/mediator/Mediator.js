@@ -4,6 +4,7 @@ import { isFunction, without } from 'min-dash';
 import { is } from '../datamodelmodeler/util/ModelUtil';
 import OlcEvents from '../olcmodeler/OlcEvents';
 import FragmentEvents from '../fragmentmodeler/FragmentEvents';
+import { namespace } from '../util/Util';
 
 const DEFAULT_EVENT_PRIORITY = 1000; //From diagram-js/lib/core/EventBus.DEFAULT_PRIORITY
 
@@ -69,6 +70,12 @@ Mediator.prototype.handleHookCreated = function (hook) {
     this._on.forEach(({events, priority, callback}) => {
         hook.eventBus?.on(events, priority, wrapCallback(callback, hook));
     });
+
+    // TODO: put the following into AbstractHook prototype
+
+    hook.getNamespace = function() {
+        return this.modeler.get && namespace(this.modeler.get('canvas').getRootElement());
+    }
 }
 
 Mediator.prototype.executed = function(events, callback) {
@@ -160,6 +167,36 @@ Mediator.prototype.createState = function (name, olc) {
 
 Mediator.prototype.createDataclass = function (name) {
     return this.dataModelerHook.modeler.createDataclass(name);
+}
+
+Mediator.prototype.focusElement = function(element) {
+    const modeler = this.getHookForElement(element).modeler;
+    this.focus(modeler);
+    if (!modeler.get('elementRegistry').get(element.id)) {
+        modeler.ensureElementIsOnCanvas(element);
+    }
+    const visual = modeler.get('elementRegistry').get(element.id);
+    if (!visual) {
+        throw new Error('Cannot focus element '+element+'. It is not on canvas');
+    }
+    const canvas = modeler.get('canvas');
+    canvas.scroll({}); // Initialize stuff for scrolling, otherwise it only works at second attempt
+    const viewbox = canvas.viewbox();
+    canvas.scrollToElement(element.id, {
+        top: (viewbox.height - visual.height) * viewbox.scale / 2,
+        left: (viewbox.width - visual.width) * viewbox.scale / 2,
+        bottom: (viewbox.height - visual.height) * viewbox.scale / 2,
+        right: (viewbox.width - visual.width) * viewbox.scale / 2,
+    });
+}
+
+Mediator.prototype.getHookForElement = function(element) {
+    const elementNamespace = namespace(element);
+    const modelers = this.getHooks().filter(hook => hook.getNamespace() === elementNamespace);
+    if (modelers.length !== 1) {
+        throw new Error('Modeler for element '+element+' was not unique or present: '+modelers);
+    }
+    return modelers[0];
 }
 
 // === Olc Modeler Hook

@@ -1,6 +1,7 @@
 export default class ErrorBar {
-    constructor(element) {
+    constructor(element, mediator) {
         this.element = element;
+        this.mediator = mediator;
         makeResizable(element);
         this.table = document.getElementById('errorTable');
         this.toggleTableButton = document.getElementById('toggleErrorTable');
@@ -19,6 +20,9 @@ export default class ErrorBar {
 
     displayRow({ severity, element, artifact, message, link, quickFixes }) {
         const row = this.table.insertRow(-1);
+        row.addEventListener('click', event => {
+            this.mediator.focusElement(element.businessObject);
+        });
         row.classList.add(severity.cssClass);
         row.classList.add('violationRow');
         const elementCell = row.insertCell(-1), artifactCell = row.insertCell(-1), messageCell = row.insertCell(-1), linkCell = row.insertCell(-1), quickFixesCell = row.insertCell(-1);
