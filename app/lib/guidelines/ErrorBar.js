@@ -21,7 +21,7 @@ export default class ErrorBar {
     displayRow({ severity, element, artifact, message, link, quickFixes }) {
         const row = this.table.insertRow(-1);
         row.addEventListener('click', event => {
-            this.mediator.focusElement(element.businessObject);
+            this.mediator.focusElement(element);
         });
         row.classList.add(severity.cssClass);
         row.classList.add('violationRow');

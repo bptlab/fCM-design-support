@@ -168,39 +168,41 @@ OlcModeler.prototype.importDefinitions = function (definitions) {
 OlcModeler.prototype.showOlc = function (olc) {
   this.clear();
   this._olc = olc;
+  if (olc) {
+    const elementFactory = this.get('elementFactory');
+    var diagramRoot = elementFactory.createRoot({ type: 'olc:Olc', businessObject: olc });
+    const canvas = this.get('canvas');
+    canvas.setRootElement(diagramRoot);
+
+    var elements = groupBy(olc.get('Elements'), element => element.$type);
+    var states = {};
+
+    (elements['olc:State'] || []).forEach(state => {
+      var stateVisual = elementFactory.createShape({
+        type: 'olc:State',
+        businessObject: state,
+        x: parseInt(state.get('x')),
+        y: parseInt(state.get('y'))
+      });
+      states[state.get('id')] = stateVisual;
+      canvas.addShape(stateVisual, diagramRoot);
+    });
+
+    (elements['olc:Transition'] || []).forEach(transition => {
+      var source = states[transition.get('sourceState').get('id')];
+      var target = states[transition.get('targetState').get('id')];
+      var transitionVisual = elementFactory.createConnection({
+        type: 'olc:Transition',
+        businessObject: transition,
+        source: source,
+        target: target,
+        waypoints: this.get('olcUpdater').connectionWaypoints(source, target)
+      });
+      canvas.addConnection(transitionVisual, diagramRoot);
+    });
+  }
+
   this._emit(OlcEvents.SELECTED_OLC_CHANGED, { olc: olc });
-  if (!olc) return;
-  const elementFactory = this.get('elementFactory');
-  var diagramRoot = elementFactory.createRoot({ type: 'olc:Olc', businessObject: olc });
-  const canvas = this.get('canvas');
-  canvas.setRootElement(diagramRoot);
-
-  var elements = groupBy(olc.get('Elements'), element => element.$type);
-  var states = {};
-
-  (elements['olc:State'] || []).forEach(state => {
-    var stateVisual = elementFactory.createShape({
-      type: 'olc:State',
-      businessObject: state,
-      x: parseInt(state.get('x')),
-      y: parseInt(state.get('y'))
-    });
-    states[state.get('id')] = stateVisual;
-    canvas.addShape(stateVisual, diagramRoot);
-  });
-
-  (elements['olc:Transition'] || []).forEach(transition => {
-    var source = states[transition.get('sourceState').get('id')];
-    var target = states[transition.get('targetState').get('id')];
-    var transitionVisual = elementFactory.createConnection({
-      type: 'olc:Transition',
-      businessObject: transition,
-      source: source,
-      target: target,
-      waypoints: this.get('olcUpdater').connectionWaypoints(source, target)
-    });
-    canvas.addConnection(transitionVisual, diagramRoot);
-  });
 }
 
 OlcModeler.prototype.showOlcById = function (id) {
@@ -329,7 +331,7 @@ OlcModeler.prototype._emit = function (type, event) {
 
 OlcModeler.prototype.ensureElementIsOnCanvas = function (element) {
   if (!this.get('elementRegistry').get(element.id)) {
-    const rootElement = root(element.businessObject);
+    const rootElement = root(element);
     if (this.getOlcs().includes(rootElement)) {
       this.showOlc(rootElement);
     } else {

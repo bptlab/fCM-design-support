@@ -25,8 +25,8 @@ export default [
         title : 'Development Guideline',
         id : 'eins',
         getViolations(mediator) {
-            var olc = mediator.olcModelerHook.modeler.getCurrentOlc();
-            var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
+            var olcs = mediator.olcModelerHook.modeler.getOlcs();
+            var states = olcs.flatMap(olc => olc.get('Elements')).filter(element => is(element, 'olc:State'));
             return states.filter(state => !state.name?.endsWith('cake')).map(state => ({
                 element : state,
                 message : 'Please make state ' + state.name + ' a cake.'
@@ -40,8 +40,8 @@ export default [
         id : 'zwei',
         getViolations(mediator) {
             const olcModeler = mediator.olcModelerHook.modeler;
-            var olc = olcModeler.getCurrentOlc();
-            var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
+            var olcs = mediator.olcModelerHook.modeler.getOlcs();
+            var states = olcs.flatMap(olc => olc.get('Elements')).filter(element => is(element, 'olc:State'));
             return states.filter(state => state.name !== 'Cheesecake').map(state => ({
                 element : state,
                 message : 'Please make state ' + state.name + ' more delicious.',
@@ -78,8 +78,8 @@ export default [
         title : 'O4: Define meaningful state lables',
         id : 'O4',
         getViolations(mediator) {
-            var olc = mediator.olcModelerHook.modeler.getCurrentOlc();
-            var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
+            var olcs = mediator.olcModelerHook.modeler.getOlcs();
+            var states = olcs.flatMap(olc => olc.get('Elements')).filter(element => is(element, 'olc:State'));
             var ex = new RegExp("(ed$|ready|initial)");
             return states.filter(state => !(state.name || '').match(ex)).map(state => ({
                 element : state,

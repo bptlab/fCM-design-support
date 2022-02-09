@@ -15,11 +15,11 @@ export default class Checker {
         mediator.executed(['shape.create', 'shape.delete', 'element.updateLabel'], event => {
             this.evaluateAll();
         });
-        // mediator.on([OlcEvents.SELECTED_OLC_CHANGED], event => {
-        //     if (event.olc) {
-        //         this.evaluateAll();
-        //     }
-        // });
+        mediator.on([OlcEvents.SELECTED_OLC_CHANGED], event => {
+            if (event.olc) {
+                this.evaluateAll();
+            }
+        });
         this.errorBar = errorBar;
         this.hiddenSeverities = {};
         this.messageDropdown = getDropdown();
@@ -68,6 +68,7 @@ export default class Checker {
     highlightViolation(element, severity) {
         const modeler = this.mediator.getHookForElement(element).modeler;
         const gfx = modeler.get('elementRegistry').getGraphics(element.id);
+        if (!gfx) {return}
         gfx.classList.add(severity.cssClass);
         gfx.classList.add('highlightedElement');
 
@@ -118,11 +119,17 @@ export default class Checker {
     unhighlightViolation(element, severity) {
         const modeler = this.mediator.getHookForElement(element).modeler;
         const gfx = modeler.get('elementRegistry').getGraphics(element.id);
+        if (!gfx) { // Clean up until the element is shown again
+            element.markerContainer = undefined;
+            element.markers = undefined;
+        }
         const violatedGuidelines = Object.keys(element.violations || {});
-        if (this.hiddenSeverities[severity.key] || violatedGuidelines.filter(guidelineId => guidelinePerId[guidelineId].severity === severity).length === 0) {
+        if (element.markers && (this.hiddenSeverities[severity.key] || violatedGuidelines.filter(guidelineId => guidelinePerId[guidelineId].severity === severity).length === 0)) {
             gfx.classList.remove(severity.cssClass);
-            element.markerContainer.removeChild(element.markers[severity.key]);
-            element.markers[severity.key] = undefined;
+            if (element.markers[severity.key]) { // There might be no marker because the element wasn't shown before
+                element.markerContainer.removeChild(element.markers[severity.key]);
+                element.markers[severity.key] = undefined;
+            }
 
             if (SEVERITY.filter(severity => gfx.classList.contains(severity.cssClass)).length === 0) {
                 gfx.classList.remove('highlightedElement');
