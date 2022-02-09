@@ -13,7 +13,8 @@
 }
 
 .violationRow {
-    color: var(--highlight-color);
+//    background-color: var(--highlight-color);
+//    color: white;
 }
 
 .warningElement {
@@ -22,6 +23,7 @@
 
 .errorElement {
     --highlight-color: red !important;
+      background-color: var(--highlight-color);
 }
 
 .errorMarker {
@@ -103,7 +105,11 @@
 }
 
 #errorBar:not(.hidingTable) #toggleErrorTable , #errorBar .strong {
-    //background-color: rgba(0,0,0,0.2);
+    background-color: white;
+    color: #29487D;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+    text-decoration: none;
 }
 
 #errorBar:not(.hidingTable) #toggleErrorTable:after {
