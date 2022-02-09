@@ -28,7 +28,7 @@ export default [
             var olc = mediator.olcModelerHook.modeler.getCurrentOlc();
             var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
             return states.filter(state => !state.name?.endsWith('cake')).map(state => ({
-                element : mediator.olcModelerHook.modeler.get('elementRegistry').get(state.id),
+                element : state,
                 message : 'Please make state ' + state.name + ' a cake.',
                 gfx : mediator.olcModelerHook.modeler.get('elementRegistry').getGraphics(state.id),
                 hook: mediator.olcModelerHook,
@@ -45,7 +45,7 @@ export default [
             var olc = olcModeler.getCurrentOlc();
             var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
             return states.filter(state => state.name !== 'Cheesecake').map(state => ({
-                element : olcModeler.get('elementRegistry').get(state.id),
+                element : state,
                 message : 'Please make state ' + state.name + ' more delicious.',
                 quickFixes : [
                     {
@@ -71,7 +71,7 @@ export default [
             const dataModeler = mediator.dataModelerHook.modeler;
 
             return dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class')).map(clazz => ({
-                element : clazz,
+                element : clazz.businessObject,
                 message : 'XX',
                 gfx : dataModeler.get('elementRegistry').getGraphics(clazz.id),
                 hook: mediator.dataModelerHook,
@@ -88,7 +88,7 @@ export default [
             var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
             var ex = new RegExp("(ed$|ready|initial)");
             return states.filter(state => !(state.name || '').match(ex)).map(state => ({
-                element : mediator.olcModelerHook.modeler.get('elementRegistry').get(state.id),
+                element : state,
                 message : 'State "' + state.name + '" has no meaningful state label. Consider changing it to past tense',
                 gfx : mediator.olcModelerHook.modeler.get('elementRegistry').getGraphics(state.id),
                 hook: mediator.olcModelerHook,
