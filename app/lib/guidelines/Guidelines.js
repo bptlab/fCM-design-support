@@ -29,9 +29,7 @@ export default [
             var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
             return states.filter(state => !state.name?.endsWith('cake')).map(state => ({
                 element : state,
-                message : 'Please make state ' + state.name + ' a cake.',
-                gfx : mediator.olcModelerHook.modeler.get('elementRegistry').getGraphics(state.id),
-                hook: mediator.olcModelerHook,
+                message : 'Please make state ' + state.name + ' a cake.'
             }));
         },
         severity : SEVERITY.ERROR,
@@ -56,9 +54,7 @@ export default [
                         label : 'Delete state',
                         action : () => olcModeler.get('modeling').removeElements([olcModeler.get('elementRegistry').get(state.id)])
                     }
-                ],
-                gfx : olcModeler.get('elementRegistry').getGraphics(state.id),
-                hook: mediator.olcModelerHook,
+                ]
             }));
         },
         severity : SEVERITY.WARNING,
@@ -72,9 +68,7 @@ export default [
 
             return dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class')).map(clazz => ({
                 element : clazz.businessObject,
-                message : 'XX',
-                gfx : dataModeler.get('elementRegistry').getGraphics(clazz.id),
-                hook: mediator.dataModelerHook,
+                message : 'XX'
             }));
         },
         severity : SEVERITY.WARNING,
@@ -89,9 +83,7 @@ export default [
             var ex = new RegExp("(ed$|ready|initial)");
             return states.filter(state => !(state.name || '').match(ex)).map(state => ({
                 element : state,
-                message : 'State "' + state.name + '" has no meaningful state label. Consider changing it to past tense',
-                gfx : mediator.olcModelerHook.modeler.get('elementRegistry').getGraphics(state.id),
-                hook: mediator.olcModelerHook,
+                message : 'State "' + state.name + '" has no meaningful state label. Consider changing it to past tense'
             }));
         },
         severity : SEVERITY.WARNING,
