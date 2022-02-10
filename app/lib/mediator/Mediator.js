@@ -37,7 +37,7 @@ export default function Mediator() {
     this._on = [];
 
     //Propagate mouse events in order to defocus elements and close menus
-    this.on(['element.mousedown', 'element.mouseup', 'element.click'], DEFAULT_EVENT_PRIORITY - 1, (event, hook) => {
+    this.on(['element.mousedown', 'element.mouseup', 'element.click'], DEFAULT_EVENT_PRIORITY - 1, (event, data, hook) => {
         if (!event.handledByMediator) {
             const { originalEvent, element } = event;
             without(this.getHooks(), hook).forEach(propagateHook => {
