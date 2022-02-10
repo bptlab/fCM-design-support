@@ -90,7 +90,7 @@ export default class Checker {
             element.markers[severity.key] = this.createMarkerForSeverity(element, severity);
             element.markerContainer.appendChild(element.markers[severity.key]);
         }
-        element.markers[severity.key].innerHTML = Object.keys(this.getGuidelinesOfSeverity(element.violations, severity)).length;
+        this.updateSeverityCount(element, severity);
     }
 
     createMarkerForSeverity = (element, severity) => {
@@ -124,19 +124,27 @@ export default class Checker {
             element.markers = undefined;
         }
         const violatedGuidelines = Object.keys(element.violations || {});
-        if (element.markers && (this.hiddenSeverities[severity.key] || violatedGuidelines.filter(guidelineId => guidelinePerId[guidelineId].severity === severity).length === 0)) {
-            gfx.classList.remove(severity.cssClass);
-            if (element.markers[severity.key]) { // There might be no marker because the element wasn't shown before
-                element.markerContainer.removeChild(element.markers[severity.key]);
-                element.markers[severity.key] = undefined;
-            }
-
-            if (SEVERITY.filter(severity => gfx.classList.contains(severity.cssClass)).length === 0) {
-                gfx.classList.remove('highlightedElement');
-                modeler.get('overlays').remove({ element: element.id, type: 'violationMarkers' });
-                element.markerContainer = undefined;
+        if (element.markers) {
+            if (this.hiddenSeverities[severity.key] || violatedGuidelines.filter(guidelineId => guidelinePerId[guidelineId].severity === severity).length === 0) {
+                gfx.classList.remove(severity.cssClass);
+                if (element.markers[severity.key]) { // There might be no marker because the element wasn't shown before
+                    element.markerContainer.removeChild(element.markers[severity.key]);
+                    element.markers[severity.key] = undefined;
+                }
+    
+                if (SEVERITY.filter(severity => gfx.classList.contains(severity.cssClass)).length === 0) {
+                    gfx.classList.remove('highlightedElement');
+                    modeler.get('overlays').remove({ element: element.id, type: 'violationMarkers' });
+                    element.markerContainer = undefined;
+                }
+            } else {
+                this.updateSeverityCount(element, severity);
             }
         }
+    }
+
+    updateSeverityCount(element, severity) {
+        element.markers[severity.key].innerHTML = Object.keys(this.getGuidelinesOfSeverity(element.violations, severity)).length;
     }
 
     evaluateAll() {
