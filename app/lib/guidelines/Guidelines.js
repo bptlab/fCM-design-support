@@ -1,4 +1,5 @@
 import { is } from '../datamodelmodeler/util/ModelUtil';
+import { getConnectedElements } from './fragment_guidelines/connected_components';
 
 export const SEVERITY = {
     ERROR : {
@@ -96,11 +97,34 @@ export default [
             const gateways = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:Gateway'));
             gateways.filter(gateway => gateway.incoming.length === 0);
             return gateways.filter(gateway => gateway.incoming.length === 0).map(gateway => ({
-                element: gateway,
+                element: gateway.businessObject,
                 message: 'Gateways should not be used at the beginning of a fragment'
             }));
         },
         severity: SEVERITY.ERROR,
         link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f9---do-not-use-gateways-at-the-beginning-of-a-fragment'
-    }
+    },
+    {
+        title: 'F3: Use at least one activity for a fragment',
+        id: 'F3',
+        getViolations(mediator) {
+            const elements = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element =>
+                is(element, 'bpmn:Activity') || is(element, 'bpmn:Event') || is(element, 'bpmn:Gateway') ||
+                (is(element, 'bpmn:DataObjectReference') && !(element.type === 'label')));
+            const connectedElements = new Set();
+            const activities = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:Activity'));
+            for (const activity of activities) {
+                if (connectedElements.has(activity)) {
+                    continue;
+                }
+                getConnectedElements(activity).forEach(element => connectedElements.add(element));
+            }
+            return elements.filter(element => !connectedElements.has(element)).map(element => ({
+                element: element.businessObject,
+                message: 'Each fragment should comprise at least one activity'
+            }));
+        },
+        severity: SEVERITY.ERROR,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f3---use-at-least-one-activity-for-a-fragment'
+    },
 ]
