@@ -12,7 +12,8 @@ export default class Checker {
     constructor(mediator, errorBar) {
         this.errorList = {};
         this.mediator = mediator;
-        mediator.executed(['shape.create', 'shape.delete', 'element.updateLabel'], event => {
+        // ToDo: Might be worthwhile to assign guidelines to specific events - avoiding evaluating all guidelines every time
+        mediator.executed(['shape.create', 'shape.delete', 'element.updateLabel', 'connection.create'], event => {
             this.evaluateAll();
         });
         mediator.on([OlcEvents.SELECTED_OLC_CHANGED], event => {

@@ -89,4 +89,18 @@ export default [
         severity : SEVERITY.WARNING,
         link : 'https://github.com/bptlab/fCM-design-support/wiki/Object-Lifecycle-(OLC)#o4---define-meaningful-state-labels'
     },
+    {
+        title: 'F9: Do not use gateways at the beginning of a fragment',
+        id: 'F9',
+        getViolations(mediator) {
+            const gateways = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:Gateway'));
+            gateways.filter(gateway => gateway.incoming.length === 0);
+            return gateways.filter(gateway => gateway.incoming.length === 0).map(gateway => ({
+                element: gateway,
+                message: 'Gateways should not be used at the beginning of a fragment'
+            }));
+        },
+        severity: SEVERITY.ERROR,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f9---do-not-use-gateways-at-the-beginning-of-a-fragment'
+    }
 ]
