@@ -14,6 +14,15 @@ OlcModeling.$inject = [
     'commandStack',
 ];
 
+OlcModeling.prototype.updateLabel = function (element, newLabel, newBounds, hints) {
+    this._commandStack.execute('element.updateLabel', {
+        element: element,
+        newLabel: newLabel,
+        newBounds: newBounds,
+        hints: hints || {}
+    });
+};
+
 OlcModeling.prototype.getHandlers = function () {
     var handlers = BaseModeling.prototype.getHandlers.call(this);
     handlers['element.updateLabel'] = UpdateLabelHandler;
