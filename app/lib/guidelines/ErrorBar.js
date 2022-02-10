@@ -20,7 +20,7 @@ export default class ErrorBar {
 
     displayRow({ severity, element, artifact, message, link, quickFixes }) {
         const row = this.table.insertRow(-1);
-        row.addEventListener('click', event => {
+        row.addEventListener('dblclick', event => {
             this.mediator.focusElement(element);
         });
         row.classList.add(severity.cssClass);
@@ -38,7 +38,12 @@ export default class ErrorBar {
             const quickFixesButton = document.createElement('button');
             quickFixesButton.innerHTML = '💡';
             quickFixesCell.appendChild(quickFixesButton);
-            //TODO make functional
+            quickFixesButton.addEventListener('click', event => {
+                this.makeQuickFixDiv(event, this.element, element, quickFixes)
+            });
+            quickFixesButton.addEventListener('dblclick', event => {
+                event.stopPropagation();
+            });
         }
     }
 
@@ -53,7 +58,40 @@ export default class ErrorBar {
         this.numberOfViolations.appendChild(display);
         return display;
     }
+
+    makeQuickFixDiv(event, parent, element, quickFixes) {
+        const quickFixDiv = document.createElement('div');
+        quickFixDiv.close = () => {
+            quickFixDiv.parentElement?.removeChild(quickFixDiv);
+            document.removeEventListener('click', quickFixDiv.close, true);
+        }
+        const quickFixTable = document.createElement('table');
+        quickFixes.forEach(quickFix => {
+            const quickFixRow = quickFixTable.insertRow(-1);
+            const cell = quickFixRow.insertCell(-1);
+            cell.innerHTML = quickFix.label;
+            cell.addEventListener('click', event => {
+                this.mediator.focusElement(element); // TODO the only 'this' reference in here
+                quickFix.action();
+                event.stopPropagation();
+                quickFixDiv.close();
+            });
+            cell.style.cursor = 'pointer';
+        });
     
+        quickFixDiv.style.background = 'gray';
+        quickFixDiv.style.position = 'absolute';
+        quickFixTable.classList.add('errorTable');
+        quickFixTable.style.margin = '0';
+    
+        quickFixDiv.appendChild(quickFixTable);
+        parent.appendChild(quickFixDiv);
+        quickFixDiv.style.left = event.x + 'px';
+        quickFixDiv.style.top = event.y + 'px';
+        event.stopPropagation();
+    
+        document.addEventListener('click', quickFixDiv.close, true);
+    }
 }
 
 
