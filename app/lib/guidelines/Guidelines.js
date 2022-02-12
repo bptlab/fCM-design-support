@@ -148,7 +148,7 @@ export default [
         severity: SEVERITY.ERROR,
         link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f3---use-at-least-one-activity-for-a-fragment'
     },
-        {
+    {
         title: 'F11: Label notations elements',
         id: 'F11',
         getViolations(mediator) {
@@ -168,8 +168,7 @@ export default [
         id : 'D5',
         getViolations(mediator) {
             const dataModeler = mediator.dataModelerHook.modeler;
-            const clazzes = dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class'))
-            console.log(clazzes);
+            const clazzes = dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class'));
             return clazzes.filter(element => element.businessObject.attributeValues).map(clazz => ({
                 element : clazz.businessObject,
                 message : 'Attributes are only used very rarely. Consider using states instead.'
@@ -177,5 +176,33 @@ export default [
         },
         severity : SEVERITY.WARNING,
         link : 'https://github.com/bptlab/fCM-design-support/wiki/Data-Model#d5---use-states-instead-of-attributes-for-important-data-changes'
+    },
+    {
+        title: 'F4: Use data objects to model pre- and postconditions',
+        id: 'F4',
+        getViolations(mediator) {
+            const activities = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element =>
+                is(element, 'bpmn:Activity'));
+            console.log(activities);
+            const activites_with_data = [];
+            for (let i = 0; i < activities.length; i++) {
+                for (let y = 0; y < activities[i].outgoing.length; y++) {
+                    if (activities[i].outgoing[y].type === 'bpmn:DataOutputAssociation') {
+                        activites_with_data.push(activities[i]);
+                    }
+                }
+                for (let z = 0; z < activities[i].incoming.length; z++) {
+                    if (activities[i].incoming[z].type === 'bpmn:DataInputAssociation') {
+                        activites_with_data.push(activities[i]);
+                    }
+                }
+            }
+            return activities.filter(element => !activites_with_data.includes(element)).map(element => ({
+                element: element.businessObject,
+                message: 'Consider using a data object to model a pre- and postcondition for this activity.'
+            }));
+        },
+        severity: SEVERITY.WARNING,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f4---use-data-objects-to-model-pre--and-postconditions'
     },
 ]
