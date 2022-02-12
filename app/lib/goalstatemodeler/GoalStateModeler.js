@@ -252,6 +252,10 @@ GoalStateModeler.prototype.getStateList = function (clazz) {
     return clazz.get('Elements').filter(element => is(element, 'olc:State'));
 }
 
+GoalStateModeler.prototype.getGoalState = function () {
+    return this._goalState || [];
+}
+
 
 function makeDiv(text, ...classes) {
     var element = document.createElement('div');

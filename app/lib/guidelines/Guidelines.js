@@ -81,4 +81,21 @@ export default [
         severity : SEVERITY.WARNING,
         link : 'https://github.com/bptlab/fCM-design-support/wiki/Object-Lifecycle-(OLC)#o4---define-meaningful-state-labels'
     },
+    {
+        title : 'GS2: Include all relevant data objects in the goal',
+        id : 'GS2',
+        getViolations(mediator) {
+            var goalstate_operands = mediator.goalStateModelerHook.modeler.getGoalState().operands;
+            console.log(mediator.goalStateModelerHook.modeler.getGoalState());
+            console.log(!goalstate_operands.length);
+            return goalstate_operands.filter(state => !goalstate_operands.length).map(state => ({
+                element : mediator.goalStateModelerHook.modeler.getGoalState(),
+                message : 'Your goalstate should include all relevant data objects, but at least one.',
+                gfx : mediator.goalStateModelerHook.modeler.getGoalState(),
+                hook: mediator.goalStateModelerHook,
+            }));
+        },
+        severity : SEVERITY.WARNING,
+        link : 'https://github.com/bptlab/fCM-design-support/wiki/Goal-State#gs2---include-all-relevant-data-objects-in-the-goal-state'
+    },
 ]
