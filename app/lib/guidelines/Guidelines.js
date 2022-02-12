@@ -161,6 +161,21 @@ export default [
             }));
         },
         severity: SEVERITY.ERROR,
-        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f3---use-at-least-one-activity-for-a-fragment'
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f11---label-notation-elements'
+    },
+    {
+        title : 'Use states instead of attributes for important data changes',
+        id : 'D5',
+        getViolations(mediator) {
+            const dataModeler = mediator.dataModelerHook.modeler;
+            const clazzes = dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class'))
+            console.log(clazzes);
+            return clazzes.filter(element => element.businessObject.attributeValues).map(clazz => ({
+                element : clazz.businessObject,
+                message : 'Attributes are only used very rarely. Consider using states instead.'
+            }));
+        },
+        severity : SEVERITY.WARNING,
+        link : 'https://github.com/bptlab/fCM-design-support/wiki/Data-Model#d5---use-states-instead-of-attributes-for-important-data-changes'
     },
 ]
