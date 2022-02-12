@@ -148,4 +148,19 @@ export default [
         severity: SEVERITY.ERROR,
         link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f3---use-at-least-one-activity-for-a-fragment'
     },
+        {
+        title: 'F11: Label notations elements',
+        id: 'F11',
+        getViolations(mediator) {
+            const elements = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element =>
+                is(element, 'bpmn:Activity') || is(element, 'bpmn:Event') || is(element, 'bpmn:Gateway') ||
+                (is(element, 'bpmn:DataObjectReference') && !(element.type === 'label')));
+            return elements.filter(element => !element.label).map(element => ({
+                element: element.businessObject,
+                message: 'Each fragment element should have a appropriate label'
+            }));
+        },
+        severity: SEVERITY.ERROR,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f3---use-at-least-one-activity-for-a-fragment'
+    },
 ]
