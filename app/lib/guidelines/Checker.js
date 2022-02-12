@@ -3,6 +3,7 @@ import { root } from "../util/Util";
 import Guidelines from "./Guidelines";
 import { SEVERITY } from "./Guidelines";
 import getDropdown from "../util/Dropdown";
+import OlcEvents from '../olcmodeler/OlcEvents';
 
 const guidelines = Guidelines;
 const guidelinePerId = {}; guidelines.forEach(guideline => guidelinePerId[guideline.id] = guideline);
@@ -11,8 +12,14 @@ export default class Checker {
     constructor(mediator, errorBar) {
         this.errorList = {};
         this.mediator = mediator;
-        mediator.executed(['shape.create', 'shape.delete', 'element.updateLabel'], event => {
+        // ToDo: Might be worthwhile to assign guidelines to specific events - avoiding evaluating all guidelines every time
+        mediator.executed(['shape.create', 'shape.delete', 'element.updateLabel', 'connection.create', 'connection.delete'], event => {
             this.evaluateAll();
+        });
+        mediator.on([OlcEvents.SELECTED_OLC_CHANGED], event => {
+            if (event.olc) {
+                this.evaluateAll();
+            }
         });
         this.errorBar = errorBar;
         this.hiddenSeverities = {};
@@ -41,32 +48,35 @@ export default class Checker {
     reevaluateGuideline(guideline) {
         this.clearViolations(guideline);
         const violations = guideline.getViolations(this.mediator);
-        violations.forEach(({element, message, gfx, hook}) => {
+        violations.forEach(({element, message}) => {
             if (!element.violations) {
                 element.violations = {};
             }
             element.violations[guideline.id] = message;
-            this.highlightViolation(element, hook, gfx, guideline.severity)
+            this.highlightViolation(element, guideline.severity)
         });
         this.errorList[guideline.id] = violations;
         this.repopulateErrorBar();
     }
 
     clearViolations(guideline) {
-        this.errorList[guideline.id]?.forEach(({element, gfx, hook}) => {
+        this.errorList[guideline.id]?.forEach(({element}) => {
             delete element.violations[guideline.id];
-            this.unhighlightViolation(element, hook, gfx, guideline.severity)
+            this.unhighlightViolation(element, guideline.severity)
         });
     }
     
-    highlightViolation(element, hook, gfx, severity) {
+    highlightViolation(element, severity) {
+        const modeler = this.mediator.getHookForElement(element).modeler;
+        const gfx = modeler.get('elementRegistry').getGraphics(element.id);
+        if (!gfx) {return}
         gfx.classList.add(severity.cssClass);
         gfx.classList.add('highlightedElement');
 
         if (!element.markerContainer) {
             element.markerContainer = document.createElement('div');
             element.markerContainer.classList.add('markerContainer');
-            hook.modeler.get('overlays').add(element.id, 'violationMarkers', {
+            modeler.get('overlays').add(element.id, 'violationMarkers', {
                 position: {
                     bottom: 0,
                     right: 0
@@ -81,7 +91,7 @@ export default class Checker {
             element.markers[severity.key] = this.createMarkerForSeverity(element, severity);
             element.markerContainer.appendChild(element.markers[severity.key]);
         }
-        element.markers[severity.key].innerHTML = Object.keys(this.getGuidelinesOfSeverity(element.violations, severity)).length;
+        this.updateSeverityCount(element, severity);
     }
 
     createMarkerForSeverity = (element, severity) => {
@@ -107,19 +117,35 @@ export default class Checker {
         this.messageDropdown.parentElement?.removeChild(this.messageDropdown);
     }
     
-    unhighlightViolation(element, hook, gfx, severity) {
+    unhighlightViolation(element, severity) {
+        const modeler = this.mediator.getHookForElement(element).modeler;
+        const gfx = modeler.get('elementRegistry').getGraphics(element.id);
+        if (!gfx) { // Clean up until the element is shown again
+            element.markerContainer = undefined;
+            element.markers = undefined;
+        }
         const violatedGuidelines = Object.keys(element.violations || {});
-        if (this.hiddenSeverities[severity.key] || violatedGuidelines.filter(guidelineId => guidelinePerId[guidelineId].severity === severity).length === 0) {
-            gfx.classList.remove(severity.cssClass);
-            element.markerContainer.removeChild(element.markers[severity.key]);
-            element.markers[severity.key] = undefined;
-
-            if (SEVERITY.filter(severity => gfx.classList.contains(severity.cssClass)).length === 0) {
-                gfx.classList.remove('highlightedElement');
-                hook.modeler.get('overlays').remove({ element: element.id, type: 'violationMarkers' });
-                element.markerContainer = undefined;
+        if (element.markers) {
+            if (this.hiddenSeverities[severity.key] || violatedGuidelines.filter(guidelineId => guidelinePerId[guidelineId].severity === severity).length === 0) {
+                gfx.classList.remove(severity.cssClass);
+                if (element.markers[severity.key]) { // There might be no marker because the element wasn't shown before
+                    element.markerContainer.removeChild(element.markers[severity.key]);
+                    element.markers[severity.key] = undefined;
+                }
+    
+                if (SEVERITY.filter(severity => gfx.classList.contains(severity.cssClass)).length === 0) {
+                    gfx.classList.remove('highlightedElement');
+                    modeler.get('overlays').remove({ element: element.id, type: 'violationMarkers' });
+                    element.markerContainer = undefined;
+                }
+            } else {
+                this.updateSeverityCount(element, severity);
             }
         }
+    }
+
+    updateSeverityCount(element, severity) {
+        element.markers[severity.key].innerHTML = Object.keys(this.getGuidelinesOfSeverity(element.violations, severity)).length;
     }
 
     evaluateAll() {
@@ -133,7 +159,7 @@ export default class Checker {
             if (!this.hiddenSeverities[severity.key]) {
                 violatedGuidelinesOfSeverity.forEach(guideline => {
                     const violations = this.errorList[guideline.id];
-                    violations.forEach(({element, message, quickFixes, gfx}) => {
+                    violations.forEach(({element, message, quickFixes}) => {
                         var artifact = undefined;
                         if (is(root(element), 'olc:Olc')) {
                             artifact = 'Olcs'
@@ -161,9 +187,9 @@ export default class Checker {
                 this.hiddenSeverities[severity.key] = !this.hiddenSeverities[severity.key];
                 const violationsOfSeverity = this.getViolationsOfSeverity(severity);
                 if (!this.hiddenSeverities[severity.key]) {
-                    violationsOfSeverity.forEach(({element, hook, gfx}) => this.highlightViolation(element, hook, gfx, severity));
+                    violationsOfSeverity.forEach(({element}) => this.highlightViolation(element, severity));
                 } else {
-                    violationsOfSeverity.forEach(({gfx, element, hook}) => this.unhighlightViolation(element, hook, gfx, severity));
+                    violationsOfSeverity.forEach(({element}) => this.unhighlightViolation(element, severity));
                 }
                 this.repopulateErrorBar();
             });

@@ -12,5 +12,13 @@ export function formatStates(states, emptyValue='<empty>', mapper= x => x.name |
 }
 
 export function root(element) {
-    return element.parent || element;
+    return element.parent || element.$parent || element;
+}
+
+export function namespace(element) {
+    return (element.businessObject || element).$type.split(':')[0];
+}
+
+export function type(element) {
+    return (element.businessObject || element).$type.split(':')[1];
 }

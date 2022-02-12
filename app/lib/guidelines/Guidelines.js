@@ -1,5 +1,5 @@
-
 import { is } from '../datamodelmodeler/util/ModelUtil';
+import { getConnectedElements } from './fragment_guidelines/connected_components';
 
 export const SEVERITY = {
     ERROR : {
@@ -20,18 +20,17 @@ SEVERITY.filter = function(lambda) {
     return severityKeys.map(key => SEVERITY[key]).filter(lambda);
 }
 
+// TODO let guidelines return businessobject instead of elements
 export default [
     {
         title : 'Development Guideline',
         id : 'eins',
         getViolations(mediator) {
-            var olc = mediator.olcModelerHook.modeler.getCurrentOlc();
-            var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
+            var olcs = mediator.olcModelerHook.modeler.getOlcs();
+            var states = olcs.flatMap(olc => olc.get('Elements')).filter(element => is(element, 'olc:State'));
             return states.filter(state => !state.name?.endsWith('cake')).map(state => ({
-                element : mediator.olcModelerHook.modeler.get('elementRegistry').get(state.id),
-                message : 'Please make state ' + state.name + ' a cake.',
-                gfx : mediator.olcModelerHook.modeler.get('elementRegistry').getGraphics(state.id),
-                hook: mediator.olcModelerHook,
+                element : state,
+                message : 'Please make state ' + state.name + ' a cake.'
             }));
         },
         severity : SEVERITY.ERROR,
@@ -42,10 +41,10 @@ export default [
         id : 'zwei',
         getViolations(mediator) {
             const olcModeler = mediator.olcModelerHook.modeler;
-            var olc = olcModeler.getCurrentOlc();
-            var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
+            var olcs = mediator.olcModelerHook.modeler.getOlcs();
+            var states = olcs.flatMap(olc => olc.get('Elements')).filter(element => is(element, 'olc:State'));
             return states.filter(state => state.name !== 'Cheesecake').map(state => ({
-                element : olcModeler.get('elementRegistry').get(state.id),
+                element : state,
                 message : 'Please make state ' + state.name + ' more delicious.',
                 quickFixes : [
                     {
@@ -56,9 +55,21 @@ export default [
                         label : 'Delete state',
                         action : () => olcModeler.get('modeling').removeElements([olcModeler.get('elementRegistry').get(state.id)])
                     }
-                ],
-                gfx : olcModeler.get('elementRegistry').getGraphics(state.id),
-                hook: mediator.olcModelerHook,
+                ]
+            }));
+        },
+        severity : SEVERITY.WARNING,
+        link : 'https://de.wikipedia.org/wiki/Käsekuchen'
+    },
+    {
+        title : 'Development Guideline #3',
+        id : 'drei',
+        getViolations(mediator) {
+            const dataModeler = mediator.dataModelerHook.modeler;
+
+            return dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class')).map(clazz => ({
+                element : clazz.businessObject,
+                message : 'XX'
             }));
         },
         severity : SEVERITY.WARNING,
@@ -68,14 +79,12 @@ export default [
         title : 'O4: Define meaningful state lables',
         id : 'O4',
         getViolations(mediator) {
-            var olc = mediator.olcModelerHook.modeler.getCurrentOlc();
-            var states = olc.get('Elements').filter(element => is(element, 'olc:State'));
+            var olcs = mediator.olcModelerHook.modeler.getOlcs();
+            var states = olcs.flatMap(olc => olc.get('Elements')).filter(element => is(element, 'olc:State'));
             var ex = new RegExp("(ed$|ready|initial)");
-            return states.filter(state => !state.name.match(ex)).map(state => ({
-                element : mediator.olcModelerHook.modeler.get('elementRegistry').get(state.id),
-                message : 'State "' + state.name + '" has no meaningful state label. Consider changing it to past tense',
-                gfx : mediator.olcModelerHook.modeler.get('elementRegistry').getGraphics(state.id),
-                hook: mediator.olcModelerHook,
+            return states.filter(state => !(state.name || '').match(ex)).map(state => ({
+                element : state,
+                message : 'State "' + state.name + '" has no meaningful state label. Consider changing it to past tense'
             }));
         },
         severity : SEVERITY.WARNING,
@@ -97,5 +106,42 @@ export default [
         },
         severity : SEVERITY.WARNING,
         link : 'https://github.com/bptlab/fCM-design-support/wiki/Goal-State#gs2---include-all-relevant-data-objects-in-the-goal-state'
+    },
+    {
+        title: 'F9: Do not use gateways at the beginning of a fragment',
+        id: 'F9',
+        getViolations(mediator) {
+            const gateways = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:Gateway'));
+            gateways.filter(gateway => gateway.incoming.length === 0);
+            return gateways.filter(gateway => gateway.incoming.length === 0).map(gateway => ({
+                element: gateway.businessObject,
+                message: 'Gateways should not be used at the beginning of a fragment'
+            }));
+        },
+        severity: SEVERITY.ERROR,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f9---do-not-use-gateways-at-the-beginning-of-a-fragment'
+    },
+    {
+        title: 'F3: Use at least one activity for a fragment',
+        id: 'F3',
+        getViolations(mediator) {
+            const elements = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element =>
+                is(element, 'bpmn:Activity') || is(element, 'bpmn:Event') || is(element, 'bpmn:Gateway') ||
+                (is(element, 'bpmn:DataObjectReference') && !(element.type === 'label')));
+            const connectedElements = new Set();
+            const activities = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:Activity'));
+            for (const activity of activities) {
+                if (connectedElements.has(activity)) {
+                    continue;
+                }
+                getConnectedElements(activity).forEach(element => connectedElements.add(element));
+            }
+            return elements.filter(element => !connectedElements.has(element)).map(element => ({
+                element: element.businessObject,
+                message: 'Each fragment should comprise at least one activity'
+            }));
+        },
+        severity: SEVERITY.ERROR,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f3---use-at-least-one-activity-for-a-fragment'
     },
 ]

@@ -67,9 +67,9 @@
     flex-direction: column;
 }
 
-#errorBar:not(.hidingTable):hover {
-    cursor: grab;
-}
+// #errorBar:not(.hidingTable):hover { //TODO reintroduce; but distracts from clickable and draggable elements inside table
+//     cursor: grab;
+// }
 
 #errorBar:active {
     cursor: grabbing;
@@ -146,4 +146,23 @@
 .errorBarControls div,a {
     font-size: 14px;
     color: white;
+    text-decoration: none !important; // Overrule bootstrap
+}
+
+.columnDivider {
+    top: 0;
+    right: 0;
+    width: 5px;
+    position: absolute;
+    cursor: col-resize;
+    background-color: transparent;
+    user-select: none;
+}
+
+.columnDivider:after {
+  content: '';
+  display: block;
+  margin-left: 2px;
+  border-left: 1px solid white;
+  height: 100%;
 }

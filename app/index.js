@@ -50,7 +50,7 @@ new mediator.GoalStateModelerHook(goalStateModeler);
 
 
 
-const errorBar = new ErrorBar(document.getElementById("errorBar"));
+const errorBar = new ErrorBar(document.getElementById("errorBar"), mediator);
 const checker = new Checker(mediator, errorBar);
 
 async function createNewDiagram() {
@@ -180,30 +180,37 @@ Array.from(document.getElementsByClassName("focusButton")).forEach(button => but
 Array.from(document.getElementsByClassName("focusHeader")).forEach(button => button.addEventListener("click", function(event) { toggleFocusModeler(event.target) }, false));
 
 function toggleFocusModeler(button) {
-    
     if (!button.parentElement.classList.contains("focus")){
-        
         // get wrapper for element on right side
         var element_to_focus = button.parentElement;
-
-        // canvas on right side add class focus
-        element_to_focus.classList.add("focus");
-
-        // get wrapper for element on left side
-        var element_to_unfocus = document.getElementsByClassName("focus")[0];
-
-        // remove focus from canvas on left side
-        element_to_unfocus.classList.remove("focus");
-
-        // switch wrappers
-        var left_node_to_insert = element_to_unfocus.parentElement;
-
-        var right_node_to_insert = element_to_focus.parentElement;
-
-        left_node_to_insert.appendChild(element_to_focus);
-
-        right_node_to_insert.appendChild(element_to_unfocus);
+        focus(element_to_focus);
     }
 }
 
+function focus(element) {
+  // get wrapper for element on left side
+  var currentlyFocussedElement = document.getElementsByClassName("focus")[0];
+
+  if (element !== currentlyFocussedElement) {
+    // canvas on right side add class focus
+    element.classList.add("focus");
+
+    // remove focus from canvas on left side
+    currentlyFocussedElement.classList.remove("focus");
+  
+    // switch wrappers
+    var left_node_to_insert = currentlyFocussedElement.parentElement;
+  
+    var right_node_to_insert = element.parentElement;
+  
+    left_node_to_insert.appendChild(element);
+  
+    right_node_to_insert.appendChild(currentlyFocussedElement);
+  }
+}
+
+// TODO move full focus function to mediator
+mediator.focus = function(modeler) {
+  focus(modeler.get('canvas').getContainer().closest('.canvas'));
+}
 // document.getElementById("toggleDatamodel").click(); //TODO only for debug reasons
