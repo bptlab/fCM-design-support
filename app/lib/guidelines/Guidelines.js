@@ -229,10 +229,10 @@ export default [
             const hook = mediator.fragmentModelerHook;
             const startEvents = hook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:StartEvent'));
             if (startEvents.length > 1) {
-                return [{
-                    element: hook.getRootObject(),
+                return startEvents.map(element => ({
+                    element: element.businessObject,
                     message: 'Process has multiple start events. Please ensure that this is intended.'
-                }];
+                }));
             } else {
                 return [];
             }
