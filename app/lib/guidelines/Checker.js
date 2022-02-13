@@ -5,6 +5,7 @@ import { SEVERITY } from "./Guidelines";
 import getDropdown from "../util/Dropdown";
 import OlcEvents from '../olcmodeler/OlcEvents';
 import { openAsOverlay } from "../util/HtmlUtil";
+import { makeQuickFixDiv } from "./ErrorBar";
 
 const guidelines = Guidelines;
 const guidelinePerId = {}; guidelines.forEach(guideline => guidelinePerId[guideline.id] = guideline);
@@ -39,9 +40,9 @@ export default class Checker {
         return this.getViolatedGuidelinesOfSeverity(severity).flatMap(guideline => this.errorList[guideline.id]);
     }
 
-    getGuidelinesOfSeverity(guidelines, severity) {
-        return Object.keys(guidelines).filter(key => guidelinePerId[key].severity === severity).reduce((obj, key) => {
-            obj[key] = guidelines[key];
+    getElementViolationsOfSeverity(element, severity) {
+        return Object.keys(element.violations).filter(key => guidelinePerId[key].severity === severity).reduce((obj, key) => {
+            obj[key] = element.violations[key];
             return obj;
         }, {});
     }
@@ -49,11 +50,12 @@ export default class Checker {
     reevaluateGuideline(guideline) {
         this.clearViolations(guideline);
         const violations = guideline.getViolations(this.mediator);
-        violations.forEach(({element, message}) => {
+        violations.forEach(violation => {
+            const element = violation.element;
             if (!element.violations) {
                 element.violations = {};
             }
-            element.violations[guideline.id] = message;
+            element.violations[guideline.id] = violation;
             this.highlightViolation(element, guideline.severity)
         });
         this.errorList[guideline.id] = violations;
@@ -113,7 +115,7 @@ export default class Checker {
         marker.classList.add('violationMarker');
         marker.classList.add(severity.cssClass);
         marker.addEventListener('click', event => {
-            this.openMessageDropdown(event, this.getGuidelinesOfSeverity(element.violations, severity));
+            this.openMessageDropdown(event, this.getElementViolationsOfSeverity(element, severity));
         });
         return marker;
     }
@@ -122,7 +124,16 @@ export default class Checker {
         this.hideDropdowns();
         this.messageDropdown.populate(Object.keys(violations), (guideline, element, event) => {
             event.stopPropagation();
-        }, undefined, (guideline) => violations[guideline]);
+        }, undefined, (guideline) => violations[guideline].message);
+        this.messageDropdown.getEntries().forEach(entry => {
+            entry.classList.add('unclickable');
+            const quickFixes = violations[entry.option].quickFixes;
+            if (quickFixes && quickFixes.length > 0) {
+                entry.classList.add('hasQuickFixes');
+                const quickFixDiv = makeQuickFixDiv(quickFixes);
+                entry.appendChild(quickFixDiv);
+            }
+        });
         this.messageDropdown.style.height = 'fit-content';
 
         openAsOverlay(this.messageDropdown, event);
@@ -168,7 +179,7 @@ export default class Checker {
     }
 
     updateSeverityCount(element, severity) {
-        element.markers[severity.key].innerHTML = Object.keys(this.getGuidelinesOfSeverity(element.violations, severity)).length;
+        element.markers[severity.key].innerHTML = Object.keys(this.getElementViolationsOfSeverity(element, severity)).length;
     }
 
     evaluateAll() {

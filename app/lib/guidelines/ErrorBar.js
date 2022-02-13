@@ -1,3 +1,4 @@
+import { openAsOverlay } from "../util/HtmlUtil";
 import { type } from "../util/Util";
 
 export default class ErrorBar {
@@ -42,7 +43,9 @@ export default class ErrorBar {
             quickFixesButton.innerHTML = '💡';
             quickFixesCell.appendChild(quickFixesButton);
             quickFixesButton.addEventListener('click', event => {
-                this.makeQuickFixDiv(event, this.element, element, quickFixes)
+                event.stopPropagation();
+                const quickFixDiv = makeQuickFixDiv(quickFixes, () => this.mediator.focusElement(element))
+                openAsOverlay(quickFixDiv, event);
             });
             quickFixesButton.addEventListener('dblclick', event => {
                 event.stopPropagation();
@@ -61,43 +64,34 @@ export default class ErrorBar {
         this.numberOfViolations.appendChild(display);
         return display;
     }
-
-    makeQuickFixDiv(event, parent, element, quickFixes) {
-        //TODO refactor to use HtmlUtil openAsOverlay
-        const quickFixDiv = document.createElement('div');
-        quickFixDiv.close = () => {
-            quickFixDiv.parentElement?.removeChild(quickFixDiv);
-            document.removeEventListener('click', quickFixDiv.close, true);
-        }
-        const quickFixTable = document.createElement('table');
-        quickFixes.forEach(quickFix => {
-            const quickFixRow = quickFixTable.insertRow(-1);
-            const cell = quickFixRow.insertCell(-1);
-            cell.innerHTML = quickFix.label;
-            cell.addEventListener('click', event => {
-                this.mediator.focusElement(element); // TODO the only 'this' reference in here
-                quickFix.action();
-                event.stopPropagation();
-                quickFixDiv.close();
-            });
-            cell.style.cursor = 'pointer';
-        });
-
-        quickFixDiv.style.background = 'gray';
-        quickFixDiv.style.position = 'absolute';
-        quickFixTable.classList.add('errorTable');
-        quickFixTable.style.margin = '0';
-
-        quickFixDiv.appendChild(quickFixTable);
-        parent.appendChild(quickFixDiv);
-        quickFixDiv.style.left = event.x + 'px';
-        quickFixDiv.style.top = event.y + 'px';
-        event.stopPropagation();
-
-        document.addEventListener('click', quickFixDiv.close, true);
-    }
 }
 
+export function makeQuickFixDiv(quickFixes, onFix = ()=>{}) {
+    const quickFixDiv = document.createElement('div');
+    quickFixDiv.style.background = 'gray';
+
+    const quickFixTable = document.createElement('table');
+    quickFixes.forEach(quickFix => {
+        const quickFixRow = quickFixTable.insertRow(-1);
+        const cell = quickFixRow.insertCell(-1);
+        cell.classList.add('dd-dropdown-entry');
+        cell.style.padding = 'unset';
+        cell.innerHTML = quickFix.label;
+        cell.addEventListener('click', event => {
+            onFix(quickFix);
+            quickFix.action();
+            event.stopPropagation();
+            quickFixDiv.close();
+        });
+        cell.style.cursor = 'pointer';
+    });
+    quickFixTable.classList.add('errorTable');
+    quickFixTable.style.margin = '0';
+    quickFixTable.style.width = '100%';
+    quickFixDiv.appendChild(quickFixTable);
+
+    return quickFixDiv;
+}
 
 
 function makeResizable(elmnt) {
