@@ -210,7 +210,6 @@ export default [
         getViolations(mediator) {
             const hook = mediator.fragmentModelerHook;
             const startEvents = hook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:StartEvent'));
-            console.log(startEvents);
             if (startEvents.length === 0) {
                 return [{
                     element: hook.getRootObject(),
@@ -221,6 +220,24 @@ export default [
             }
         },
         severity: SEVERITY.ERROR,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
+    },
+    {
+        title: 'F6B: Use multiple start events carefully',
+        id: 'F6B',
+        getViolations(mediator) {
+            const hook = mediator.fragmentModelerHook;
+            const startEvents = hook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:StartEvent'));
+            if (startEvents.length > 1) {
+                return [{
+                    element: hook.getRootObject(),
+                    message: 'Process has multiple start events. Please ensure that this is intended.'
+                }];
+            } else {
+                return [];
+            }
+        },
+        severity: SEVERITY.WARNING, // TODO candidate for lower severity
         link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
     },
 ]
