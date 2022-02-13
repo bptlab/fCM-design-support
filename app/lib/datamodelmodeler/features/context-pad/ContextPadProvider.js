@@ -83,15 +83,25 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
   }
 
   createDeleteEntry(actions);
+  
   if (element.type === 'od:Class') {
     createLinkObjectsEntry(actions);
-    createLinkNewObjectEntry(actions);
+    //createLinkNewObjectEntry(actions);
+    createLinkMakeCaseClass(actions);
   }
 
   return actions;
 
   function removeElement() {
     modeling.removeElements([ element ]);
+  }
+    
+  function makeCaseClass() {
+    if (element.businessObject.caseClass == true) {
+        modeling.updateProperties(element, {caseClass: false})
+    } else {
+        modeling.updateProperties(element, {caseClass: true})
+    }    
   }
 
   function createDeleteEntry(actions) {
@@ -144,6 +154,19 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
         'od-no-font-icon-object',
         translate('Link with new object')
       ),
+    });
+  }
+
+    function createLinkMakeCaseClass(actions) {
+    assign(actions, {
+      'make-case-class': {
+        group: 'make-case-class',
+        className: 'bpmn-icon-hand-tool',
+        title: 'Toggle Case Class',
+        action: {
+          click: makeCaseClass
+        },
+      },
     });
   }
 

@@ -39,6 +39,11 @@
           "isMany": true,
           "type": "Association",
           "isReference": true
+        },
+        {
+          "name": "caseClass",
+          "isAttr": true,
+          "type": "Boolean"
         }
       ]
     },

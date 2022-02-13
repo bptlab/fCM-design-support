@@ -182,7 +182,9 @@ export default function ODRenderer(
     let text = '';
     if (semantic.name) {
       text = semantic.name;
-
+    }
+    if (element.businessObject.caseClass == true) {
+      text = "<<case Object>> " + text
     }
     renderLabel(parentGfx, text, {
       box: {

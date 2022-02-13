@@ -9,14 +9,14 @@
         <od:association name="components" sourceCardinality="0..0" targetCardinality="1..1" id="Association_Class2_Conference_to_Class4_Unicorn_type_components" type="components"
                  sourceRef="Class2_Conference" targetRef="Class4_Unicorn"/>
         <od:class name="Conference" id="Class2_Conference"
-                   attributeValues="cost: integer">
+                   attributeValues="cost: integer" caseClass="true">
             <od:associations>Association_Class2_Conference_to_Class1_Paper_type_components</od:associations>
             <od:associations>Association_Class2_Conference_to_Class3_Decision_type_components</od:associations>
             <od:associations>Association_Class2_Conference_to_Class4_Unicorn_type_components</od:associations>
         </od:class>
-        <od:class name="Paper" id="Class1_Paper" attributeValues="quantity: string"/>
-        <od:class name="Decision" id="Class3_Decision" attributeValues="quantity: string"/>
-        <od:class name="Unicorn" id="Class4_Unicorn" attributeValues="quantity: string"/>
+        <od:class name="Paper" id="Class1_Paper" attributeValues="quantity: string" caseClass="false"/>
+        <od:class name="Decision" id="Class3_Decision" attributeValues="quantity: string" caseClass="false"/>
+        <od:class name="Unicorn" id="Class4_Unicorn" attributeValues="quantity: string" caseClass="false"/>
     </od:odBoard>
     <odDi:odRootBoard id="RootBoard_debug">
         <odDi:odPlane id="Plane_debug" boardElement="Board_debug">

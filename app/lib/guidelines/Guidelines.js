@@ -183,7 +183,6 @@ export default [
         getViolations(mediator) {
             const activities = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element =>
                 is(element, 'bpmn:Activity'));
-            console.log(activities);
             const activites_with_data = [];
             for (let i = 0; i < activities.length; i++) {
                 for (let y = 0; y < activities[i].outgoing.length; y++) {
