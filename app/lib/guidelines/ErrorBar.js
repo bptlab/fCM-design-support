@@ -1,6 +1,8 @@
 import { openAsOverlay } from "../util/HtmlUtil";
 import { type } from "../util/Util";
 
+//TODO rename to "ViolationBar" or similar, as only one severity is about errors
+
 export default class ErrorBar {
     constructor(element, mediator) {
         this.element = element;

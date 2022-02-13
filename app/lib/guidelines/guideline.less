@@ -23,11 +23,13 @@ div.highlightedElement {
 
 .warningElement {
     --highlight-color: yellow;
+    --text-color: black;
     order: 2;
 }
 
 .errorElement {
     --highlight-color: red !important;
+    --text-color: white;
     order: 1;
 }
 
@@ -116,6 +118,7 @@ div.highlightedElement {
     border-bottom: 1px solid white;
     height: 20px;
     background-color: var(--highlight-color);
+    color: var(--text-color);
 }
 
 .errorTable th {
