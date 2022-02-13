@@ -5,6 +5,7 @@ import { is } from '../datamodelmodeler/util/ModelUtil';
 import OlcEvents from '../olcmodeler/OlcEvents';
 import FragmentEvents from '../fragmentmodeler/FragmentEvents';
 import { namespace } from '../util/Util';
+import AbstractHook from './AbstractHook';
 
 const DEFAULT_EVENT_PRIORITY = 1000; //From diagram-js/lib/core/EventBus.DEFAULT_PRIORITY
 
@@ -70,16 +71,6 @@ Mediator.prototype.handleHookCreated = function (hook) {
     this._on.forEach(({events, priority, callback}) => {
         hook.eventBus?.on(events, priority, wrapCallback(callback, hook));
     });
-
-    // TODO: put the following into AbstractHook prototype
-
-    hook.getNamespace = function() {
-        return this.modeler.get && namespace(this.modeler.get('canvas').getRootElement());
-    }
-
-    hook.getRootObject = function() {
-        return this.modeler.get && this.modeler.get('canvas').getRootElement().businessObject;
-    }
 }
 
 Mediator.prototype.executed = function(events, callback) {
@@ -206,9 +197,9 @@ Mediator.prototype.getHookForElement = function(element) {
 // === Olc Modeler Hook
 Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
     CommandInterceptor.call(this, eventBus);
+    AbstractHook.call(this, olcModeler, 'OLCs', 'https://github.com/bptlab/fCM-design-support/wiki/Object-Lifecycle-(OLC)');
     this.mediator.olcModelerHook = this;
     this.eventBus = eventBus;
-    this.modeler = olcModeler;
 
     this.executed([
         'shape.create'
@@ -282,9 +273,9 @@ Mediator.prototype.OlcModelerHook.isHook = true;
 // === Data Modeler Hook
 Mediator.prototype.DataModelerHook = function (eventBus, dataModeler) {
     CommandInterceptor.call(this, eventBus);
+    AbstractHook.call(this, dataModeler, 'Data Model' ,'https://github.com/bptlab/fCM-design-support/wiki/Data-Model');
     this.mediator.dataModelerHook = this;
     this.eventBus = eventBus;
-    this.modeler = dataModeler;
 
     this.executed([
         'shape.create'
@@ -363,9 +354,9 @@ Mediator.prototype.DataModelerHook.isHook = true;
 // === Fragment Modeler Hook
 Mediator.prototype.FragmentModelerHook = function (eventBus, fragmentModeler) {
     CommandInterceptor.call(this, eventBus);
+    AbstractHook.call(this, fragmentModeler, 'Fragments', 'https://github.com/bptlab/fCM-design-support/wiki/Fragments');
     this.mediator.fragmentModelerHook = this;
     this.eventBus = eventBus;
-    this.modeler = fragmentModeler;
 
     eventBus.on(FragmentEvents.CREATED_STATE, event => {
         return this.mediator.createState(event.name, event.olc);
@@ -386,7 +377,7 @@ Mediator.prototype.FragmentModelerHook.isHook = true;
 
 // === Goal State Modeler Hook
 Mediator.prototype.GoalStateModelerHook = function (goalStateModeler) {
-    this.modeler = goalStateModeler;
+    AbstractHook.call(this, goalStateModeler, 'Goal State', 'https://github.com/bptlab/fCM-design-support/wiki/Goal-State');
     this.mediator.goalStateModelerHook = this;
 }
 
