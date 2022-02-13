@@ -155,9 +155,9 @@ export default [
             const elements = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element =>
                 is(element, 'bpmn:Activity') || is(element, 'bpmn:Event') || is(element, 'bpmn:Gateway') ||
                 (is(element, 'bpmn:DataObjectReference') && !(element.type === 'label')));
-            return elements.filter(element => !element.label).map(element => ({
+            return elements.filter(element => !element.businessObject.name).map(element => ({
                 element: element.businessObject,
-                message: 'Each fragment element should have a appropriate label'
+                message: 'Each fragment element should have an appropriate label.'
             }));
         },
         severity: SEVERITY.ERROR,
