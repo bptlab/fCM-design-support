@@ -30,7 +30,6 @@ export default class ErrorBar {
             this.mediator.focusElement(element);
         });
         row.classList.add(severity.cssClass);
-        row.classList.add('violationRow');
         const elementCell = row.insertCell(-1), artifactCell = row.insertCell(-1), messageCell = row.insertCell(-1), linkCell = row.insertCell(-1), quickFixesCell = row.insertCell(-1);
         elementCell.innerHTML = type(element) + ' \"' + element.name + '\"';
         artifactCell.innerHTML = artifact;
