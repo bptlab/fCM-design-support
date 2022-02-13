@@ -16,4 +16,8 @@ export default function AbstractHook(modeler, title, wikilink) {
     this.getRootObject = function () {
         return this.modeler.get && this.modeler.get('canvas').getRootElement().businessObject;
     }
+
+    this.locationOfElement = function(element) {
+        return this.title; //Default implementation;
+    }
 }

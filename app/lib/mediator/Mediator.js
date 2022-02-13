@@ -4,7 +4,7 @@ import { isFunction, without } from 'min-dash';
 import { is } from '../datamodelmodeler/util/ModelUtil';
 import OlcEvents from '../olcmodeler/OlcEvents';
 import FragmentEvents from '../fragmentmodeler/FragmentEvents';
-import { namespace } from '../util/Util';
+import { namespace, root } from '../util/Util';
 import AbstractHook from './AbstractHook';
 
 const DEFAULT_EVENT_PRIORITY = 1000; //From diagram-js/lib/core/EventBus.DEFAULT_PRIORITY
@@ -260,6 +260,10 @@ Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
     eventBus.on(OlcEvents.DATACLASS_CREATION_REQUESTED, event => {
         return this.mediator.createDataclass(event.name);
     });
+
+    this.locationOfElement = function(element) {
+        return 'Olc ' + root(element).name;
+    }
 }
 inherits(Mediator.prototype.OlcModelerHook, CommandInterceptor);
 

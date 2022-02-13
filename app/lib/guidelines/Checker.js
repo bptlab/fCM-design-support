@@ -194,13 +194,7 @@ export default class Checker {
                 violatedGuidelinesOfSeverity.forEach(guideline => {
                     const violations = this.errorList[guideline.id];
                     violations.forEach(({element, message, quickFixes}) => {
-                        var artifact = undefined;
-                        if (is(root(element), 'olc:Olc')) {
-                            artifact = 'Olcs'
-                        } else {
-                            //TODO determine artifact
-                        }
-    
+                        const artifact = this.mediator.getHookForElement(element).locationOfElement(element);
                         this.errorBar.displayRow({
                             severity: guideline.severity,
                             element,
