@@ -145,7 +145,6 @@ export default class Checker {
                 entry.appendChild(quickFixDiv);
             }
         });
-        this.messageDropdown.style.height = 'fit-content';
 
         openAsOverlay(this.messageDropdown, event);
     }
@@ -176,7 +175,9 @@ export default class Checker {
                     element.markerContainer = undefined;
                 }
             } else {
-                this.updateSeverityCount(element, severity);
+                if (element.markers[severity.key]) { // There might be no marker because the element wasn't shown before
+                    this.updateSeverityCount(element, severity);
+                }
             }
         }
     }

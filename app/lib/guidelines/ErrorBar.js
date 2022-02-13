@@ -45,7 +45,10 @@ export default class ErrorBar {
             quickFixesCell.appendChild(quickFixesButton);
             quickFixesButton.addEventListener('click', event => {
                 event.stopPropagation();
-                const quickFixDiv = makeQuickFixDiv(quickFixes, () => this.mediator.focusElement(element))
+                const quickFixDiv = makeQuickFixDiv(quickFixes, () => {
+                    this.mediator.focusElement(element);
+                    quickFixDiv.close();
+                });
                 openAsOverlay(quickFixDiv, event);
             });
             quickFixesButton.addEventListener('dblclick', event => {
@@ -82,7 +85,6 @@ export function makeQuickFixDiv(quickFixes, onFix = ()=>{}) {
             onFix(quickFix);
             quickFix.action();
             event.stopPropagation();
-            quickFixDiv.close();
         });
         cell.style.cursor = 'pointer';
     });
