@@ -204,4 +204,23 @@ export default [
         severity: SEVERITY.WARNING,
         link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f4---use-data-objects-to-model-pre--and-postconditions'
     },
+    {
+        title: 'F6A: Use at least one start event',
+        id: 'F6A',
+        getViolations(mediator) {
+            const hook = mediator.fragmentModelerHook;
+            const startEvents = hook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:StartEvent'));
+            console.log(startEvents);
+            if (startEvents.length === 0) {
+                return [{
+                    element: hook.getRootObject(),
+                    message: 'Please use at least one start event in the fragment model'
+                }];
+            } else {
+                return [];
+            }
+        },
+        severity: SEVERITY.ERROR,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
+    },
 ]

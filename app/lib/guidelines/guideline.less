@@ -12,6 +12,10 @@
         drop-shadow(0 0 2px var(--highlight-color)) drop-shadow(1px 0 0 var(--highlight-color)) drop-shadow(-1px 0 0 var(--highlight-color)) drop-shadow(0 -1px 0 var(--highlight-color)) drop-shadow(0 1px 0 var(--highlight-color));
 }
 
+div.highlightedElement {
+    box-shadow: inset 0 0 10px var(--highlight-color), inset 2px 0 0 var(--highlight-color), inset -2px 0 0 var(--highlight-color), inset 0 -2px 0 var(--highlight-color), inset 0 2px 0 var(--highlight-color);
+}
+
 .violationRow {
 //    background-color: var(--highlight-color);
 //    color: white;
@@ -24,7 +28,6 @@
 
 .errorElement {
     --highlight-color: red !important;
-    background-color: var(--highlight-color);
     order: 1;
 }
 
@@ -32,7 +35,17 @@
     width: 10px;
     height: 15px;
     background-color: var(--highlight-color);
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
 }
+
+.canvas > .markerContainer > .violationMarker {
+    height: 30px;
+    width: 20px;
+    font-size: 20px;
+}
+
 .markerContainer {
     display: flex;
 }
@@ -97,6 +110,7 @@
 .errorTable tr {
     border-bottom: 1px solid white;
     height: 20px;
+    background-color: var(--highlight-color);
 }
 
 .errorTable th {

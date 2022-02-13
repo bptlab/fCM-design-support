@@ -4,6 +4,7 @@ import Guidelines from "./Guidelines";
 import { SEVERITY } from "./Guidelines";
 import getDropdown from "../util/Dropdown";
 import OlcEvents from '../olcmodeler/OlcEvents';
+import { openAsOverlay } from "../util/HtmlUtil";
 
 const guidelines = Guidelines;
 const guidelinePerId = {}; guidelines.forEach(guideline => guidelinePerId[guideline.id] = guideline);
@@ -67,22 +68,13 @@ export default class Checker {
     }
     
     highlightViolation(element, severity) {
-        const modeler = this.mediator.getHookForElement(element).modeler;
-        const gfx = modeler.get('elementRegistry').getGraphics(element.id);
+        const gfx = this.getGraphics(element);
         if (!gfx) {return}
         gfx.classList.add(severity.cssClass);
         gfx.classList.add('highlightedElement');
 
         if (!element.markerContainer) {
-            element.markerContainer = document.createElement('div');
-            element.markerContainer.classList.add('markerContainer');
-            modeler.get('overlays').add(element.id, 'violationMarkers', {
-                position: {
-                    bottom: 0,
-                    right: 0
-                },
-                html: element.markerContainer
-            });
+            this.createMarkerContainer(element)
         }
         if (!element.markers) {
             element.markers = {};
@@ -94,23 +86,46 @@ export default class Checker {
         this.updateSeverityCount(element, severity);
     }
 
+    createMarkerContainer(element) {
+        const hook = this.mediator.getHookForElement(element);
+        const modeler = hook.modeler;
+        element.markerContainer = document.createElement('div');
+        element.markerContainer.classList.add('markerContainer');
+        
+        if (element !== hook.getRootObject()) {
+            modeler.get('overlays').add(element.id, 'violationMarkers', {
+                position: {
+                    bottom: 0,
+                    right: 0
+                },
+                html: element.markerContainer
+            });
+        } else {
+            element.markerContainer.style.bottom = 0;
+            element.markerContainer.style.right = 0; 
+            element.markerContainer.style.position = 'absolute'; 
+            this.getGraphics(element).appendChild(element.markerContainer);
+        }
+    }
+
     createMarkerForSeverity = (element, severity) => {
         const marker = document.createElement('div');
         marker.classList.add('violationMarker');
         marker.classList.add(severity.cssClass);
         marker.addEventListener('click', event => {
-            this.openMessageDropdown(marker, this.getGuidelinesOfSeverity(element.violations, severity));
+            this.openMessageDropdown(event, this.getGuidelinesOfSeverity(element.violations, severity));
         });
         return marker;
     }
 
-    openMessageDropdown = (parent, violations) => {
+    openMessageDropdown = (event, violations) => {
         this.hideDropdowns();
         this.messageDropdown.populate(Object.keys(violations), (guideline, element, event) => {
             event.stopPropagation();
-        }, parent, (guideline) => violations[guideline]);
-        this.messageDropdown.style.display = 'block';
-        parent.appendChild(this.messageDropdown);
+        }, undefined, (guideline) => violations[guideline]);
+        this.messageDropdown.style.height = 'fit-content';
+
+        openAsOverlay(this.messageDropdown, event);
     }
 
     hideDropdowns = () => {
@@ -119,7 +134,7 @@ export default class Checker {
     
     unhighlightViolation(element, severity) {
         const modeler = this.mediator.getHookForElement(element).modeler;
-        const gfx = modeler.get('elementRegistry').getGraphics(element.id);
+        const gfx = this.getGraphics(element);
         if (!gfx) { // Clean up until the element is shown again
             element.markerContainer = undefined;
             element.markers = undefined;
@@ -142,6 +157,14 @@ export default class Checker {
                 this.updateSeverityCount(element, severity);
             }
         }
+    }
+
+    getGraphics(element) {
+        const hook = this.mediator.getHookForElement(element);
+        const modeler = hook.modeler;
+        return element !== hook.getRootObject() ?
+            modeler.get('elementRegistry').getGraphics(element.id)
+            : modeler.get('canvas').getContainer().closest('.canvas');
     }
 
     updateSeverityCount(element, severity) {

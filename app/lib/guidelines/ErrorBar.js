@@ -63,6 +63,7 @@ export default class ErrorBar {
     }
 
     makeQuickFixDiv(event, parent, element, quickFixes) {
+        //TODO refactor to use HtmlUtil openAsOverlay
         const quickFixDiv = document.createElement('div');
         quickFixDiv.close = () => {
             quickFixDiv.parentElement?.removeChild(quickFixDiv);

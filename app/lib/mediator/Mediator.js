@@ -76,6 +76,10 @@ Mediator.prototype.handleHookCreated = function (hook) {
     hook.getNamespace = function() {
         return this.modeler.get && namespace(this.modeler.get('canvas').getRootElement());
     }
+
+    hook.getRootObject = function() {
+        return this.modeler.get && this.modeler.get('canvas').getRootElement().businessObject;
+    }
 }
 
 Mediator.prototype.executed = function(events, callback) {
