@@ -29,6 +29,7 @@ import MoveModule from 'diagram-js/lib/features/move';
 import PaletteModule from './features/palette';
 import ResizeModule from 'diagram-js/lib/features/resize';
 import SnappingModule from './features/snapping';
+import { nextPosition } from '../util/Util';
 
 var initialDiagram =
   `<?xml version="1.0" encoding="UTF-8"?>
@@ -127,10 +128,11 @@ Modeler.prototype.createDataclass = function (name) {
   const canvas = this.get('canvas');
   const diagramRoot = canvas.getRootElement();
 
+  const {x,y} = nextPosition(this, 'od:Class');
   const shape = modeling.createShape({
     type: 'od:Class',
     name: name
-  }, { x: 0, y: 0 }, diagramRoot);
+  }, {x,y}, diagramRoot);
   return shape.businessObject;
 }
 

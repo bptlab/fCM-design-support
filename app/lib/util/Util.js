@@ -22,3 +22,14 @@ export function namespace(element) {
 export function type(element) {
     return (element.businessObject || element).$type.split(':')[1];
 }
+
+export function nextPosition(modeler, type) {
+    const existingStates = modeler.get('elementRegistry').filter(element => is(element, type));
+    const rightBorder = Math.max(... existingStates.map(element => element.x + element.width * 3 / 2));
+    const topBorder = Math.min(... existingStates.map(element => element.y + element.height / 2));
+
+    const x = (isFinite(rightBorder) ? rightBorder : 100) + 50;
+    const y = isFinite(topBorder) ? topBorder : 100;
+
+    return {x, y};
+}

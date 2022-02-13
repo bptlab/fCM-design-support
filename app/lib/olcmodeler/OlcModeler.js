@@ -26,7 +26,7 @@ import OlcButtonBarModule from './buttonbar';
 
 import OlcModdle from './moddle';
 import OlcEvents from './OlcEvents';
-import { root } from '../util/Util';
+import { nextPosition, root } from '../util/Util';
 
 var emptyDiagram =
   `<?xml version="1.0" encoding="UTF-8"?>
@@ -269,12 +269,13 @@ OlcModeler.prototype.createState = function (name, olc) {
   const canvas = this.get('canvas');
   const diagramRoot = canvas.getRootElement();
 
+  const {x,y} = nextPosition(this, 'olc:State');
   const shape = modeling.createShape({
     type: 'olc:State',
     name: name,
-    x: parseInt(0),
-    y: parseInt(0)
-  }, { x: 0, y: 0 }, diagramRoot);
+    x: parseInt(x),
+    y: parseInt(y)
+  }, { x, y }, diagramRoot);
   return shape.businessObject;
 }
 
