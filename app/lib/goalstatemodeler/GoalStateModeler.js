@@ -3,12 +3,17 @@ import { without } from 'min-dash';
 import { is } from '../datamodelmodeler/util/ModelUtil';
 import { formatStates } from '../util/Util';
 import getDropdown from '../util/Dropdown';
+import EventBus from 'diagram-js/lib/core/EventBus'
+import GoalStateEvents from './GoalStateEvents';
+
+const NAMESPACE = 'gs';
 
 export default function GoalStateModeler(container) {
     var root = document.createElement('div');
     root.classList.add('gs-root');
     $(container).get(0).appendChild(root);
     this._root = root;
+    this.eventBus = new EventBus();
 }
 
 GoalStateModeler.prototype.showGoalState = function (goalState) {
@@ -24,6 +29,7 @@ GoalStateModeler.prototype.showGoalState = function (goalState) {
 }
 
 GoalStateModeler.prototype.handleStatement = function (parentElement, statement) {
+    statement.$type = NAMESPACE + ':' + statement.type;
     var element = this._handlers[statement.type || 'literal'].call(this, parentElement, statement);
     statement.element = element;
     element.statement = statement;
@@ -77,6 +83,7 @@ GoalStateModeler.prototype.createOperationElement = function (parentElement, ope
             this.deleteStatement(operand);
         });
         operandElement.appendChild(deleteButton);
+        this.eventBus.fire(GoalStateEvents.GOALSTATE_CHANGED, {});
     }
     operation.operands.forEach(element.addOperand);
     parentElement.appendChild(element);
@@ -171,6 +178,7 @@ GoalStateModeler.prototype.deleteStatement = function (statement) {
     var parentElement = parentStatement.element;
     parentStatement.operands = without(parentStatement.operands, statement);
     parentElement.operandsElement.removeChild(element);
+    this.eventBus.fire(GoalStateEvents.GOALSTATE_CHANGED, {});
 }
 
 GoalStateModeler.prototype.handleStatesChanged = function (clazz, newStates) {
@@ -232,16 +240,23 @@ GoalStateModeler.prototype.handleStateDeleted = function (state) {
     });
 }
 
-GoalStateModeler.prototype.forEachLiteral = function(consumer) {
-    var statementsToVisit = [this._goalState];
+GoalStateModeler.prototype.getLiterals = function() {
+    if (!this._goalState) return undefined;
+    const statementsToVisit = [this._goalState];
+    const visitedLiterals = [];
     while (statementsToVisit.length > 0) {
         var nextStatement = statementsToVisit.shift();
         if (nextStatement.type === 'literal') {
-            consumer(nextStatement);
+            visitedLiterals.push(nextStatement);
         } else {
             statementsToVisit.push(...nextStatement.operands);
         }
     }
+    return visitedLiterals;
+}
+
+GoalStateModeler.prototype.forEachLiteral = function(consumer) {
+    return this.getLiterals().forEach(consumer);
 }
 
 GoalStateModeler.prototype.getClassList = function () {
@@ -253,7 +268,7 @@ GoalStateModeler.prototype.getStateList = function (clazz) {
 }
 
 GoalStateModeler.prototype.getGoalState = function () {
-    return this._goalState || [];
+    return this._goalState;
 }
 
 

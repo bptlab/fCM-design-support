@@ -89,7 +89,7 @@ async function openDiagram(bpmn_xml, datamodel_xml) {
         await olcModeler.createNew();
         await dataModeler.importXML(datamodel_xml);
         debugBootstrap();
-        checker.evaluateAll();
+        checker.activate();
     } catch (err) {
         console.error(err);
     }

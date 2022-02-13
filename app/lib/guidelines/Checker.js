@@ -4,6 +4,7 @@ import Guidelines from "./Guidelines";
 import { SEVERITY } from "./Guidelines";
 import getDropdown from "../util/Dropdown";
 import OlcEvents from '../olcmodeler/OlcEvents';
+import GoalStateEvents from "../goalstatemodeler/GoalStateEvents";
 import { openAsOverlay } from "../util/HtmlUtil";
 import { makeQuickFixDiv } from "./ErrorBar";
 
@@ -18,10 +19,8 @@ export default class Checker {
         mediator.executed(['shape.create', 'shape.delete', 'element.updateLabel', 'connection.create', 'connection.delete'], event => {
             this.evaluateAll();
         });
-        mediator.on([OlcEvents.SELECTED_OLC_CHANGED], event => {
-            if (event.olc) {
-                this.evaluateAll();
-            }
+        mediator.on([OlcEvents.SELECTED_OLC_CHANGED, GoalStateEvents.GOALSTATE_CHANGED], event => {
+            this.evaluateAll();
         });
         this.errorBar = errorBar;
         this.hiddenSeverities = {};
@@ -29,6 +28,18 @@ export default class Checker {
         mediator.on(['element.click', 'create.start'], event => {
             this.hideDropdowns();
         });
+
+        // Initially deactivate for imports etc.
+        this.deactivate();
+    }
+
+    activate () {
+        this.active = true;
+        this.evaluateAll();
+    }
+
+    deactivate () {
+        this.active = false;
     }
     
     getViolatedGuidelinesOfSeverity(severity) {
@@ -56,7 +67,7 @@ export default class Checker {
                 element.violations = {};
             }
             element.violations[guideline.id] = violation;
-            this.highlightViolation(element, guideline.severity)
+            this.highlightViolation(element, guideline.severity);
         });
         this.errorList[guideline.id] = violations;
         this.repopulateErrorBar();
@@ -172,10 +183,7 @@ export default class Checker {
 
     getGraphics(element) {
         const hook = this.mediator.getHookForElement(element);
-        const modeler = hook.modeler;
-        return element !== hook.getRootObject() ?
-            modeler.get('elementRegistry').getGraphics(element.id)
-            : modeler.get('canvas').getContainer().closest('.canvas');
+        return hook.getGraphics(element);
     }
 
     updateSeverityCount(element, severity) {
@@ -183,7 +191,9 @@ export default class Checker {
     }
 
     evaluateAll() {
-        guidelines.forEach(guideline => this.reevaluateGuideline(guideline));
+        if (this.active) {
+            guidelines.forEach(guideline => this.reevaluateGuideline(guideline));
+        }
     }
 
     repopulateErrorBar() {

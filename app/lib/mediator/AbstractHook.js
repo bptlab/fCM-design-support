@@ -20,4 +20,11 @@ export default function AbstractHook(modeler, title, wikilink) {
     this.locationOfElement = function(element) {
         return this.title; //Default implementation;
     }
+
+    this.getGraphics = function(element) {
+        const modeler = this.modeler;
+        return element !== this.getRootObject() ?
+            modeler.get('elementRegistry').getGraphics(element.id)
+            : modeler.get('canvas').getContainer().closest('.canvas');
+    }
 }

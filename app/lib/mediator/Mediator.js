@@ -383,6 +383,22 @@ Mediator.prototype.FragmentModelerHook.isHook = true;
 Mediator.prototype.GoalStateModelerHook = function (goalStateModeler) {
     AbstractHook.call(this, goalStateModeler, 'Goal State', 'https://github.com/bptlab/fCM-design-support/wiki/Goal-State');
     this.mediator.goalStateModelerHook = this;
+    this.eventBus = goalStateModeler.eventBus;
+
+    this.getRootObject = function() {
+        return this.modeler.getGoalState();
+    }
+
+    this.getNamespace = function () {
+        return this.getRootObject() && namespace(this.getRootObject());
+    }
+
+    this.getGraphics = function (element) {
+        const modeler = this.modeler;
+        return element !== this.getRootObject() ?
+            element.element
+            : modeler._root.closest('.canvas');
+    }
 }
 
 Mediator.prototype.GoalStateModelerHook.isHook = true;
