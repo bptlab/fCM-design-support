@@ -157,36 +157,24 @@ Mediator.prototype.olcDeletionRequested = function (olc) {
 }
 
 Mediator.prototype.createState = function (name, olc) {
-    return this.olcModelerHook.modeler.createState(name, olc);
+    const state = this.olcModelerHook.modeler.createState(name, olc);
+    this.olcModelerHook.focusElement(state);
+    return state;
 }
 
 Mediator.prototype.createDataclass = function (name) {
-    return this.dataModelerHook.modeler.createDataclass(name);
+    const clazz = this.dataModelerHook.modeler.createDataclass(name);
+    this.dataModelerHook.focusElement(clazz);
+    return clazz;
 }
 
 Mediator.prototype.focusElement = function(element) {
     const hook = this.getHookForElement(element);
     const modeler = hook.modeler;
     this.focus(modeler);
-    if (element === hook.getRootObject()) {
-        return;
+    if (element !== hook.getRootObject()) {
+        hook.focusElement(element);
     }
-    if (!modeler.get('elementRegistry').get(element.id)) {
-        modeler.ensureElementIsOnCanvas(element);
-    }
-    const visual = modeler.get('elementRegistry').get(element.id);
-    if (!visual) {
-        throw new Error('Cannot focus element '+element+'. It is not on canvas');
-    }
-    const canvas = modeler.get('canvas');
-    canvas.scroll({}); // Initialize stuff for scrolling, otherwise it only works at second attempt
-    const viewbox = canvas.viewbox();
-    canvas.scrollToElement(element.id, {
-        top: (viewbox.height - visual.height) * viewbox.scale / 2,
-        left: (viewbox.width - visual.width) * viewbox.scale / 2,
-        bottom: (viewbox.height - visual.height) * viewbox.scale / 2,
-        right: (viewbox.width - visual.width) * viewbox.scale / 2,
-    });
 }
 
 Mediator.prototype.getHookForElement = function(element) {
