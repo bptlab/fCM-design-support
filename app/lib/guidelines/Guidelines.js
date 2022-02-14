@@ -126,18 +126,16 @@ export default [
         title: 'F3: Use at least one activity for a fragment',
         id: 'F3',
         getViolations(mediator) {
-            const elements = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element =>
-                is(element, 'bpmn:Activity') || is(element, 'bpmn:Event') || is(element, 'bpmn:Gateway') ||
-                (is(element, 'bpmn:DataObjectReference') && !(element.type === 'label')));
+            const elements = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element => (is(element, 'bpmn:FlowNode') || is(element, 'bpmn:DataObjectReference')) && element.type !== 'label');
             const connectedElements = new Set();
             const activities = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:Activity'));
             for (const activity of activities) {
                 if (connectedElements.has(activity)) {
                     continue;
                 }
-                getConnectedElements(activity).forEach(element => connectedElements.add(element));
+                getConnectedElements(activity).forEach(element => connectedElements.add(element.id));
             }
-            return elements.filter(element => !connectedElements.has(element)).map(element => ({
+            return elements.filter(element => !connectedElements.has(element.id)).map(element => ({
                 element: element.businessObject,
                 message: 'Each fragment should comprise at least one activity'
             }));
