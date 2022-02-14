@@ -206,7 +206,7 @@ export default [
         id: 'F6A',
         getViolations(mediator) {
             const hook = mediator.fragmentModelerHook;
-            const startEvents = hook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:StartEvent'));
+            const startEvents = hook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:StartEvent') && element.type !== 'label');
             if (startEvents.length === 0) {
                 return [{
                     element: hook.getRootObject(),
@@ -224,7 +224,7 @@ export default [
         id: 'F6B',
         getViolations(mediator) {
             const hook = mediator.fragmentModelerHook;
-            const startEvents = hook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:StartEvent'));
+            const startEvents = hook.modeler.get('elementRegistry').filter(element => is(element, 'bpmn:StartEvent') && element.type !== 'label');
             if (startEvents.length > 1) {
                 return startEvents.map(element => ({
                     element: element.businessObject,
