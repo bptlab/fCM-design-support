@@ -24,9 +24,8 @@ SEVERITY.filter = function(lambda) {
     return severityKeys.map(key => SEVERITY[key]).filter(lambda);
 }
 
-// TODO let guidelines return businessobject instead of elements
 export default [
-    {
+    /* {
         title : 'Development Guideline',
         id : 'eins',
         getViolations(mediator) {
@@ -78,7 +77,7 @@ export default [
         },
         severity : SEVERITY.WARNING,
         link : 'https://de.wikipedia.org/wiki/Käsekuchen'
-    },
+    }, */
     {
         title : 'O4: Define meaningful state lables',
         id : 'O4',
@@ -152,8 +151,7 @@ export default [
         id: 'F11',
         getViolations(mediator) {
             const elements = mediator.fragmentModelerHook.modeler.get('elementRegistry').filter(element =>
-                is(element, 'bpmn:Activity') || is(element, 'bpmn:Event') || is(element, 'bpmn:Gateway') ||
-                (is(element, 'bpmn:DataObjectReference') && !(element.type === 'label')));
+                is(element, 'bpmn:Activity') || is(element, 'bpmn:Event') || (is(element, 'bpmn:DataObjectReference') && !(element.type === 'label')));
             return elements.filter(element => !element.businessObject.name).map(element => ({
                 element: element.businessObject,
                 message: 'Each fragment element should have an appropriate label.'
