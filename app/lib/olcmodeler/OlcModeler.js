@@ -17,6 +17,8 @@ import PaletteModule from 'diagram-js/lib/features/palette';
 import RulesModule from 'diagram-js/lib/features/rules';
 import SelectionModule from 'diagram-js/lib/features/selection';
 import ZoomScrollModule from 'diagram-js/lib/navigation/zoomscroll';
+import EditorActionsModule from 'diagram-js/lib/features/editor-actions';
+import KeyboardModule from 'diagram-js/lib/features/keyboard';
 
 import OlcPaletteModule from './palette';
 import OlcDrawModule from './draw';
@@ -59,7 +61,8 @@ export default function OlcModeler(options) {
 
   const {
     container,
-    additionalModules = []
+    additionalModules = [],
+    keyboard
   } = options;
 
   // default modules provided by the toolbox
@@ -76,7 +79,9 @@ export default function OlcModeler(options) {
     PaletteModule,
     RulesModule,
     SelectionModule,
-    ZoomScrollModule
+    ZoomScrollModule,
+    EditorActionsModule,
+    KeyboardModule
   ];
 
   // our own modules, contributing controls, customizations, and more
@@ -92,16 +97,21 @@ export default function OlcModeler(options) {
     }
   ];
 
-  Diagram.call(this, {
+  const diagramOptions = {
     canvas: {
       container
     },
+    keyboard,
     modules: [
       ...builtinModules,
       ...customModules,
       ...additionalModules
     ]
-  });
+  };
+
+  Diagram.call(this, diagramOptions);
+  
+  this.get('eventBus').fire('attach');
 }
 
 inherits(OlcModeler, Diagram);

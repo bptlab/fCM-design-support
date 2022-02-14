@@ -17,6 +17,9 @@ window.mediator = mediator;
 
 var olcModeler = new OlcModeler({
     container: document.querySelector('#olc-canvas'),
+    keyboard: { 
+      bindTo: document.querySelector('#olc-canvas') 
+    },
     additionalModules: [{
       __init__ : ['mediator'],
       mediator : ['type', mediator.OlcModelerHook]
