@@ -98,9 +98,9 @@ PaletteProvider.prototype.getPaletteEntries = function(element) {
       group: 'tools',
       separator: true
     },
-    'create-object': createAction(
-      'od:Class', 'od-elements', 'od-icon-object',
-      translate('Create object')
+    'create-class': createAction(
+      'od:Class', 'od-elements', 'bpmn-icon-od-class',
+      translate('Create Class')
     ),
     'object-linker': {
       group: 'od-elements',
@@ -111,15 +111,7 @@ PaletteProvider.prototype.getPaletteEntries = function(element) {
           globalConnect.start(event);
         }
       }
-    },
-    'od-separator': {
-      group: 'od-elements',
-      separator: true
-    },
-    'create.text-box': createAction(
-      'od:TextBox', 'text', 'pjs-text-box',
-      translate('Create text')
-    )
+    }
   });
 
   return actions;
