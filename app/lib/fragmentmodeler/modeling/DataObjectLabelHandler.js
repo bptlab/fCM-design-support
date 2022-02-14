@@ -75,7 +75,8 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                             updateStateSelection();
                         }, element);
 
-                        this._stateDropdown.addCreateElementInput(event => {
+                        // Prevent adding new states if no dataclass is selected
+                        dataObject.dataclass && this._stateDropdown.addCreateElementInput(event => {
                             const state = this.createState(event.target.value, currentOlc);
                             this.updateState(state, element);
                             updateClassSelection();
