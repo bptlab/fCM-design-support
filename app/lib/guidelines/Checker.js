@@ -154,7 +154,8 @@ export default class Checker {
     }
     
     unhighlightViolation(element, severity) {
-        const modeler = this.mediator.getHookForElement(element).modeler;
+        const hook = this.mediator.getHookForElement(element);
+        const modeler = hook.modeler;
         const gfx = this.getGraphics(element);
         if (!gfx) { // Clean up until the element is shown again
             element.markerContainer = undefined;
@@ -171,7 +172,11 @@ export default class Checker {
     
                 if (SEVERITY.filter(severity => gfx.classList.contains(severity.cssClass)).length === 0) {
                     gfx.classList.remove('highlightedElement');
-                    modeler.get('overlays').remove({ element: element.id, type: 'violationMarkers' });
+                    if (element !== hook.getRootObject()) {
+                        modeler.get('overlays').remove({ element: element.id, type: 'violationMarkers' });
+                    } else {
+                        this.getGraphics(element).removeChild(element.markerContainer);
+                    }
                     element.markerContainer = undefined;
                 }
             } else {
