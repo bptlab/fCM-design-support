@@ -86,7 +86,7 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
   
   if (element.type === 'od:Class') {
     createLinkObjectsEntry(actions);
-    //createLinkNewObjectEntry(actions);
+    createLinkNewObjectEntry(actions);
     createLinkMakeCaseClass(actions);
   }
 
@@ -151,7 +151,7 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
     assign(actions, {
       'append.append-task': appendAction(
         'od:Class',
-        'od-no-font-icon-object',
+        'bpmn-icon-od-class',
         translate('Link with new object')
       ),
     });
