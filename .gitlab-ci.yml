@@ -12,7 +12,6 @@ deployOnDockerHost:
     - 'which ssh-agent || ( apk add openssh-client )'
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
-    # take care to deploy private key in GitLab as corresponding env var
     - echo "$identitykey" | ssh-add -
   script:
     - ssh -o StrictHostKeyChecking=no $deployuser@$targethost '/var/fcm-design-support/deploy.sh'
