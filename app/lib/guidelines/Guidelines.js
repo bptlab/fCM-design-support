@@ -78,7 +78,7 @@ export default [
         severity : SEVERITY.WARNING,
         link : 'https://de.wikipedia.org/wiki/Käsekuchen'
     }, */
-    {
+    /* {
         title : 'O4: Define meaningful state lables',
         id : 'O4',
         getViolations(mediator) {
@@ -92,8 +92,8 @@ export default [
         },
         severity : SEVERITY.INFORMATION,
         link : 'https://github.com/bptlab/fCM-design-support/wiki/Object-Lifecycle-(OLC)#o4---define-meaningful-state-labels'
-    },
-   {
+    }, */
+    {
        title : 'GS2: Include all relevant data objects in the goal',
        id : 'GS2',
        getViolations(mediator) {
@@ -110,7 +110,7 @@ export default [
        },
        severity : SEVERITY.ERROR,
        link : 'https://github.com/bptlab/fCM-design-support/wiki/Goal-State#gs2---include-all-relevant-data-objects-in-the-goal-state'
-   },
+    },
     {
         title: 'F9: Do not use gateways at the beginning of a fragment',
         id: 'F9',
