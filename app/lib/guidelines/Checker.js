@@ -82,7 +82,7 @@ export default class Checker {
     
     highlightViolation(element, severity) {
         const gfx = this.getGraphics(element);
-        if (!gfx) {return}
+        if (!gfx || this.hiddenSeverities[severity.key]) {return}
         gfx.classList.add(severity.cssClass);
         gfx.classList.add('highlightedElement');
 
