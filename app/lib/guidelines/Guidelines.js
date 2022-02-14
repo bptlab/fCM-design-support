@@ -9,6 +9,10 @@ export const SEVERITY = {
     WARNING : {
         cssClass : 'warningElement',
         label : 'Warnings'
+    },
+    INFORMATION : {
+        cssClass : 'informationElement',
+        label : 'Information'
     }
 }
 const severityKeys = Object.keys(SEVERITY)
@@ -87,7 +91,7 @@ export default [
                 message : 'State "' + state.name + '" has no meaningful state label. Consider changing it to past tense'
             }));
         },
-        severity : SEVERITY.WARNING,
+        severity : SEVERITY.INFORMATION,
         link : 'https://github.com/bptlab/fCM-design-support/wiki/Object-Lifecycle-(OLC)#o4---define-meaningful-state-labels'
     },
    {
@@ -169,7 +173,7 @@ export default [
                 message : 'Attributes are only used very rarely. Consider using states instead.'
             }));
         },
-        severity : SEVERITY.WARNING,
+        severity : SEVERITY.INFORMATION,
         link : 'https://github.com/bptlab/fCM-design-support/wiki/Data-Model#d5---use-states-instead-of-attributes-for-important-data-changes'
     },
     {
@@ -232,7 +236,7 @@ export default [
                 return [];
             }
         },
-        severity: SEVERITY.WARNING, // TODO candidate for lower severity
+        severity: SEVERITY.INFORMATION,
         link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
     },
 ]

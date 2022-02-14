@@ -16,15 +16,24 @@ div.highlightedElement {
     box-shadow: inset 0 0 10px var(--highlight-color), inset 2px 0 0 var(--highlight-color), inset -2px 0 0 var(--highlight-color), inset 0 -2px 0 var(--highlight-color), inset 0 2px 0 var(--highlight-color);
 }
 
+.informationElement {
+    --highlight-color: rgb(179, 250, 255);
+    --text-color: black;
+    --icon: 'ℹ️';
+    order: 3;
+}
+
 .warningElement {
     --highlight-color: yellow;
     --text-color: black;
+    --icon: '⚠️';
     order: 2;
 }
 
 .errorElement {
     --highlight-color: red !important;
     --text-color: white;
+    --icon: '🛑';
     order: 1;
 }
 
@@ -114,6 +123,12 @@ div.highlightedElement {
     height: 20px;
     background-color: var(--highlight-color);
     color: var(--text-color);
+}
+
+.errorTable tr > td:first-child:before {
+    content: var(--icon);
+    position: relative;
+    margin-right: 5px;
 }
 
 .errorTable th {
