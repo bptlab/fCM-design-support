@@ -28,6 +28,7 @@ import ModelingModule from './features/modeling';
 import MoveModule from 'diagram-js/lib/features/move';
 import PaletteModule from './features/palette';
 import ResizeModule from 'diagram-js/lib/features/resize';
+import SpaceToolBehaviorModule from './behavior';
 import SnappingModule from './features/snapping';
 import { nextPosition } from '../util/Util';
 
@@ -108,6 +109,7 @@ Modeler.prototype._modelingModules = [
   PaletteModule,
   ResizeModule,
   SnappingModule,
+  SpaceToolBehaviorModule
 ];
 
 

@@ -37,4 +37,8 @@ OlcRuleProvider.prototype.init = function () {
     var source = context.source;
     return is(source, 'olc:State') && { type: 'olc:Transition' };
   });
+
+  this.addRule('shape.resize', function (context) {
+    return false;
+  });
 };
