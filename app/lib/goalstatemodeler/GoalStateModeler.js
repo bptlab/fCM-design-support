@@ -44,6 +44,7 @@ GoalStateModeler.prototype.createDisjunctionElement = function (parentElement, d
         var newConjunction = { type: 'conjunction', operands: [] };
         disjunction.operands.push(newConjunction);
         element.addOperand(newConjunction);
+        this.addLiteral(newConjunction);
     });
     element.appendChild(addConjunctionButton);
     return element;
@@ -53,13 +54,15 @@ GoalStateModeler.prototype.createConjunctionElement = function (parentElement, c
     var element = this.createOperationElement(parentElement, conjunction);
     var addLiteralButton = document.createElement('button');
     addLiteralButton.innerHTML = '+';
-    addLiteralButton.addEventListener('click', event => {
-        var newLiteral = { type: 'literal', class: this.getClassList()[0], states: [] };
-        conjunction.operands.push(newLiteral);
-        element.addOperand(newLiteral);
-    });
+    addLiteralButton.addEventListener('click', event => this.addLiteral(conjunction));
     element.appendChild(addLiteralButton);
     return element;
+}
+
+GoalStateModeler.prototype.addLiteral = function (parentStatement) {
+    var newLiteral = { type: 'literal', class: this.getClassList()[0], states: [] };
+    parentStatement.operands.push(newLiteral);
+    parentStatement.element.addOperand(newLiteral);
 }
 
 GoalStateModeler.prototype.createOperationElement = function (parentElement, operation) {
@@ -179,6 +182,9 @@ GoalStateModeler.prototype.deleteStatement = function (statement) {
     parentStatement.operands = without(parentStatement.operands, statement);
     parentElement.operandsElement.removeChild(element);
     this.eventBus.fire(GoalStateEvents.GOALSTATE_CHANGED, {});
+    if (parentStatement.operands.length === 0 && parentStatement.parent) {
+        this.deleteStatement(parentStatement);
+    }
 }
 
 GoalStateModeler.prototype.handleStatesChanged = function (clazz, newStates) {
