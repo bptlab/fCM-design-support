@@ -4,7 +4,7 @@ stages:
 deployOnDockerHost:
   stage: deploy
   only:
-    - master
+    - main
   image: alpine:3.12
   before_script:
     - apk update
