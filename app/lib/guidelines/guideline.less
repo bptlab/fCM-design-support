@@ -121,8 +121,6 @@ div.highlightedElement {
 .errorTable tr {
     border-bottom: 1px solid white;
     height: 20px;
-    background-color: var(--highlight-color);
-    color: var(--text-color);
 }
 
 .errorTable tr > td:first-child:before {
@@ -138,6 +136,11 @@ div.highlightedElement {
 .errorTable th,td {
     padding-left: 10px;
     padding-right: 10px;
+}
+
+.errorTable .narrowColumn {
+    width:0.1%;
+    white-space: nowrap;
 }
 
 .hidingTable {
@@ -194,7 +197,7 @@ div.highlightedElement {
 .columnDivider:after {
   content: '';
   display: block;
-  margin-left: 2px;
+  margin-left: 3px;
   border-left: 1px solid white;
   height: 100%;
 }

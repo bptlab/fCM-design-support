@@ -30,7 +30,8 @@ export default class ErrorBar {
             this.mediator.focusElement(element);
         });
         row.classList.add(severity.cssClass);
-        const elementCell = row.insertCell(-1), artifactCell = row.insertCell(-1), messageCell = row.insertCell(-1), linkCell = row.insertCell(-1), quickFixesCell = row.insertCell(-1);
+        const severityCell = row.insertCell(-1), messageCell = row.insertCell(-1), linkCell = row.insertCell(-1), elementCell = row.insertCell(-1), artifactCell = row.insertCell(-1);
+        severityCell.classList.add('narrowColumn');
         elementCell.innerHTML = type(element) + ' \"' + element.name + '\"';
         artifactCell.innerHTML = artifact;
         messageCell.innerHTML = message;
@@ -38,11 +39,14 @@ export default class ErrorBar {
         linkElement.href = link;
         linkElement.target = '_blank';
         linkElement.innerHTML = '❓';
+        linkCell.classList.add('narrowColumn');
         linkCell.appendChild(linkElement);
         if (quickFixes && quickFixes.length > 0) {
             const quickFixesButton = document.createElement('button');
             quickFixesButton.innerHTML = '💡';
-            quickFixesCell.appendChild(quickFixesButton);
+            quickFixesButton.style.border = 'none';
+            quickFixesButton.style.backgroundColor = 'transparent';
+            messageCell.appendChild(quickFixesButton);
             quickFixesButton.addEventListener('click', event => {
                 event.stopPropagation();
                 const quickFixDiv = makeQuickFixDiv(quickFixes, () => {
