@@ -165,8 +165,12 @@ Mediator.prototype.createDataclass = function (name) {
 }
 
 Mediator.prototype.focusElement = function(element) {
-    const modeler = this.getHookForElement(element).modeler;
+    const hook = this.getHookForElement(element);
+    const modeler = hook.modeler;
     this.focus(modeler);
+    if (element === hook.getRootObject()) {
+        return;
+    }
     if (!modeler.get('elementRegistry').get(element.id)) {
         modeler.ensureElementIsOnCanvas(element);
     }
