@@ -20,7 +20,8 @@
                 {
                     "name": "states",
                     "isAttr": true,
-                    "type": "String",
+                    "isReference": true,
+                    "type": "olc:State",
                     "isMany": true
                 }
             ]
