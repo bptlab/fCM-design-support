@@ -237,4 +237,40 @@ export default [
         severity: SEVERITY.INFORMATION,
         link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
     },
+    {
+        title: 'F6C: Start fragment does not create case class',
+        id: 'F6C',
+        getViolations(mediator) {
+            const dataModeler = mediator.dataModelerHook.modeler;
+            const fragmentModeler = mediator.fragmentModelerHook.modeler;
+            const startEvents = fragmentModeler.get('elementRegistry').filter(element => is(element, 'bpmn:StartEvent') && element.type !== 'label');
+            const caseClasses = dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class') && element.businessObject.caseClass == true);
+            
+            for (const startEvent of startEvents) {
+                const connectedElements = getConnectedElements(startEvent);
+                    
+                    // get according connected dataobjects
+                    const dataObjects = connectedElements.filter(element => is(element, 'bpmn:DataObjectReference'));
+                    var caseClassConnected = false;
+                    
+                    // check if connected data objects to activities are case classes
+                    for (let i = 0; i < dataObjects.length; i++) {
+                        for (let y = 0; y < caseClasses.length; y++) {
+                            if (dataObjects[i].businessObject.dataclass.id == caseClasses[y].id) {
+                                caseClassConnected = true;
+                            }
+                        }
+                    }
+                    if (caseClassConnected == false) {
+                        return startEvents.map(element => ({
+                            element: startEvent.businessObject,
+                            message: 'Start fragment should create case class data object.'
+                        }));
+                    }
+            }
+            return [];
+        },
+        severity: SEVERITY.ERROR,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
+    },
 ]
