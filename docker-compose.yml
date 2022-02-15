@@ -5,7 +5,6 @@ services:
     build: .
     volumes:
       - .:/usr/src/app
-      - /usr/src/app/node_modules
     ports:
       - 9024:9024
     command: npm run serve
