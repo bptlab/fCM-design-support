@@ -87,7 +87,7 @@ export function makeQuickFixDiv(quickFixes, onFix = ()=>{}) {
         cell.innerHTML = quickFix.label;
         cell.addEventListener('click', event => {
             onFix(quickFix);
-            quickFix.action();
+            quickFix.action(event);
             event.stopPropagation();
         });
         cell.style.cursor = 'pointer';

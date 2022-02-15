@@ -291,7 +291,89 @@ export default [
         },
         severity : SEVERITY.ERROR,
         link : 'https://github.com/bptlab/fCM-design-support/wiki/Consistency#c3---use-state-labels-and-state-transitions-of-data-objects-consistently-in-olcs-and-fragments'
+    },    
+    {
+        title: 'C5: Provide existential objects',
+        id: 'C5',
+        getViolations(mediator) {
+            const dataModeler = mediator.dataModelerHook.modeler;
+            const classDependencies = {};
+            function addClassDependency(dependentClass, contextClass) {
+                if (!classDependencies[dependentClass.id]) {
+                    classDependencies[dependentClass.id] = [];
+                }
+                classDependencies[dependentClass.id].push(contextClass);
+            }
+            const associations = dataModeler.get('elementRegistry').filter(element => is(element, 'od:Association') && element.type !== 'label').map(association => association.businessObject);
+            associations.forEach(association => {
+                const [sourceLowerBound, sourceUpperBound] = association.sourceCardinality.split('..');
+                const [targetLowerBound, targetUpperBound] = association.targetCardinality.split('..');
+                if (parseInt(sourceLowerBound) > 0) {
+                    addClassDependency(association.sourceRef, association.targetRef);
+                }
+                if (parseInt(targetLowerBound) > 0) {
+                    addClassDependency(association.targetRef, association.sourceRef);
+                }
+            });
+
+            const fragmentModeler = mediator.fragmentModelerHook.modeler;
+            const activities = fragmentModeler.get('elementRegistry').filter(element => is(element, 'bpmn:Activity')).map(activity => activity.businessObject);
+
+            return activities.flatMap(activity => {
+                // TODO rework when IO sets are implemented (classes might be created in specific io configurations)
+                const writtenClasses = new Set(activity.dataOutputAssociations?.map(assoc => assoc.targetRef.dataclass));
+                const readClasses = new Set(activity.dataInputAssociations?.map(assoc => assoc.sourceRef[0].dataclass));
+                const createdClasses = [...writtenClasses].filter(clazz => !readClasses.has(clazz));
+                
+                const missingAssociations = createdClasses.flatMap(createdClass => {
+                    return (classDependencies[createdClass.id] || []).filter(contextClass => !writtenClasses.has(contextClass) && !readClasses.has(contextClass)).map(contextClass => ({createdClass, contextClass}));
+                });
+
+                function stringifyMissing({createdClass, contextClass}) {
+                    return 'to \"' + contextClass.name + '\" for \"' + createdClass.name + '\"';
+                }
+
+                if (missingAssociations.length > 0) {
+                    const activityShape = fragmentModeler.get('elementRegistry').get(activity.id);
+                    function startDoCreation(event, dataclass, isIncoming) {
+                        const shape = fragmentModeler.get('elementFactory').createShape({
+                            type : 'bpmn:DataObjectReference'
+                        });
+                        shape.businessObject.dataclass = dataclass;
+                        shape.businessObject.states = [];
+                        const hints = isIncoming ?
+                            {connectionTarget: activityShape}
+                            : undefined;
+                        fragmentModeler.get('autoPlace').append(activityShape, shape, hints);
+                        // The following works for outgoing data, but breaks the activity for incoming
+                        // fragmentModeler.get('create').start(event, shape, {
+                        //   source: activityShape,
+                        //   hints
+                        // });
+                    }
+                    return [{
+                        element: activity,
+                        message: 'Please add references to the following context classes to activity ' + activity.name + ': ' + missingAssociations.map(stringifyMissing).join(', '),
+                        quickFixes : missingAssociations.flatMap(({createdClass, contextClass}) => (
+                            [{
+                                label : 'Add reading data object reference of class \"' + createdClass.name + '\" to activity \"' + activity.name + '\"',
+                                action : (event) => startDoCreation(event, contextClass, true)
+                            },{
+                                label : 'Add writing data object reference of class \"' + createdClass.name + '\" to activity \"' + activity.name + '\"',
+                                action : (event) => startDoCreation(event, contextClass)
+                            }]
+                        ))
+                    }];
+                } else {
+                    return [];
+                }
+            });
+        },
+        severity: SEVERITY.ERROR,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
     },
+
+    // TODO move the following to F6A and F6B
     {
         title: 'F6C: Start fragment does not create case class',
         id: 'F6C',
