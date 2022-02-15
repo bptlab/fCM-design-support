@@ -111,7 +111,21 @@ export default function OlcModeler(options) {
 
   Diagram.call(this, diagramOptions);
   
-  this.get('eventBus').fire('attach');
+  this.get('eventBus').fire('attach'); // Needed for key listeners to work
+
+  // Hide canvas when no olc is available
+  this.get('eventBus').on(OlcEvents.DEFINITIONS_CHANGED, event => {
+    const container = this.get('canvas').getContainer();
+    const shouldBeVisible = event.definitions.get('olcs').length !== 0;
+    const currentVisibility = container.style.visibility;
+    if (!currentVisibility || (shouldBeVisible !== (currentVisibility !== 'hidden'))) {
+      if (shouldBeVisible) {
+        container.style.visibility = '';
+      } else {
+        container.style.visibility = 'hidden';
+      }
+    }
+  });
 }
 
 inherits(OlcModeler, Diagram);

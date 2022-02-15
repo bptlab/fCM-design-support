@@ -16,11 +16,11 @@ export function root(element) {
 }
 
 export function namespace(element) {
-    return (element.businessObject || element).$type.split(':')[0];
+    return (element.businessObject || element).$type?.split(':')[0];
 }
 
 export function type(element) {
-    return (element.businessObject || element).$type.split(':')[1];
+    return (element.businessObject || element).$type?.split(':')[1];
 }
 
 export function nextPosition(modeler, type) {
