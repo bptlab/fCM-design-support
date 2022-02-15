@@ -10,3 +10,8 @@ RUN npm install
 COPY . .
 
 RUN grunt build
+
+EXPOSE 9024
+
+CMD [ "grunt", "serve" ]
+

@@ -1,8 +1,0 @@
-version: '3'
-
-services:
-  not-gryphon:
-    build: .
-    ports:
-      - 9024:9024
-    command: npm run serve
