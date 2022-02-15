@@ -178,14 +178,12 @@ function toggleNoteArea() {
 
 // function to toggle focus
 
-Array.from(document.getElementsByClassName("focusButton")).forEach(button => button.addEventListener("click", function(event) { toggleFocusModeler(event.target) }, false));
-
 Array.from(document.getElementsByClassName("focusHeader")).forEach(button => button.addEventListener("click", function(event) { toggleFocusModeler(event.target) }, false));
 
 function toggleFocusModeler(button) {
     if (!button.parentElement.classList.contains("focus")){
         // get wrapper for element on right side
-        var element_to_focus = button.parentElement;
+        var element_to_focus = button.parentElement.parentElement;
         focus(element_to_focus);
     }
 }
