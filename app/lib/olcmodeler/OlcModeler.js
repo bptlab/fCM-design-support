@@ -289,6 +289,22 @@ OlcModeler.prototype.createState = function (name, olc) {
   return shape.businessObject;
 }
 
+OlcModeler.prototype.createTransition = function (sourceState, targetState) {
+  this.showOlcById(root(sourceState).id);
+  const modeling = this.get('modeling');
+  const sourceVisual = this.get('elementRegistry').get(sourceState.id);
+  const targetVisual = this.get('elementRegistry').get(targetState.id);
+
+  const transitionVisual = modeling.connect(sourceVisual, targetVisual, {
+    type: 'olc:Transition',
+    source: sourceState,
+    target: targetState,
+    waypoints: this.get('olcUpdater').connectionWaypoints(sourceState, targetState)
+  });
+
+  return transitionVisual.businessObject;
+}
+
 OlcModeler.prototype.saveXML = function (options) {
 
   options = options || {};

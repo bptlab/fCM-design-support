@@ -236,6 +236,61 @@ export default [
         },
         severity: SEVERITY.INFORMATION,
         link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
+    },    
+    {
+        title : 'Have each fragment state transition in olc',
+        id : 'C3',
+        getViolations(mediator) {
+            const fragmentModeler = mediator.fragmentModelerHook.modeler;
+            const activities = fragmentModeler.get('elementRegistry').filter(element => is(element, 'bpmn:Activity'));
+
+            return activities.map(activity => activity.businessObject).flatMap(activity => {
+                // TODO improve after introduction of IO-Sets
+                const statesPerClass = {};
+                activity.dataInputAssociations?.forEach(assoc => {
+                    const dataObjectReference = assoc.sourceRef[0];
+                    if (!statesPerClass[dataObjectReference.dataclass.id]) {
+                        statesPerClass[dataObjectReference.dataclass.id] = {incoming : [], outgoing : []};
+                    }
+                    statesPerClass[dataObjectReference.dataclass.id].incoming.push(...dataObjectReference.states);
+                });
+                activity.dataOutputAssociations?.forEach(assoc => {
+                    const dataObjectReference = assoc.targetRef;
+                    if (statesPerClass[dataObjectReference.dataclass.id]) {
+                        statesPerClass[dataObjectReference.dataclass.id].outgoing.push(...dataObjectReference.states);
+                    }
+                });
+                const uncoveredTransitions = Object.keys(statesPerClass).flatMap(clazz => {
+                    const transitionsInOlc = statesPerClass[clazz].incoming[0]?.$parent.get('Elements').filter(element => is(element, 'olc:Transition')) || [];
+                    return statesPerClass[clazz].incoming.flatMap(sourceState => {
+                        return statesPerClass[clazz].outgoing.filter(targetState => {
+                            return sourceState !== targetState && transitionsInOlc.filter(transition => transition.sourceState === sourceState && transition.targetState === targetState).length !== 1;
+                        }).map(targetState => ({sourceState, targetState}));
+                    });
+                });
+
+                function stringifyTransition({sourceState, targetState}) {
+                    return '\[' + sourceState.name + ' -> ' + targetState.name + '\]';
+                }
+
+                if (uncoveredTransitions.length > 0) {
+                    return [{
+                        element : activity,
+                        message : 'Please make state transitions in activity ' + activity.name + ' match those of the OLCs. Unmatched transitions: ' + uncoveredTransitions.map(stringifyTransition).join(', '), //TODO improve this message
+                        quickFixes : uncoveredTransitions.map(transition => (
+                            {
+                                label : 'Create transition ' + stringifyTransition(transition) + ' in OLC ' + transition.sourceState.$parent.name,
+                                action : () => mediator.olcModelerHook.modeler.createTransition(transition.sourceState, transition.targetState)
+                            }
+                        ))
+                    }];
+                } else {
+                    return [];
+                }
+            });
+        },
+        severity : SEVERITY.ERROR,
+        link : 'https://github.com/bptlab/fCM-design-support/wiki/Consistency#c3---use-state-labels-and-state-transitions-of-data-objects-consistently-in-olcs-and-fragments'
     },
     {
         title: 'F6C: Start fragment does not create case class',
