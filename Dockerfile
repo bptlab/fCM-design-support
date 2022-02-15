@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 RUN npm install -g grunt-cli
 
-COPY package*.json ./
+COPY package.json ./
 RUN npm install
 
 COPY . .

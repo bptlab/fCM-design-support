@@ -3,8 +3,6 @@ version: '3'
 services:
   not-gryphon:
     build: .
-    volumes:
-      - .:/usr/src/app
     ports:
       - 9024:9024
     command: npm run serve
