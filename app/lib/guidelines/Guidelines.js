@@ -305,8 +305,10 @@ export default [
                 classDependencies[dependentClass.id].push(contextClass);
             }
             const associations = dataModeler.get('elementRegistry').filter(element => is(element, 'od:Association') && element.type !== 'label').map(association => association.businessObject);
-            associations.forEach(association => {
-                // this breaks for short forms of cardinalities
+            // this breaks for short forms of cardinalities
+            associations
+            .filter(association => association.sourceCardinality && association.targetCardinality) // TODO this is an hotfix
+            .forEach(association => {
                 const [sourceLowerBound, sourceUpperBound] = association.sourceCardinality.split('..');
                 const [targetLowerBound, targetUpperBound] = association.targetCardinality.split('..');
                 if (parseInt(sourceLowerBound) > 0) {
