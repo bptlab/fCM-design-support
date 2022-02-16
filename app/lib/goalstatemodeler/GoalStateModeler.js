@@ -193,6 +193,11 @@ GoalStateModeler.prototype.handleStatesChanged = function (clazz, newStates) {
 
 GoalStateModeler.prototype.handleOlcListChanged = function (classes) {
     this._classList = classes;
+    if (classes.length === 0) {
+        this._root.classList.add('no-dataclass');
+    } else {
+        this._root.classList.remove('no-dataclass');
+    }
     if (this._goalState) {
         var literalsToDelete = [];
         this.forEachLiteral(literal => {
@@ -275,6 +280,13 @@ GoalStateModeler.prototype.getStateList = function (clazz) {
 
 GoalStateModeler.prototype.getGoalState = function () {
     return this._goalState;
+}
+
+GoalStateModeler.prototype.createNew = function () {
+    this.showGoalState({
+        type: 'conjunction',
+        operands: []
+    });
 }
 
 

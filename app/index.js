@@ -1,6 +1,7 @@
 import FragmentModeler from './lib/fragmentmodeler/FragmentModeler';
 import diagramXML from '../resources/newDiagram.bpmn';
 import datamodelXML from '../resources/sampleBoard.bpmn';
+import newDatamodel from '../resources/emptyBoard.bpmn';
 import OlcModeler from './lib/olcmodeler/OlcModeler';
 import GoalStateModeler from './lib/goalstatemodeler/GoalStateModeler';
 import DataModelModeler from './lib/datamodelmodeler/Modeler';
@@ -10,6 +11,8 @@ import $ from 'jquery';
 import Mediator from './lib/mediator/Mediator';
 import Checker from './lib/guidelines/Checker';
 import ErrorBar from './lib/guidelines/ErrorBar';
+
+const LOAD_DUMMY = false;
 
 
 var mediator = new Mediator();
@@ -60,7 +63,9 @@ async function createNewDiagram() {
     await openDiagram(diagramXML, datamodelXML);
 }
 
-function debugBootstrap() {
+async function loadDebugData() {
+  // TODO dummy fragment data
+  await dataModeler.importXML(datamodelXML);
   DummyData.dummyStateList.forEach(clazz => {
     var clazzRef = dataModeler.get('elementRegistry').get(clazz.id).businessObject;
     olcModeler.addOlc(clazzRef);
@@ -90,8 +95,11 @@ async function openDiagram(bpmn_xml, datamodel_xml) {
         // await fragmentModeler.importXML(xml);
         await fragmentModeler.importXML(bpmn_xml);
         await olcModeler.createNew();
-        await dataModeler.importXML(datamodel_xml);
-        debugBootstrap();
+        await dataModeler.importXML(newDatamodel);
+        goalStateModeler.createNew();
+        if (LOAD_DUMMY) {
+          await loadDebugData();
+        } 
         checker.activate();
     } catch (err) {
         console.error(err);

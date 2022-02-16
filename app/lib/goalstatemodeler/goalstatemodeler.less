@@ -3,6 +3,15 @@
     font-size: 16px;
 }
 
+.gs-root.no-dataclass::before {
+    content: 'Please create data classes before modeling the goal state';
+    color: gray;
+}
+
+.gs-root.no-dataclass * {
+    visibility: hidden;
+}
+
 .gs-conjunction > .gs-operands > .operand:not(:first-of-type):before {
     content: " ∧ ";
 }

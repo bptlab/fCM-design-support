@@ -119,7 +119,7 @@ export default [
             gateways.filter(gateway => gateway.incoming.length === 0);
             return gateways.filter(gateway => gateway.incoming.length === 0).map(gateway => ({
                 element: gateway.businessObject,
-                message: 'Gateways should not be used at the beginning of a fragment'
+                message: 'Please do not use a gateway at the start of a fragment.'
             }));
         },
         severity: SEVERITY.ERROR,
@@ -140,7 +140,7 @@ export default [
             }
             return elements.filter(element => !connectedElements.has(element.id)).map(element => ({
                 element: element.businessObject,
-                message: 'Each fragment should comprise at least one activity'
+                message: 'Please use at least one activity for each fragment.'
             }));
         },
         severity: SEVERITY.ERROR,
@@ -154,7 +154,7 @@ export default [
                 is(element, 'bpmn:Activity') || is(element, 'bpmn:Event') || (is(element, 'bpmn:DataObjectReference') && !(element.type === 'label')));
             return elements.filter(element => !element.businessObject.name).map(element => ({
                 element: element.businessObject,
-                message: 'Each fragment element should have an appropriate label.'
+                message: 'Please provide a label for each fragment element.'
             }));
         },
         severity: SEVERITY.ERROR,
@@ -210,7 +210,7 @@ export default [
             if (startEvents.length === 0) {
                 return [{
                     element: hook.getRootObject(),
-                    message: 'Please use at least one start event in the fragment model'
+                    message: 'Please use at least one start event in the fragment model.'
                 }];
             } else {
                 return [];
@@ -228,7 +228,7 @@ export default [
             if (startEvents.length > 1) {
                 return startEvents.map(element => ({
                     element: element.businessObject,
-                    message: 'Process has multiple start events. Please ensure that this is intended.'
+                    message: 'Your process has multiple start events. Please ensure that this is intended.'
                 }));
             } else {
                 return [];
@@ -276,7 +276,7 @@ export default [
                 if (uncoveredTransitions.length > 0) {
                     return [{
                         element : activity,
-                        message : 'Please make state transitions in activity ' + activity.name + ' match those of the OLCs. Unmatched transitions: ' + uncoveredTransitions.map(stringifyTransition).join(', '), //TODO improve this message
+                        message : 'Please make sure that all state transitions in activity ' + activity.name + ' are in the OLCs. Unmatched transitions: ' + uncoveredTransitions.map(stringifyTransition).join(', '), //TODO improve this message
                         quickFixes : uncoveredTransitions.map(transition => (
                             {
                                 label : 'Create transition ' + stringifyTransition(transition) + ' in OLC ' + transition.sourceState.$parent.name,
@@ -291,7 +291,93 @@ export default [
         },
         severity : SEVERITY.ERROR,
         link : 'https://github.com/bptlab/fCM-design-support/wiki/Consistency#c3---use-state-labels-and-state-transitions-of-data-objects-consistently-in-olcs-and-fragments'
+    },    
+    {
+        title: 'C5: Provide existential objects',
+        id: 'C5',
+        getViolations(mediator) {
+            const dataModeler = mediator.dataModelerHook.modeler;
+            const classDependencies = {};
+            function addClassDependency(dependentClass, contextClass) {
+                if (!classDependencies[dependentClass.id]) {
+                    classDependencies[dependentClass.id] = [];
+                }
+                classDependencies[dependentClass.id].push(contextClass);
+            }
+            const associations = dataModeler.get('elementRegistry').filter(element => is(element, 'od:Association') && element.type !== 'label').map(association => association.businessObject);
+            // this breaks for short forms of cardinalities
+            associations
+            .filter(association => association.sourceCardinality && association.targetCardinality) // TODO this is an hotfix
+            .forEach(association => {
+                const [sourceLowerBound, sourceUpperBound] = association.sourceCardinality.split('..');
+                const [targetLowerBound, targetUpperBound] = association.targetCardinality.split('..');
+                if (parseInt(sourceLowerBound) > 0) {
+                    addClassDependency(association.sourceRef, association.targetRef);
+                }
+                if (parseInt(targetLowerBound) > 0) {
+                    addClassDependency(association.targetRef, association.sourceRef);
+                }
+            });
+
+            const fragmentModeler = mediator.fragmentModelerHook.modeler;
+            const activities = fragmentModeler.get('elementRegistry').filter(element => is(element, 'bpmn:Activity')).map(activity => activity.businessObject);
+
+            return activities.flatMap(activity => {
+                // TODO rework when IO sets are implemented (classes might be created in specific io configurations)
+                const writtenClasses = new Set(activity.dataOutputAssociations?.map(assoc => assoc.targetRef.dataclass));
+                const readClasses = new Set(activity.dataInputAssociations?.map(assoc => assoc.sourceRef[0].dataclass));
+                const createdClasses = [...writtenClasses].filter(clazz => !readClasses.has(clazz));
+                
+                const missingAssociations = createdClasses.flatMap(createdClass => {
+                    return (classDependencies[createdClass.id] || []).filter(contextClass => !writtenClasses.has(contextClass) && !readClasses.has(contextClass)).map(contextClass => ({createdClass, contextClass}));
+                });
+
+                function stringifyMissing({createdClass, contextClass}) {
+                    return 'to \"' + contextClass.name + '\" for \"' + createdClass.name + '\"';
+                }
+
+                if (missingAssociations.length > 0) {
+                    const activityShape = fragmentModeler.get('elementRegistry').get(activity.id);
+                    function startDoCreation(event, dataclass, isIncoming) {
+                        const shape = fragmentModeler.get('elementFactory').createShape({
+                            type : 'bpmn:DataObjectReference'
+                        });
+                        shape.businessObject.dataclass = dataclass;
+                        shape.businessObject.states = [];
+                        const hints = isIncoming ?
+                            {connectionTarget: activityShape}
+                            : undefined;
+                        fragmentModeler.get('autoPlace').append(activityShape, shape, hints);
+                        // The following works for outgoing data, but breaks the activity for incoming
+                        // fragmentModeler.get('create').start(event, shape, {
+                        //   source: activityShape,
+                        //   hints
+                        // });
+                    }
+                    return [{
+                        element: activity,
+                        // Maybe we can also add to the error message, which classes are missing their context class?
+                        message: 'In activity ' + activity.name + ', please add references to the following context classes: ' + missingAssociations.map(stringifyMissing).join(', '),
+                        quickFixes : missingAssociations.flatMap(({createdClass, contextClass}) => (
+                            [{
+                                label : 'Add reading data object reference of class \"' + createdClass.name + '\" to activity \"' + activity.name + '\"',
+                                action : (event) => startDoCreation(event, contextClass, true)
+                            },{
+                                label : 'Add writing data object reference of class \"' + createdClass.name + '\" to activity \"' + activity.name + '\"',
+                                action : (event) => startDoCreation(event, contextClass)
+                            }]
+                        ))
+                    }];
+                } else {
+                    return [];
+                }
+            });
+        },
+        severity: SEVERITY.ERROR,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
     },
+
+    // TODO move the following to F6A and F6B
     {
         title: 'F6C: Start fragment does not create case class',
         id: 'F6C',
@@ -319,7 +405,7 @@ export default [
                     if (caseClassConnected == false) {
                         return startEvents.map(element => ({
                             element: startEvent.businessObject,
-                            message: 'Start fragment should create case class data object.'
+                            message: 'Each initial fragment should create a case class data object.'
                         }));
                     }
             }

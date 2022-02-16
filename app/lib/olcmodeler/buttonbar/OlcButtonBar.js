@@ -40,7 +40,9 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     selectedOlcSpan.style.userSelect = 'none';
     selectOlcComponent.showValue = function (olc) {
         this.value = olc;
-        selectedOlcSpan.innerHTML = this.value?.classRef.name;
+        selectedOlcSpan.innerText = this.value ?
+            this.value.classRef.name
+            : '<no OLC selected>';
     }
     var selectOlcMenu = getDropdown();
     selectOlcComponent.addEventListener('click', event => {
