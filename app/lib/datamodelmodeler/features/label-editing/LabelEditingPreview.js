@@ -25,10 +25,10 @@ export default function LabelEditingPreview(
       
       var label_text = element.businessObject[cardinality];
         
-      if (!label_text.includes("⬧")) {
+      if (!label_text.includes("⬨")) {
           var previewDiv = document.getElementsByClassName("djs-direct-editing-content")[0];
   
-          previewDiv.innerHTML = label_text + " <br>⬧" + label_text;
+          previewDiv.innerHTML = label_text + " <br>⬨" + label_text;
       }
     }
 

@@ -35,14 +35,14 @@ export default function UpdateLabelHandler(modeling, textRenderer) {
     // Text can be set to null on deletion
     if (text !== null && element.businessObject.$type == 'od:Association') {
         // check if text fulfills required form
-        const check_re_1 = /^((\d+..(\d+|\*))|\d+|\*)\n⬧((\d+..(\d+|\*))|\d+|\*)$/;
+        const check_re_1 = /^((\d+..(\d+|\*))|\d+|\*)\n⬨((\d+..(\d+|\*))|\d+|\*)$/;
         const check_re_2 = /^((\d+..(\d+|\*))|\d+|\*)$/;
 
         if (!(text.match(check_re_1)) && !(text.match(check_re_2))   ) {
           text = oldText;
         }
         
-        const text_parts = text.split('\n⬧');
+        const text_parts = text.split('\n⬨');
         if (text_parts[0] == text_parts[1]) {
             text = text_parts[0];
         }
