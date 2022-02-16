@@ -35,8 +35,8 @@ export default function UpdateLabelHandler(modeling, textRenderer) {
     // Text can be set to null on deletion
     if (text !== null && element.businessObject.$type == 'od:Association') {
         // check if text fulfills required form
-        const check_re_1 = /^((\d+..(\d+|\*))|\d+|\*)\n⬨((\d+..(\d+|\*))|\d+|\*)$/;
-        const check_re_2 = /^((\d+..(\d+|\*))|\d+|\*)$/;
+        const check_re_1 = /^\d+..(\d+|\*)\n⬨\d+..(\d+|\*)$/;
+        const check_re_2 = /^\d+..(\d+|\*)$/;
 
         if (!(text.match(check_re_1)) && !(text.match(check_re_2))   ) {
           text = oldText;
