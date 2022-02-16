@@ -119,7 +119,7 @@ export default [
             gateways.filter(gateway => gateway.incoming.length === 0);
             return gateways.filter(gateway => gateway.incoming.length === 0).map(gateway => ({
                 element: gateway.businessObject,
-                message: 'Gateways should not be used at the beginning of a fragment'
+                message: 'Please do not use a gateway at the start of a fragment.'
             }));
         },
         severity: SEVERITY.ERROR,
@@ -140,7 +140,7 @@ export default [
             }
             return elements.filter(element => !connectedElements.has(element.id)).map(element => ({
                 element: element.businessObject,
-                message: 'Each fragment should comprise at least one activity'
+                message: 'Please use at least one activity for each fragment.'
             }));
         },
         severity: SEVERITY.ERROR,
@@ -154,7 +154,7 @@ export default [
                 is(element, 'bpmn:Activity') || is(element, 'bpmn:Event') || (is(element, 'bpmn:DataObjectReference') && !(element.type === 'label')));
             return elements.filter(element => !element.businessObject.name).map(element => ({
                 element: element.businessObject,
-                message: 'Each fragment element should have an appropriate label.'
+                message: 'Please provide a label for each fragment element.'
             }));
         },
         severity: SEVERITY.ERROR,
@@ -210,7 +210,7 @@ export default [
             if (startEvents.length === 0) {
                 return [{
                     element: hook.getRootObject(),
-                    message: 'Please use at least one start event in the fragment model'
+                    message: 'Please use at least one start event in the fragment model.'
                 }];
             } else {
                 return [];
@@ -228,7 +228,7 @@ export default [
             if (startEvents.length > 1) {
                 return startEvents.map(element => ({
                     element: element.businessObject,
-                    message: 'Process has multiple start events. Please ensure that this is intended.'
+                    message: 'Your process has multiple start events. Please ensure that this is intended.'
                 }));
             } else {
                 return [];
@@ -276,7 +276,7 @@ export default [
                 if (uncoveredTransitions.length > 0) {
                     return [{
                         element : activity,
-                        message : 'Please make state transitions in activity ' + activity.name + ' match those of the OLCs. Unmatched transitions: ' + uncoveredTransitions.map(stringifyTransition).join(', '), //TODO improve this message
+                        message : 'Please make sure that all state transitions in activity ' + activity.name + ' are in the OLCs. Unmatched transitions: ' + uncoveredTransitions.map(stringifyTransition).join(', '), //TODO improve this message
                         quickFixes : uncoveredTransitions.map(transition => (
                             {
                                 label : 'Create transition ' + stringifyTransition(transition) + ' in OLC ' + transition.sourceState.$parent.name,
@@ -306,6 +306,7 @@ export default [
             }
             const associations = dataModeler.get('elementRegistry').filter(element => is(element, 'od:Association') && element.type !== 'label').map(association => association.businessObject);
             associations.forEach(association => {
+                // this breaks for short forms of cardinalities
                 const [sourceLowerBound, sourceUpperBound] = association.sourceCardinality.split('..');
                 const [targetLowerBound, targetUpperBound] = association.targetCardinality.split('..');
                 if (parseInt(sourceLowerBound) > 0) {
@@ -353,7 +354,8 @@ export default [
                     }
                     return [{
                         element: activity,
-                        message: 'Please add references to the following context classes to activity ' + activity.name + ': ' + missingAssociations.map(stringifyMissing).join(', '),
+                        // Maybe we can also add to the error message, which classes are missing their context class?
+                        message: 'In activity ' + activity.name + ', please add references to the following context classes: ' + missingAssociations.map(stringifyMissing).join(', '),
                         quickFixes : missingAssociations.flatMap(({createdClass, contextClass}) => (
                             [{
                                 label : 'Add reading data object reference of class \"' + createdClass.name + '\" to activity \"' + activity.name + '\"',
@@ -401,7 +403,7 @@ export default [
                     if (caseClassConnected == false) {
                         return startEvents.map(element => ({
                             element: startEvent.businessObject,
-                            message: 'Start fragment should create case class data object.'
+                            message: 'Each initial fragment should create a case class data object.'
                         }));
                     }
             }
