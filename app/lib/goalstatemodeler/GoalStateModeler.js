@@ -284,7 +284,7 @@ GoalStateModeler.prototype.getGoalState = function () {
 
 GoalStateModeler.prototype.createNew = function () {
     this.showGoalState({
-        type: 'conjunction',
+        type: 'disjunction',
         operands: []
     });
 }
