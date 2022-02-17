@@ -35,10 +35,7 @@ export default class ErrorBar {
         elementCell.innerHTML = type(element) + ' \"' + element.name + '\"';
         artifactCell.innerHTML = artifact;
         messageCell.innerHTML = message;
-        const linkElement = document.createElement('a');
-        linkElement.href = link;
-        linkElement.target = '_blank';
-        linkElement.innerHTML = '❓';
+        const linkElement = makeGuidelineLink(link);
         linkCell.classList.add('narrowColumn');
         linkCell.appendChild(linkElement);
         if (quickFixes && quickFixes.length > 0) {
@@ -72,6 +69,14 @@ export default class ErrorBar {
         this.numberOfViolations.appendChild(display);
         return display;
     }
+}
+
+export function makeGuidelineLink(link) {
+    const linkElement = document.createElement('a');
+    linkElement.href = link;
+    linkElement.target = '_blank';
+    linkElement.innerHTML = '❓';
+    return linkElement;
 }
 
 export function makeQuickFixDiv(quickFixes, onFix = ()=>{}) {

@@ -6,7 +6,7 @@ import getDropdown from "../util/Dropdown";
 import OlcEvents from '../olcmodeler/OlcEvents';
 import GoalStateEvents from "../goalstatemodeler/GoalStateEvents";
 import { openAsOverlay } from "../util/HtmlUtil";
-import { makeQuickFixDiv } from "./ErrorBar";
+import { makeGuidelineLink, makeQuickFixDiv } from "./ErrorBar";
 
 const guidelines = Guidelines;
 const guidelinePerId = {}; guidelines.forEach(guideline => guidelinePerId[guideline.id] = guideline);
@@ -139,6 +139,7 @@ export default class Checker {
         this.messageDropdown.getEntries().forEach(entry => {
             entry.classList.add('unclickable');
             const quickFixes = violations[entry.option].quickFixes;
+            entry.appendChild(makeGuidelineLink(guidelinePerId[entry.option].link));
             if (quickFixes && quickFixes.length > 0) {
                 entry.classList.add('hasQuickFixes');
                 const quickFixDiv = makeQuickFixDiv(quickFixes);
