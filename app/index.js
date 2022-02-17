@@ -11,6 +11,7 @@ import $ from 'jquery';
 import Mediator from './lib/mediator/Mediator';
 import Checker from './lib/guidelines/Checker';
 import ErrorBar from './lib/guidelines/ErrorBar';
+import { download } from './lib/util/FileUtil';
 
 const LOAD_DUMMY = false;
 
@@ -223,3 +224,10 @@ mediator.focus = function(modeler) {
   focus(modeler.get('canvas').getContainer().closest('.canvas'));
 }
 // document.getElementById("toggleDatamodel").click(); //TODO only for debug reasons
+
+window.mediator = mediator;
+window.export = function (modeler) {
+  modeler.saveXML({ format: true }).then(result => {
+    download('foobar.xml', result.xml);
+  });
+}
