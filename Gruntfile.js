@@ -11,7 +11,7 @@ module.exports = function(grunt) {
         },
         transform: [
           ['stringify', {
-            extensions: ['.bpmn']
+            extensions: ['.bpmn', '.xml']
           }],
         ],
         plugin: [

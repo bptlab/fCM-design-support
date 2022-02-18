@@ -28,7 +28,7 @@ import OlcButtonBarModule from './buttonbar';
 
 import OlcModdle from './moddle';
 import OlcEvents from './OlcEvents';
-import { nextPosition, root } from '../util/Util';
+import { nextPosition, root, is } from '../util/Util';
 
 var emptyDiagram =
   `<?xml version="1.0" encoding="UTF-8"?>
@@ -280,6 +280,10 @@ OlcModeler.prototype.renameOlc = function (name, id) {
 
 OlcModeler.prototype.getOlcById = function(id) {
   return this.getOlcs().filter(olc => olc.id === id)[0];
+}
+
+OlcModeler.prototype.getStateById = function(id) {
+  return this.getOlcs().flatMap(olc => olc.get('Elements')).filter(element => is(element, 'olc:State')).filter(state => state.id === id)[0];
 }
 
 OlcModeler.prototype.getOlcs = function() {

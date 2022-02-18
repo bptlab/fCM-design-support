@@ -1,7 +1,7 @@
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 import inherits from 'inherits';
 import { isFunction, without } from 'min-dash';
-import { is } from '../datamodelmodeler/util/ModelUtil';
+import { is } from '../util/Util';
 import OlcEvents from '../olcmodeler/OlcEvents';
 import FragmentEvents from '../fragmentmodeler/FragmentEvents';
 import { namespace, root } from '../util/Util';
@@ -253,6 +253,16 @@ Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
         return this.mediator.createDataclass(event.name);
     });
 
+    eventBus.on('import.parse.complete', ({context}) => {
+        context.warnings.filter(({message}) => message.startsWith('unresolved reference')).forEach(({property, value, element}) => {
+            if (property === 'olc:classRef') {
+                const dataClass = this.mediator.dataModelerHook.modeler.get('elementRegistry').get(value).businessObject;
+                if (!dataClass) { throw new Error('Could not resolve data class with id '+value); }
+                element.classRef = dataClass;
+            }
+        });
+    });
+
     this.locationOfElement = function(element) {
         return 'Olc ' + root(element).name;
     }
@@ -360,6 +370,20 @@ Mediator.prototype.FragmentModelerHook = function (eventBus, fragmentModeler) {
 
     eventBus.on(FragmentEvents.CREATED_DATACLASS, event => {
         return this.mediator.createDataclass(event.name);
+    });
+
+    eventBus.on('import.parse.complete', ({warnings}) => {
+        warnings.filter(({message}) => message.startsWith('unresolved reference')).forEach(({property, value, element}) => {
+            if (property === 'fcm:dataclass') {
+                const dataClass = this.mediator.dataModelerHook.modeler.get('elementRegistry').get(value).businessObject;
+                if (!dataClass) { throw new Error('Could not resolve data class with id '+value); }
+                element.dataclass = dataClass;
+            } else if (property === 'fcm:states') {
+                const state = this.mediator.olcModelerHook.modeler.getStateById(value)
+                if (!state) { throw new Error('Could not resolve olc state with id '+value); }
+                element.get('states').push(state);
+            }
+        });
     });
 }
 inherits(Mediator.prototype.FragmentModelerHook, CommandInterceptor);

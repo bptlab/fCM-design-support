@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<od:definitions xmlns:od="http://tk/schema/od" xmlns:odDi="http://tk/schema/odDi" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC">
+  <od:odBoard id="Board">
+    <od:class name="Conference" id="Object_0spiahz" caseClass="true" type="od:Class" />
+    <od:class name="Paper" id="Object_1f0k77j" type="od:Class">
+      <od:associations>Association_1bmgvlo</od:associations>
+    </od:class>
+    <od:association id="Association_1bmgvlo" type="od:Association" sourceCardinality="0..*&#10;⬨50..*" targetCardinality="1..1" sourceRef="Object_1f0k77j" targetRef="Object_0spiahz" />
+  </od:odBoard>
+  <odDi:odRootBoard id="RootBoard">
+    <odDi:odPlane id="Plane" boardElement="Board">
+      <odDi:association id="Association_1bmgvlo_di" boardElement="Association_1bmgvlo">
+        <odDi:waypoint x="445" y="150" />
+        <odDi:waypoint x="445" y="60" />
+        <odDi:odSourceLabel>
+          <dc:Bounds x="449" y="110" width="45" height="36" />
+        </odDi:odSourceLabel>
+        <odDi:odTargetLabel>
+          <dc:Bounds x="459" y="70" width="25" height="18" />
+        </odDi:odTargetLabel>
+      </odDi:association>
+      <odDi:odShape id="Object_0spiahz_di" boardElement="Object_0spiahz">
+        <dc:Bounds x="370" y="-30" width="150" height="90" />
+      </odDi:odShape>
+      <odDi:odShape id="Object_1f0k77j_di" boardElement="Object_1f0k77j">
+        <dc:Bounds x="370" y="150" width="150" height="90" />
+      </odDi:odShape>
+    </odDi:odPlane>
+  </odDi:odRootBoard>
+</od:definitions>

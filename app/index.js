@@ -13,7 +13,11 @@ import Checker from './lib/guidelines/Checker';
 import ErrorBar from './lib/guidelines/ErrorBar';
 import { download } from './lib/util/FileUtil';
 
-const LOAD_DUMMY = false;
+import conferenceProcess from '../resources/conferenceModel/process.bpmn';
+import conferenceDataModel from '../resources/conferenceModel/datamodel.xml';
+import conferenceOLC from '../resources/conferenceModel/olc.xml';
+
+const LOAD_DUMMY = true;
 
 
 var mediator = new Mediator();
@@ -60,41 +64,40 @@ new mediator.GoalStateModelerHook(goalStateModeler);
 const errorBar = new ErrorBar(document.getElementById("errorBar"), mediator);
 const checker = new Checker(mediator, errorBar);
 
-async function createNewDiagram() {
-    await openDiagram(diagramXML, datamodelXML);
-}
 
 async function loadDebugData() {
   // TODO dummy fragment data
-  await dataModeler.importXML(datamodelXML);
-  DummyData.dummyStateList.forEach(clazz => {
-    var clazzRef = dataModeler.get('elementRegistry').get(clazz.id).businessObject;
-    olcModeler.addOlc(clazzRef);
-    // AddOlc Also implies that this olc is then selected
-    var canvas = olcModeler.get('canvas');
-    var diagramRoot = canvas.getRootElement();
-    for (var i = 0; i < clazz.states.length; i++) {
-      var state = clazz.states[i];
-      var attrs = {
-        type: 'olc:State',
-        id: state.id,
-        name: state.name,
-        x: (i+2) * 100,
-        y: 100
-      };
-      var stateVisual = olcModeler.get('elementFactory').createShape(attrs);
-      diagramRoot.businessObject.get('Elements').push(stateVisual.businessObject);
-      stateVisual.businessObject.$parent = diagramRoot.businessObject;
-      canvas.addShape(stateVisual, diagramRoot);
-    }
-  });
-  goalStateModeler.showGoalState(DummyData.dummyGoalState(olcModeler._definitions.olcs));
+  await dataModeler.importXML(conferenceDataModel);
+  await olcModeler.importXML(conferenceOLC);
+  await fragmentModeler.importXML(conferenceProcess);
+  // DummyData.dummyStateList.forEach(clazz => {
+  //   var clazzRef = dataModeler.get('elementRegistry').get(clazz.id).businessObject;
+  //   olcModeler.addOlc(clazzRef);
+  //   // AddOlc Also implies that this olc is then selected
+  //   var canvas = olcModeler.get('canvas');
+  //   var diagramRoot = canvas.getRootElement();
+  //   for (var i = 0; i < clazz.states.length; i++) {
+  //     var state = clazz.states[i];
+  //     var attrs = {
+  //       type: 'olc:State',
+  //       id: state.id,
+  //       name: state.name,
+  //       x: (i+2) * 100,
+  //       y: 100
+  //     };
+  //     var stateVisual = olcModeler.get('elementFactory').createShape(attrs);
+  //     diagramRoot.businessObject.get('Elements').push(stateVisual.businessObject);
+  //     stateVisual.businessObject.$parent = diagramRoot.businessObject;
+  //     canvas.addShape(stateVisual, diagramRoot);
+  //   }
+  // });
+  // goalStateModeler.showGoalState(DummyData.dummyGoalState(olcModeler._definitions.olcs));
 }
 
-async function openDiagram(bpmn_xml, datamodel_xml) {
+async function createNewDiagram() {
     try {
         // await fragmentModeler.importXML(xml);
-        await fragmentModeler.importXML(bpmn_xml);
+        await fragmentModeler.importXML(diagramXML);
         await olcModeler.createNew();
         await dataModeler.importXML(newDatamodel);
         goalStateModeler.createNew();
@@ -231,3 +234,5 @@ window.export = function (modeler) {
     download('foobar.xml', result.xml);
   });
 }
+
+window.checker = checker;

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<olc:definitions xmlns:olc="http://bptlab/schema/olc" xmlns:olcDi="http://bptlab/schema/olcDi">
+  <olc:olc name="Conference" id="Olc_Conference" classRef="Object_0spiahz">
+    <olc:state name="open for submissions" id="State_0" type="olc:State" x="120" y="70" />
+    <olc:state name="closed for submissions" id="State_1" type="olc:State" x="230" y="70" />
+    <olc:state name="reviewing closed" id="State_2" type="olc:State" x="340" y="70" />
+    <olc:transition id="Transition_2" sourceState="State_0" targetState="State_1" type="olc:Transition" />
+    <olc:transition id="Transition_3" sourceState="State_1" targetState="State_2" type="olc:Transition" />
+  </olc:olc>
+  <olc:olc name="Paper" id="Olc_Paper" classRef="Object_1f0k77j">
+    <olc:state name="submitted" id="State_3" type="olc:State" x="120" y="70" />
+    <olc:state name="in review" id="State_4" type="olc:State" x="230" y="70" />
+    <olc:state name="reviewed" id="State_5" type="olc:State" x="340" y="70" />
+    <olc:transition id="Transition_5" sourceState="State_3" targetState="State_4" type="olc:Transition" />
+    <olc:transition id="Transition_6" sourceState="State_4" targetState="State_5" type="olc:Transition" />
+  </olc:olc>
+</olc:definitions>
+<!-- Exporter todo: Use own id instead of class id -->
+<!-- Exporter todo: Remove type from states -->
+<!-- Exporter todo: Remove source, target, and waypoints attributes from transitions -->
