@@ -161,7 +161,7 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
     assign(actions, {
       'make-case-class': {
         group: 'make-case-class',
-        className: 'bpmn-icon-hand-tool',
+        className: 'od-case-class',
         title: 'Toggle Case Class',
         action: {
           click: makeCaseClass
