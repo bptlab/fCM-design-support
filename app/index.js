@@ -17,6 +17,8 @@ import conferenceProcess from '../resources/conferenceModel/process.bpmn';
 import conferenceDataModel from '../resources/conferenceModel/datamodel.xml';
 import conferenceOLC from '../resources/conferenceModel/olc.xml';
 
+import Zip from 'jszip';
+
 const LOAD_DUMMY = true;
 
 
@@ -96,15 +98,15 @@ async function loadDebugData() {
 
 async function createNewDiagram() {
     try {
-        // await fragmentModeler.importXML(xml);
-        await fragmentModeler.importXML(diagramXML);
-        await olcModeler.createNew();
-        await dataModeler.importXML(newDatamodel);
-        goalStateModeler.createNew();
-        if (LOAD_DUMMY) {
-          await loadDebugData();
-        } 
-        checker.activate();
+      checker.deactivate();
+      await fragmentModeler.importXML(diagramXML);
+      await olcModeler.createNew();
+      await dataModeler.importXML(newDatamodel);
+      goalStateModeler.createNew();
+      if (LOAD_DUMMY) {
+        await loadDebugData();
+      } 
+      checker.activate();
     } catch (err) {
         console.error(err);
     }
@@ -126,7 +128,54 @@ Array.from(document.getElementsByClassName("canvas")).forEach(element => {
   });
 });
 
+async function exportToZip () {
+  const zip = new Zip();
+  const fragments = (await fragmentModeler.saveXML({ format: true })).xml;
+  zip.file('fragments.bpmn', fragments);
+  const dataModel = (await dataModeler.saveXML({ format: true })).xml;
+  zip.file('dataModel.xml', dataModel);
+  const olcs = (await olcModeler.saveXML({ format: true })).xml;
+  zip.file('olcs.xml', olcs);
+  const goalState = (await goalStateModeler.saveXML({ format: true })).xml;
+  zip.file('goalState.xml', goalState);
+  return zip.generateAsync({type : 'base64'});
+}
 
+async function importFromZip (zipData) {
+  checker.deactivate();
+  const zip = await Zip.loadAsync(zipData, {base64 : true});
+  const files = {
+    fragments: zip.file('fragments.bpmn'),
+    dataModel: zip.file('dataModel.xml'),
+    olcs: zip.file('olcs.xml'),
+    goalState: zip.file('goalState.xml')
+  };
+  Object.keys(files).forEach(key => {
+    if (!files[key]) {
+      throw new Error('Missing file: '+key)
+    }
+  });
+  await dataModeler.importXML(await files.dataModel.async("string"));
+  await olcModeler.importXML(await files.olcs.async("string"));
+  await fragmentModeler.importXML(await files.fragments.async("string"));
+  await goalStateModeler.importXML(await files.goalState.async("string"));
+  checker.activate();
+}
+
+// IO Buttons
+document.getElementById('newButton').addEventListener('click', () => {
+  createNewDiagram();
+});
+
+// document.getElementById('openButton').addEventListener('click', () => exportToZip().then(zip => {
+//   //download('foobar.zip', zip, 'base64');
+//   importFromZip(zip);
+// }));
+
+document.getElementById('saveButton').addEventListener('click', () => exportToZip().then(zip => {
+  download('fcmModel.zip', zip, 'base64');
+  //importFromZip(zip);
+}));
 
 
 // functions to make the note area draggable
