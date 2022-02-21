@@ -161,6 +161,21 @@ export default [
         link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f11---label-notation-elements'
     },
     {
+        title: 'F11.1: No empty states for data objects',
+        id: 'F11.1',
+        getViolations(mediator) {
+            const fragmentModeler = mediator.fragmentModelerHook.modeler;
+            const dataObjects = fragmentModeler.get('elementRegistry').filter(element => is(element, 'bpmn:DataObjectReference') && !(element.type === 'label')).map(element => element.businessObject);
+
+            return dataObjects.filter(dataObject => !dataObject.states || dataObject.states.length === 0).map(dataObject => ({
+                element: dataObject,
+                message: 'Please provide at least one state for data object references.'
+            }));
+        },
+        severity: SEVERITY.WARNING,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f11---label-notation-elements'
+    },
+    {
         title : 'Use states instead of attributes for important data changes',
         id : 'D5',
         getViolations(mediator) {
