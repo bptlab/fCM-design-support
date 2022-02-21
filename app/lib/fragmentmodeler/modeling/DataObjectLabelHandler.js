@@ -49,8 +49,8 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
             }
         });
 
-        eventBus.on(['element.dblclick', 'create.end'], e => {
-            const element = e.element || e.elements[0];
+        eventBus.on(['element.dblclick', 'create.end', 'autoPlace.end'], e => {
+            const element = e.element || e.shape || e.elements[0];
             if (is(element, 'bpmn:DataObjectReference')) {
                 const olcs = this._fragmentModeler._olcs;
                 const dataObject = element.businessObject;

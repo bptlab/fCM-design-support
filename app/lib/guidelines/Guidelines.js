@@ -271,7 +271,7 @@ export default [
                 });
                 activity.dataOutputAssociations?.forEach(assoc => {
                     const dataObjectReference = assoc.targetRef;
-                    if (statesPerClass[dataObjectReference.dataclass.id]) {
+                    if (dataObjectReference.dataclass && statesPerClass[dataObjectReference.dataclass.id]) {
                         statesPerClass[dataObjectReference.dataclass.id].outgoing.push(...dataObjectReference.states);
                     }
                 });
@@ -306,7 +306,7 @@ export default [
         },
         severity : SEVERITY.ERROR,
         link : 'https://github.com/bptlab/fCM-design-support/wiki/Consistency#c3---use-state-labels-and-state-transitions-of-data-objects-consistently-in-olcs-and-fragments'
-    },    
+    },
     {
         title: 'C5: Provide existential objects',
         id: 'C5',
@@ -320,7 +320,6 @@ export default [
                 classDependencies[dependentClass.id].push(contextClass);
             }
             const associations = dataModeler.get('elementRegistry').filter(element => is(element, 'od:Association') && element.type !== 'label').map(association => association.businessObject);
-            // this breaks for short forms of cardinalities
             associations
             .filter(association => association.sourceCardinality && association.targetCardinality) // TODO this is an hotfix
             .forEach(association => {
@@ -339,7 +338,7 @@ export default [
 
             return activities.flatMap(activity => {
                 // TODO rework when IO sets are implemented (classes might be created in specific io configurations)
-                const writtenClasses = new Set(activity.dataOutputAssociations?.map(assoc => assoc.targetRef.dataclass));
+                const writtenClasses = new Set(activity.dataOutputAssociations?.filter(assoc => assoc.targetRef.dataclass).map(assoc => assoc.targetRef.dataclass));
                 const readClasses = new Set(activity.dataInputAssociations?.map(assoc => assoc.sourceRef[0].dataclass));
                 const createdClasses = [...writtenClasses].filter(clazz => !readClasses.has(clazz));
                 
