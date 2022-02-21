@@ -66,6 +66,7 @@ GoalStateModeler.prototype.addLiteral = function (parentStatement) {
 }
 
 GoalStateModeler.prototype.createOperationElement = function (parentElement, operation) {
+    operation.get('operands');
     var element = document.createElement('div');
     element.classList.add('gs-operation');
     element.classList.add('gs-' + type(operation).toLowerCase());
@@ -252,6 +253,7 @@ GoalStateModeler.prototype.handleStateDeleted = function (state) {
 }
 
 GoalStateModeler.prototype.getLiterals = function() {
+    //TODO refactor to use getStatements
     if (!this._goalState) return undefined;
     const statementsToVisit = [this._goalState];
     const visitedLiterals = [];
@@ -264,6 +266,20 @@ GoalStateModeler.prototype.getLiterals = function() {
         }
     }
     return visitedLiterals;
+}
+
+GoalStateModeler.prototype.getStatements = function() {
+    if (!this._goalState) return undefined;
+    const statementsToVisit = [this._goalState];
+    const visitedStatements = [];
+    while (statementsToVisit.length > 0) {
+        var nextStatement = statementsToVisit.shift();
+        visitedStatements.push(nextStatement);
+        if (is(nextStatement, 'gs:Operation')) {
+            statementsToVisit.push(...nextStatement.operands);
+        }
+    }
+    return visitedStatements;
 }
 
 GoalStateModeler.prototype.forEachLiteral = function(consumer) {
@@ -288,6 +304,29 @@ GoalStateModeler.prototype.createNew = function () {
         { operands: [] }
     ));
 }
+
+GoalStateModeler.prototype.saveXML = function (options = {}) {
+    return new Promise((resolve, reject) => {
+        this.moddle.toXML(this._goalState, options).then(function (result) {
+            return resolve({ xml: result.xml });
+        }).catch(function (err) {
+            return reject(err);
+        });
+    });
+};
+
+GoalStateModeler.prototype.importXML = function (xml) {
+    return new Promise((resolve, reject) => {
+      this.moddle.fromXML(xml).then((result) => {
+        this.eventBus.fire('import.parse.complete', result);
+        this.showGoalState(result.rootElement);
+        resolve();
+      }).catch(function (err) {  
+        return reject(err);
+      });
+  
+    });
+  };
 
 
 function makeDiv(text, ...classes) {

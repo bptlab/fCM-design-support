@@ -39,6 +39,7 @@ export default class Checker {
     }
 
     deactivate () {
+        guidelines.forEach(guideline => this.clearViolations(guideline));
         this.active = false;
     }
     
@@ -78,6 +79,7 @@ export default class Checker {
             delete element.violations[guideline.id];
             this.unhighlightViolation(element, guideline.severity)
         });
+        delete this.errorList[guideline.id];
     }
     
     highlightViolation(element, severity) {

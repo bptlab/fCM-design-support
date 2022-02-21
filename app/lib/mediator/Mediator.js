@@ -412,9 +412,23 @@ Mediator.prototype.GoalStateModelerHook = function (goalStateModeler) {
     this.getGraphics = function (element) {
         const modeler = this.modeler;
         return element !== this.getRootObject() ?
-            element.element
+            modeler.getStatements().includes(element) && element.element
             : modeler._root.closest('.canvas');
     }
+
+    this.eventBus.on('import.parse.complete', ({warnings}) => {
+        warnings.filter(({message}) => message.startsWith('unresolved reference')).forEach(({property, value, element}) => {
+            if (property === 'gs:class') {
+                const olcClass = this.mediator.olcModelerHook.modeler.getOlcById(value);
+                if (!olcClass) { throw new Error('Could not resolve data class with id '+value); }
+                element.class = olcClass;
+            } else if (property === 'gs:states') {
+                const state = this.mediator.olcModelerHook.modeler.getStateById(value)
+                if (!state) { throw new Error('Could not resolve olc state with id '+value); }
+                element.get('states').push(state);
+            }
+        });
+    });
 }
 
 Mediator.prototype.GoalStateModelerHook.isHook = true;

@@ -13,7 +13,7 @@ export default function GoalStateModdle() {
 GoalStateModdle.prototype = Object.create(Moddle.prototype);
 
 GoalStateModdle.prototype.fromXML = function (xmlStr, options) {
-    var typeName = 'olc:Definitions';
+    var typeName = 'gs:Disjunction';
     var reader = new Reader(assign({ model: this, lax: false }, options));
     var rootHandler = reader.handler(typeName);
 
