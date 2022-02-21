@@ -1,10 +1,10 @@
 import $ from 'jquery';
 import { without } from 'min-dash';
-import { is } from '../datamodelmodeler/util/ModelUtil';
-import { formatStates } from '../util/Util';
+import { formatStates, type, is } from '../util/Util';
 import getDropdown from '../util/Dropdown';
 import EventBus from 'diagram-js/lib/core/EventBus'
 import GoalStateEvents from './GoalStateEvents';
+import GoalStateModdle from './GoalStateModdle';
 
 const NAMESPACE = 'gs';
 
@@ -14,6 +14,7 @@ export default function GoalStateModeler(container) {
     $(container).get(0).appendChild(root);
     this._root = root;
     this.eventBus = new EventBus();
+    this.moddle = new GoalStateModdle();
 }
 
 GoalStateModeler.prototype.showGoalState = function (goalState) {
@@ -21,16 +22,15 @@ GoalStateModeler.prototype.showGoalState = function (goalState) {
     this._goalState = goalState;
     if (!goalState) return;
     this._handlers = {
-        'disjunction': this.createDisjunctionElement,
-        'conjunction': this.createConjunctionElement,
-        'literal': this.createLiteralElement
+        'gs:Disjunction': this.createDisjunctionElement,
+        'gs:Conjunction': this.createConjunctionElement,
+        'gs:Literal': this.createLiteralElement
     }
     this.handleStatement(this._root, goalState);
 }
 
 GoalStateModeler.prototype.handleStatement = function (parentElement, statement) {
-    statement.$type = NAMESPACE + ':' + statement.type;
-    var element = this._handlers[statement.type || 'literal'].call(this, parentElement, statement);
+    var element = this._handlers[statement.$type].call(this, parentElement, statement);
     statement.element = element;
     element.statement = statement;
     return element;
@@ -41,7 +41,7 @@ GoalStateModeler.prototype.createDisjunctionElement = function (parentElement, d
     var addConjunctionButton = document.createElement('button');
     addConjunctionButton.innerHTML = '+';
     addConjunctionButton.addEventListener('click', event => {
-        var newConjunction = { type: 'conjunction', operands: [] };
+        var newConjunction = this.moddle.create('gs:Conjunction', {operands: [] });
         disjunction.operands.push(newConjunction);
         element.addOperand(newConjunction);
         this.addLiteral(newConjunction);
@@ -60,7 +60,7 @@ GoalStateModeler.prototype.createConjunctionElement = function (parentElement, c
 }
 
 GoalStateModeler.prototype.addLiteral = function (parentStatement) {
-    var newLiteral = { type: 'literal', class: this.getClassList()[0], states: [] };
+    var newLiteral = this.moddle.create('gs:Literal', {class: this.getClassList()[0], states: [] });
     parentStatement.operands.push(newLiteral);
     parentStatement.element.addOperand(newLiteral);
 }
@@ -68,7 +68,7 @@ GoalStateModeler.prototype.addLiteral = function (parentStatement) {
 GoalStateModeler.prototype.createOperationElement = function (parentElement, operation) {
     var element = document.createElement('div');
     element.classList.add('gs-operation');
-    element.classList.add('gs-' + operation.type);
+    element.classList.add('gs-' + type(operation).toLowerCase());
 
     var operandsElement = document.createElement('div');
     operandsElement.classList.add('gs-operands');
@@ -76,7 +76,7 @@ GoalStateModeler.prototype.createOperationElement = function (parentElement, ope
     element.operandsElement = operandsElement;
 
     element.addOperand = (operand) => {
-        operand.parent = operation; //TODO maybe use moddle later, which has a parent function
+        operand.$parent = operation;
         var operandElement = this.handleStatement(operandsElement, operand);
         operandElement.classList.add('operand');
 
@@ -177,12 +177,12 @@ GoalStateModeler.prototype.toggleState = function (state, literal) {
 
 GoalStateModeler.prototype.deleteStatement = function (statement) {
     var element = statement.element;
-    var parentStatement = statement.parent;
+    var parentStatement = statement.$parent;
     var parentElement = parentStatement.element;
     parentStatement.operands = without(parentStatement.operands, statement);
     parentElement.operandsElement.removeChild(element);
     this.eventBus.fire(GoalStateEvents.GOALSTATE_CHANGED, {});
-    if (parentStatement.operands.length === 0 && parentStatement.parent) {
+    if (parentStatement.operands.length === 0 && parentStatement.$parent) {
         this.deleteStatement(parentStatement);
     }
 }
@@ -257,7 +257,7 @@ GoalStateModeler.prototype.getLiterals = function() {
     const visitedLiterals = [];
     while (statementsToVisit.length > 0) {
         var nextStatement = statementsToVisit.shift();
-        if (nextStatement.type === 'literal') {
+        if (is(nextStatement, 'gs:Literal')) {
             visitedLiterals.push(nextStatement);
         } else {
             statementsToVisit.push(...nextStatement.operands);
@@ -283,10 +283,10 @@ GoalStateModeler.prototype.getGoalState = function () {
 }
 
 GoalStateModeler.prototype.createNew = function () {
-    this.showGoalState({
-        type: 'disjunction',
-        operands: []
-    });
+    this.showGoalState(this.moddle.create(
+        'gs:Disjunction', 
+        { operands: [] }
+    ));
 }
 
 
