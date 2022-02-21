@@ -11,7 +11,7 @@ import $ from 'jquery';
 import Mediator from './lib/mediator/Mediator';
 import Checker from './lib/guidelines/Checker';
 import ErrorBar from './lib/guidelines/ErrorBar';
-import { download } from './lib/util/FileUtil';
+import { download, upload } from './lib/util/FileUtil';
 
 import conferenceProcess from '../resources/conferenceModel/process.bpmn';
 import conferenceDataModel from '../resources/conferenceModel/datamodel.xml';
@@ -167,10 +167,12 @@ document.getElementById('newButton').addEventListener('click', () => {
   createNewDiagram();
 });
 
-// document.getElementById('openButton').addEventListener('click', () => exportToZip().then(zip => {
-//   //download('foobar.zip', zip, 'base64');
-//   importFromZip(zip);
-// }));
+document.getElementById('openButton').addEventListener('click', () => upload(data => {
+  if (data.startsWith('data:')) {
+    data = data.split(',')[1];
+  }
+  importFromZip(data);
+}, 'base64'));
 
 document.getElementById('saveButton').addEventListener('click', () => exportToZip().then(zip => {
   download('fcmModel.zip', zip, 'base64');

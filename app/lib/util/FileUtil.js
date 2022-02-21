@@ -23,7 +23,11 @@ export function upload(callback, encoding='UTF-8') {
     $(fileInput).attr({ 'type': 'file' }).on('change', function (e) {
         var file = e.target.files[0];
         var reader = new FileReader();
-        reader.readAsText(file, encoding);
+        if (encoding === 'base64') {
+            reader.readAsDataURL(file);
+        } else {
+            reader.readAsText(file, encoding);
+        }
         reader.onload = function (evt) {
             callback(evt.target.result);
         }
