@@ -17,9 +17,9 @@ import PaletteModule from 'diagram-js/lib/features/palette';
 import RulesModule from 'diagram-js/lib/features/rules';
 import SelectionModule from 'diagram-js/lib/features/selection';
 import ZoomScrollModule from 'diagram-js/lib/navigation/zoomscroll';
-import EditorActionsModule from 'diagram-js/lib/features/editor-actions';
+import EditorActionsModule from '../common/editor-actions';
 import CopyPasteModule from 'diagram-js/lib/features/copy-paste';
-import KeyboardModule from 'diagram-js/lib/features/keyboard';
+import KeyboardModule from '../common/keyboard';
 
 import OlcPaletteModule from './palette';
 import OlcDrawModule from './draw';
