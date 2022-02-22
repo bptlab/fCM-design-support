@@ -68,7 +68,7 @@ FragmentModeler.prototype.getDataObjectReferencesInState = function (olcState) {
     return this.get('elementRegistry').filter((element, gfx) =>
         is(element, 'bpmn:DataObjectReference') &&
         element.type !== 'label' &&
-        element.businessObject.states.includes(olcState)
+        element.businessObject.states?.includes(olcState)
     );
 }
 
@@ -76,7 +76,8 @@ FragmentModeler.prototype.getDataObjectReferencesOfClass = function (clazz) {
     return this.get('elementRegistry').filter((element, gfx) => 
         is(element, 'bpmn:DataObjectReference') &&
         element.type !== 'label' &&
-        element.businessObject.dataclass.id === clazz.id
+        clazz.id &&
+        element.businessObject.dataclass?.id === clazz.id
     );
 }
 
