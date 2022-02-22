@@ -20,6 +20,7 @@ import conferenceOLC from '../resources/conferenceModel/olc.xml';
 import Zip from 'jszip';
 
 const LOAD_DUMMY = true;
+const SHOW_DEBUG_BUTTONS = true;
 
 
 var mediator = new Mediator();
@@ -178,6 +179,16 @@ document.getElementById('saveButton').addEventListener('click', () => exportToZi
   download('fcmModel.zip', zip, 'base64');
   //importFromZip(zip);
 }));
+
+if (SHOW_DEBUG_BUTTONS) {
+  const reloadButton = document.createElement('a');
+  reloadButton.classList.add('barButton');
+  reloadButton.innerHTML = 'reload';
+  document.getElementById('saveButton').parentElement.appendChild(reloadButton); 
+  reloadButton.addEventListener('click', () => exportToZip().then(zip => {
+    importFromZip(zip);
+  }));
+}
 
 
 // functions to make the note area draggable
