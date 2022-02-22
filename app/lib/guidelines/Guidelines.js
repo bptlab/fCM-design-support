@@ -1,5 +1,5 @@
 import { is } from '../datamodelmodeler/util/ModelUtil';
-import { getConnectedElements } from './GuidelineUtils';
+import { getConnectedElements, startDoCreation } from './GuidelineUtils';
 
 export const SEVERITY = {
     ERROR : {
@@ -352,22 +352,6 @@ export default [
 
                 if (missingAssociations.length > 0) {
                     const activityShape = fragmentModeler.get('elementRegistry').get(activity.id);
-                    function startDoCreation(event, dataclass, isIncoming) {
-                        const shape = fragmentModeler.get('elementFactory').createShape({
-                            type : 'bpmn:DataObjectReference'
-                        });
-                        shape.businessObject.dataclass = dataclass;
-                        shape.businessObject.states = [];
-                        const hints = isIncoming ?
-                            {connectionTarget: activityShape}
-                            : undefined;
-                        fragmentModeler.get('autoPlace').append(activityShape, shape, hints);
-                        // The following works for outgoing data, but breaks the activity for incoming
-                        // fragmentModeler.get('create').start(event, shape, {
-                        //   source: activityShape,
-                        //   hints
-                        // });
-                    }
                     return [{
                         element: activity,
                         // Maybe we can also add to the error message, which classes are missing their context class?
@@ -375,10 +359,10 @@ export default [
                         quickFixes : missingAssociations.flatMap(({createdClass, contextClass}) => (
                             [{
                                 label : 'Add reading data object reference of class \"' + createdClass.name + '\" to activity \"' + activity.name + '\"',
-                                action : (event) => startDoCreation(event, contextClass, true)
+                                action : (event) => fragmentModeler.startDoCreation(event, activityShape, contextClass, true)
                             },{
                                 label : 'Add writing data object reference of class \"' + createdClass.name + '\" to activity \"' + activity.name + '\"',
-                                action : (event) => startDoCreation(event, contextClass)
+                                action : (event) => fragmentModeler.startDoCreation(event, activityShape, contextClass)
                             }]
                         ))
                     }];
@@ -399,31 +383,34 @@ export default [
             const dataModeler = mediator.dataModelerHook.modeler;
             const fragmentModeler = mediator.fragmentModelerHook.modeler;
             const startEvents = fragmentModeler.get('elementRegistry').filter(element => is(element, 'bpmn:StartEvent') && element.type !== 'label');
-            const caseClasses = dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class') && element.businessObject.caseClass == true);
-            
-            for (const startEvent of startEvents) {
+            const caseClasses = dataModeler.get('elementRegistry')
+                .filter(element => is(element, 'od:Class'))
+                .map(element => element.businessObject)
+                .filter(clazz => clazz.caseClass);
+            if (caseClasses.length === 0) {return [];}
+
+            return startEvents.flatMap(startEvent => {
                 const connectedElements = getConnectedElements(startEvent);
-                    
-                    // get according connected dataobjects
-                    const dataObjects = connectedElements.filter(element => is(element, 'bpmn:DataObjectReference'));
-                    var caseClassConnected = false;
-                    
-                    // check if connected data objects to activities are case classes
-                    for (let i = 0; i < dataObjects.length; i++) {
-                        for (let y = 0; y < caseClasses.length; y++) {
-                            if (dataObjects[i].businessObject.dataclass.id == caseClasses[y].id) {
-                                caseClassConnected = true;
+
+                // get according connected dataobjects
+                const createdClasses = connectedElements.filter(element => is(element, 'bpmn:DataObjectReference')).map(element => element.businessObject.dataclass);
+                const caseClassConnected = createdClasses.some(createdClass => caseClasses.includes(createdClass));
+
+                if (!caseClassConnected) {
+                    return [{
+                        element: startEvent.businessObject,
+                        message: 'Please make one of the nodes of this start fragment create an object of one of the case classes: ' + caseClasses.map(clazz => '"' + clazz.name + '"').join(', '),
+                        quickFixes : caseClasses.flatMap(caseClass => connectedElements.filter(element => is(element, 'bpmn:Activity') || is(element, 'bpmn:StartEvent')).map(element => (
+                            {
+                                label : 'Add data object reference that writes case class "' + caseClass.name + '" to node "' + element.businessObject.name + '"',
+                                action : (event) => fragmentModeler.startDoCreation(event, element, caseClass)
                             }
-                        }
-                    }
-                    if (caseClassConnected == false) {
-                        return startEvents.map(element => ({
-                            element: startEvent.businessObject,
-                            message: 'Each initial fragment should create a case class data object.'
-                        }));
-                    }
-            }
-            return [];
+                        )))
+                    }];
+                } else {
+                    return [];
+                }
+            });
         },
         severity: SEVERITY.ERROR,
         link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'

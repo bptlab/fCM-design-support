@@ -79,3 +79,20 @@ FragmentModeler.prototype.getDataObjectReferencesOfClass = function (clazz) {
         element.businessObject.dataclass.id === clazz.id
     );
 }
+
+FragmentModeler.prototype.startDoCreation = function(event, elementShape, dataclass, isIncoming) {
+    const shape = this.get('elementFactory').createShape({
+        type : 'bpmn:DataObjectReference'
+    });
+    shape.businessObject.dataclass = dataclass;
+    shape.businessObject.states = [];
+    const hints = isIncoming ?
+        {connectionTarget: elementShape}
+        : undefined;
+    this.get('autoPlace').append(elementShape, shape, hints);
+    // The following works for outgoing data, but breaks the activity for incoming
+    // fragmentModeler.get('create').start(event, shape, {
+    //   source: activityShape,
+    //   hints
+    // });
+}
