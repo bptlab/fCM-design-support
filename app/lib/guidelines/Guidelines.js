@@ -365,10 +365,12 @@ export default [
                 const [sourceLowerBound, sourceUpperBound] = association.sourceCardinality.split('..');
                 const [targetLowerBound, targetUpperBound] = association.targetCardinality.split('..');
                 if (parseInt(sourceLowerBound) > 0) {
-                    addClassDependency(association.sourceRef, association.targetRef);
+                    // The lower bound for the association source class is positive, which means the target class is dependent of it
+                    addClassDependency(association.targetRef, association.sourceRef);
                 }
                 if (parseInt(targetLowerBound) > 0) {
-                    addClassDependency(association.targetRef, association.sourceRef);
+                    // The lower bound for the association target class is positive, which means the source class is dependent of it
+                    addClassDependency(association.sourceRef, association.targetRef);
                 }
             });
 
@@ -411,6 +413,6 @@ export default [
             });
         },
         severity: SEVERITY.ERROR,
-        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Consistency#c5---provide-context-data-objects-from-data-model-on-data-object-creation-in-fragments'
     },
 ]
