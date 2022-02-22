@@ -18,9 +18,9 @@ import ConnectionPreviewModule from 'diagram-js/lib/features/connection-preview'
 import ContextPadModule from './features/context-pad';
 import CopyPasteModule from './features/copy-paste';
 import CreateModule from 'diagram-js/lib/features/create';
-import EditorActionsModule from './features/editor-actions';
+import EditorActionsModule from '../common/editor-actions';
 import GridSnappingModule from './features/grid-snapping';
-import KeyboardModule from './features/keyboard';
+import KeyboardModule from '../common/keyboard';
 import AutoplaceModule from './features/auto-place';
 import KeyboardMoveSelectionModule from 'diagram-js/lib/features/keyboard-move-selection';
 import LabelEditingModule from './features/label-editing';
