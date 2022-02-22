@@ -1,5 +1,5 @@
 import { is } from '../datamodelmodeler/util/ModelUtil';
-import { getConnectedElements } from './fragment_guidelines/connected_components';
+import { getConnectedElements } from './GuidelineUtils';
 
 export const SEVERITY = {
     ERROR : {
