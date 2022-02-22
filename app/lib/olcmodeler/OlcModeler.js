@@ -18,6 +18,7 @@ import RulesModule from 'diagram-js/lib/features/rules';
 import SelectionModule from 'diagram-js/lib/features/selection';
 import ZoomScrollModule from 'diagram-js/lib/navigation/zoomscroll';
 import EditorActionsModule from 'diagram-js/lib/features/editor-actions';
+import CopyPasteModule from 'diagram-js/lib/features/copy-paste';
 import KeyboardModule from 'diagram-js/lib/features/keyboard';
 
 import OlcPaletteModule from './palette';
@@ -81,7 +82,8 @@ export default function OlcModeler(options) {
     SelectionModule,
     ZoomScrollModule,
     EditorActionsModule,
-    KeyboardModule
+    KeyboardModule,
+    CopyPasteModule
   ];
 
   // our own modules, contributing controls, customizations, and more
@@ -157,6 +159,10 @@ OlcModeler.prototype.importXML = function (xml) {
         warnings: parseWarnings
       };
 
+      for (let id in elementsById) {
+        self.get('elementFactory')._ids.claim(id, elementsById[id]);
+      }
+
       // hook in post parse listeners +
       // allow definitions manipulation
       definitions = self._emit('import.parse.complete', {
@@ -168,7 +174,7 @@ OlcModeler.prototype.importXML = function (xml) {
       resolve();
     }).catch(function (err) {
 
-      self._emit('import.parse.complete', {
+      self._emit('import.parse.failed', {
         error: err
       });
 
@@ -182,6 +188,7 @@ OlcModeler.prototype.importXML = function (xml) {
 
 //TODO handle errors during import
 OlcModeler.prototype.importDefinitions = function (definitions) {
+  this.get('elementFactory')._ids.clear();
   this._definitions = definitions;
   this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: definitions });
   this._emit('import.render.start', { definitions: definitions });

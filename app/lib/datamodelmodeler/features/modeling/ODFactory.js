@@ -31,7 +31,7 @@ ODFactory.prototype._ensureId = function(element) {
   var prefix;
 
   if (is(element, 'od:Class')) {
-    prefix = 'Object';
+    prefix = 'Object'; //TODO this should not be Object. Maybe the special case can be scrapped completely
   } else {
     prefix = (element.$type || '').replace(/^[^:]*:/g, '');
   }

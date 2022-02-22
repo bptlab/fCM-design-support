@@ -41,4 +41,8 @@ OlcRuleProvider.prototype.init = function () {
   this.addRule('shape.resize', function (context) {
     return false;
   });
+  
+  this.addRule('element.copy', function(context) {
+      return true;
+  });
 };

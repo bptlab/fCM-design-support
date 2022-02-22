@@ -3,11 +3,13 @@ import {
 } from 'min-dash';
 import inherits from 'inherits';
 import BaseElementFactory from 'diagram-js/lib/core/ElementFactory';
+import Ids from 'ids';
 
 export default function OlcElementFactory(moddle, elementRegistry) {
     BaseElementFactory.call(this);
     this._moddle = moddle;
     this._elementRegistry = elementRegistry;
+    this._ids = new Ids();
 }
 
 inherits(OlcElementFactory, BaseElementFactory);
@@ -17,13 +19,13 @@ OlcElementFactory.$inject = [
     'elementRegistry'
 ];
 
-var i = 0; //TODO replace with more sophisticated system
-
 OlcElementFactory.prototype.createBusinessObject = function (type, attrs) {
-    var element = this._moddle.create(type, attrs || {});
+    const element = this._moddle.create(type, attrs || {});
     if(!element.id) {
-        var prefix = (element.$type || '').replace(/^[^:]*:/g, '') + '_';
-        while (this._elementRegistry.get(element.id = prefix + i)) i++;
+        const prefix = (element.$type || '').replace(/^[^:]*:/g, '') + '_';
+        element.id = this._ids.nextPrefixed(prefix, element);
+    } else if(this._ids.assigned(element.id)) {
+        throw new Error('Cannot create element, id "' + element.id + '" already exists');
     }
     return element;
 };
