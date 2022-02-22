@@ -251,6 +251,45 @@ export default [
         },
         severity: SEVERITY.INFORMATION,
         link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
+    },
+    {
+        title: 'F6C: Start fragment does not create case class',
+        id: 'F6C',
+        getViolations(mediator) {
+            const dataModeler = mediator.dataModelerHook.modeler;
+            const fragmentModeler = mediator.fragmentModelerHook.modeler;
+            const startEvents = fragmentModeler.get('elementRegistry').filter(element => is(element, 'bpmn:StartEvent') && element.type !== 'label');
+            const caseClasses = dataModeler.get('elementRegistry')
+                .filter(element => is(element, 'od:Class'))
+                .map(element => element.businessObject)
+                .filter(clazz => clazz.caseClass);
+            if (caseClasses.length === 0) {return [];}
+
+            return startEvents.flatMap(startEvent => {
+                const connectedElements = getConnectedElements(startEvent);
+
+                // get according connected dataobjects
+                const createdClasses = connectedElements.filter(element => is(element, 'bpmn:DataObjectReference')).map(element => element.businessObject.dataclass);
+                const caseClassConnected = createdClasses.some(createdClass => caseClasses.includes(createdClass));
+
+                if (!caseClassConnected) {
+                    return [{
+                        element: startEvent.businessObject,
+                        message: 'Please make one of the nodes of this start fragment create an object of one of the case classes: ' + caseClasses.map(clazz => '"' + clazz.name + '"').join(', '),
+                        quickFixes : caseClasses.flatMap(caseClass => connectedElements.filter(element => is(element, 'bpmn:Activity') || is(element, 'bpmn:StartEvent')).map(element => (
+                            {
+                                label : 'Add data object reference that writes case class "' + caseClass.name + '" to node "' + element.businessObject.name + '"',
+                                action : (event) => fragmentModeler.startDoCreation(event, element, caseClass)
+                            }
+                        )))
+                    }];
+                } else {
+                    return [];
+                }
+            });
+        },
+        severity: SEVERITY.ERROR,
+        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
     },    
     {
         title : 'Have each fragment state transition in olc',
@@ -365,47 +404,6 @@ export default [
                                 action : (event) => fragmentModeler.startDoCreation(event, activityShape, contextClass)
                             }]
                         ))
-                    }];
-                } else {
-                    return [];
-                }
-            });
-        },
-        severity: SEVERITY.ERROR,
-        link: 'https://github.com/bptlab/fCM-design-support/wiki/Fragments#f6---use-start-events-only-in-initial-fragments'
-    },
-
-    // TODO move the following to F6A and F6B
-    {
-        title: 'F6C: Start fragment does not create case class',
-        id: 'F6C',
-        getViolations(mediator) {
-            const dataModeler = mediator.dataModelerHook.modeler;
-            const fragmentModeler = mediator.fragmentModelerHook.modeler;
-            const startEvents = fragmentModeler.get('elementRegistry').filter(element => is(element, 'bpmn:StartEvent') && element.type !== 'label');
-            const caseClasses = dataModeler.get('elementRegistry')
-                .filter(element => is(element, 'od:Class'))
-                .map(element => element.businessObject)
-                .filter(clazz => clazz.caseClass);
-            if (caseClasses.length === 0) {return [];}
-
-            return startEvents.flatMap(startEvent => {
-                const connectedElements = getConnectedElements(startEvent);
-
-                // get according connected dataobjects
-                const createdClasses = connectedElements.filter(element => is(element, 'bpmn:DataObjectReference')).map(element => element.businessObject.dataclass);
-                const caseClassConnected = createdClasses.some(createdClass => caseClasses.includes(createdClass));
-
-                if (!caseClassConnected) {
-                    return [{
-                        element: startEvent.businessObject,
-                        message: 'Please make one of the nodes of this start fragment create an object of one of the case classes: ' + caseClasses.map(clazz => '"' + clazz.name + '"').join(', '),
-                        quickFixes : caseClasses.flatMap(caseClass => connectedElements.filter(element => is(element, 'bpmn:Activity') || is(element, 'bpmn:StartEvent')).map(element => (
-                            {
-                                label : 'Add data object reference that writes case class "' + caseClass.name + '" to node "' + element.businessObject.name + '"',
-                                action : (event) => fragmentModeler.startDoCreation(event, element, caseClass)
-                            }
-                        )))
                     }];
                 } else {
                     return [];
