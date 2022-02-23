@@ -9,12 +9,20 @@ import GoalStateModdle from './GoalStateModdle';
 const NAMESPACE = 'gs';
 
 export default function GoalStateModeler(container) {
+    container = $(container).get(0);
     var root = document.createElement('div');
     root.classList.add('gs-root');
-    $(container).get(0).appendChild(root);
+    container.appendChild(root);
     this._root = root;
     this.eventBus = new EventBus();
     this.moddle = new GoalStateModdle();
+
+    this._propagateEvent = event => {
+        this.eventBus.fire('element.' + event.type, { originalEvent : event, element : {} });
+    }
+    container.addEventListener('click', this._propagateEvent, true);
+    container.addEventListener('mouseup', this._propagateEvent, true);
+    container.addEventListener('mousedown', this._propagateEvent, true);
 }
 
 GoalStateModeler.prototype.showGoalState = function (goalState) {
