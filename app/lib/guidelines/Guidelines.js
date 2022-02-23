@@ -447,4 +447,30 @@ export default [
         severity: SEVERITY.ERROR,
         link: 'https://github.com/bptlab/fCM-design-support/wiki/Consistency#c5---provide-context-data-objects-from-data-model-on-data-object-creation-in-fragments'
     },
+    {
+        title : 'Specify a Case Class.',
+        id : 'D2',
+        getViolations(mediator) {
+            const dataModeler = mediator.dataModelerHook.modeler;
+            const clazzes = dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class'));
+            
+            const caseClasses = dataModeler.get('elementRegistry')
+                .filter(element => is(element, 'od:Class'))
+                .map(element => element.businessObject)
+                .filter(clazz => clazz.caseClass);
+            
+            if (!caseClasses.length) {
+                return clazzes.map(clazz => ({
+                    element : clazz.businessObject,
+                    message : 'Please specify a case class.'
+                }));
+            } else {
+                return [];
+            }
+            
+
+        },
+        severity : SEVERITY.ERROR,
+        link : 'https://github.com/bptlab/fCM-design-support/wiki/Data-Model#d5---use-states-instead-of-attributes-for-important-data-changes'
+    },
 ]
