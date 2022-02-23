@@ -471,6 +471,38 @@ export default [
 
         },
         severity : SEVERITY.ERROR,
-        link : 'https://github.com/bptlab/fCM-design-support/wiki/Data-Model#d5---use-states-instead-of-attributes-for-important-data-changes'
+        link : 'https://github.com/bptlab/fCM-design-support/wiki/Data-Model#d2---specify-a-case-class'
+    },
+    {
+        title : 'Connect the Case Class to Every Other Class.',
+        id : 'D3',
+        getViolations(mediator) {
+            const dataModeler = mediator.dataModelerHook.modeler;
+            const clazzes = dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class'));
+            
+            const caseClasses = dataModeler.get('elementRegistry')
+                .filter(element => is(element, 'od:Class'))
+                .filter(clazz => clazz.businessObject.caseClass);
+            
+            if (!caseClasses.length) {
+                return [];
+            }
+            
+            const connectedWithCaseClass = getConnectedElements(caseClasses[0]);
+            
+            const notConnectedClasses = clazzes.filter(clazz => connectedWithCaseClass.indexOf(clazz) === -1);
+            
+            console.log(connectedWithCaseClass);
+            console.log(notConnectedClasses);
+    
+            return notConnectedClasses.map(clazz => ({
+                element:clazz.businessObject,
+                message: 'Please connect the case class to every other class.'
+            }
+            ))
+
+        },
+        severity : SEVERITY.ERROR,
+        link : 'https://github.com/bptlab/fCM-design-support/wiki/Data-Model#d3---connect-the-case-class-to-every-other-class'
     },
 ]
