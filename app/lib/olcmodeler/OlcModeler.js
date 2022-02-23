@@ -26,6 +26,7 @@ import OlcDrawModule from './draw';
 import OlcRulesModule from './rules';
 import OlcModelingModule from './modeling';
 import OlcButtonBarModule from './buttonbar';
+import OlcAutoPlaceModule from './auto-place';
 
 import OlcModdle from './moddle';
 import OlcEvents from './OlcEvents';
@@ -93,6 +94,7 @@ export default function OlcModeler(options) {
     OlcRulesModule,
     OlcModelingModule,
     OlcButtonBarModule,
+    OlcAutoPlaceModule,
     {
       moddle: ['value', new OlcModdle({})],
       olcModeler: ['value', this]
@@ -277,6 +279,8 @@ OlcModeler.prototype.deleteOlc = function (id) {
 
 OlcModeler.prototype.renameOlc = function (name, id) {
   var olc = this.getOlcById(id);
+  console.log(name, id);
+  console.log(olc);
   if (olc) {
     olc.name = name;
     this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: this._definitions });

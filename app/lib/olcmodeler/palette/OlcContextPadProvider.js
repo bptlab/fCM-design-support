@@ -1,6 +1,9 @@
-export default function OlcContextPadProvider(connect, contextPad, modeling) {
+export default function OlcContextPadProvider(connect, contextPad, modeling, elementFactory, create, autoPlace) {
   this._connect = connect;
   this._modeling = modeling;
+  this._elementFactory = elementFactory;
+  this._create = create;
+  this._autoPlace = autoPlace;
 
   contextPad.registerProvider(this);
 }
@@ -8,13 +11,19 @@ export default function OlcContextPadProvider(connect, contextPad, modeling) {
 OlcContextPadProvider.$inject = [
   'connect',
   'contextPad',
-  'modeling'
+  'modeling',
+  'elementFactory',
+  'create',
+  'autoPlace'
 ];
 
 
 OlcContextPadProvider.prototype.getContextPadEntries = function (element) {
   var connect = this._connect,
-    modeling = this._modeling;
+    modeling = this._modeling,
+    elementFactory = this._elementFactory,
+    create = this._create,
+    autoPlace = this._autoPlace;
 
   function removeElement() {
     modeling.removeElements([element]);
@@ -22,6 +31,18 @@ OlcContextPadProvider.prototype.getContextPadEntries = function (element) {
 
   function startConnect(event, element, autoActivate) {
     connect.start(event, element, autoActivate);
+  }
+
+  function appendState(event, element) {
+    const shape = elementFactory.createShape({ type: 'olc:State' });
+
+    autoPlace.append(element, shape, { connection: { type: 'olc:Transition' } });
+  }
+
+  function appendStateStart(event) {
+    const shape = elementFactory.createShape({ type: 'olc:State' });
+
+    create.start(event, shape, { source: element });
   }
 
   return {
@@ -41,6 +62,15 @@ OlcContextPadProvider.prototype.getContextPadEntries = function (element) {
       action: {
         click: startConnect,
         dragstart: startConnect
+      }
+    },
+    'append': {
+      group: 'create',
+      className: 'bpmn-icon-start-event-none',
+      title: 'Append State',
+      action: {
+        click: appendState,
+        dragstart: appendStateStart
       }
     }
   };
