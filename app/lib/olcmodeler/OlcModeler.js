@@ -279,8 +279,6 @@ OlcModeler.prototype.deleteOlc = function (id) {
 
 OlcModeler.prototype.renameOlc = function (name, id) {
   var olc = this.getOlcById(id);
-  console.log(name, id);
-  console.log(olc);
   if (olc) {
     olc.name = name;
     this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: this._definitions });
