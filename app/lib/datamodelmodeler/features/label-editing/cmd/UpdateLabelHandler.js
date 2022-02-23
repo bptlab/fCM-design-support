@@ -31,6 +31,10 @@ export default function UpdateLabelHandler(modeling, textRenderer) {
    * @param {String} text
    */
   function setText(element, text, oldText = '') {
+      
+    if (text == null) {
+        text = oldText;
+    }
 
     // Text can be set to null on deletion
     if (text !== null && element.businessObject.$type == 'od:Association') {
@@ -48,7 +52,7 @@ export default function UpdateLabelHandler(modeling, textRenderer) {
         }
         
     }
-     
+
     // Check format for Attribute labels
     if (text !== null && element.businessObject.$type == 'od:Class' && element.businessObject.labelAttribute === 'attributeValues') {
         var check_re_class = /[A-Za-z]+: string|String|integer|Integer|int|Int|Str|str|Float|float|Boolean|boolean|bool|Bool$/
@@ -64,7 +68,7 @@ export default function UpdateLabelHandler(modeling, textRenderer) {
     var labelTarget = element.labelTarget || element;
 
     setLabel(label, text, labelTarget !== label);
-
+      
     return [ label, labelTarget ];
   }
 
@@ -114,6 +118,12 @@ export default function UpdateLabelHandler(modeling, textRenderer) {
     // ignore internal labels for elements
     if (!isLabel(label)) {
       return;
+    }
+    
+    ctx.oldLabel = getLabel(ctx.element);
+    
+    if (isEmptyText(newLabel)) {
+        newLabel = ctx.oldLabel;
     }
 
     if (isLabel(label) && isEmptyText(newLabel)) {
