@@ -261,11 +261,11 @@ OlcModeler.prototype.getCurrentOlc = function () {
 }
 
 OlcModeler.prototype.deleteCurrentOlc = function () {
-  this.deleteOlc(this._olc.id);
+  this.deleteOlc(this._olc.classRef);
 }
 
-OlcModeler.prototype.deleteOlc = function (id) {
-  var olc = this.getOlcById(id);
+OlcModeler.prototype.deleteOlc = function (clazz) {
+  var olc = this.getOlcByClass(clazz);
   var currentIndex = findIndex(this._definitions.olcs, olc);
   var indexAfterRemoval = Math.min(currentIndex, this._definitions.olcs.length - 2);
 
@@ -277,18 +277,23 @@ OlcModeler.prototype.deleteOlc = function (id) {
   }
 }
 
-OlcModeler.prototype.renameOlc = function (name, id) {
-  var olc = this.getOlcById(id);
-  if (olc) {
-    olc.name = name;
-    this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: this._definitions });
-  } else {
-    throw 'Unknown olc with class id \"'+id+'\"';
-  }
+OlcModeler.prototype.renameOlc = function (name, clazz) {
+  const olc = this.getOlcByClass(clazz);
+  olc.name = name;
+  this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: this._definitions });
 }
 
 OlcModeler.prototype.getOlcById = function(id) {
   return this.getOlcs().filter(olc => olc.id === id)[0];
+}
+
+OlcModeler.prototype.getOlcByClass = function(clazz) {
+  const olc = this.getOlcs().filter(olc => olc.classRef === clazz)[0];
+  if (!olc) {
+    throw 'Unknown olc of class \"'+clazz.name+'\"';
+  } else {
+    return olc;
+  }
 }
 
 OlcModeler.prototype.getStateById = function(id) {

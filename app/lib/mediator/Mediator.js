@@ -103,7 +103,7 @@ Mediator.prototype.addedClass = function (clazz) {
 
 Mediator.prototype.confirmClassDeletion = function (clazz) {
     const affectedLiterals = this.goalStateModelerHook.modeler.getLiteralsWithClassId(clazz.id);
-    const affectedStates = this.olcModelerHook.modeler.getOlcById(clazz.id).get('Elements').filter(element => is(element, 'olc:State'));
+    const affectedStates = this.olcModelerHook.modeler.getOlcByClass(clazz).get('Elements').filter(element => is(element, 'olc:State'));
     const affectedDataObjectReferences = this.fragmentModelerHook.modeler.getDataObjectReferencesOfClass(clazz);
     return confirm('Do you really want to delete class \"' + clazz.name + '\" ?'
         + '\n' + affectedLiterals.length + ' literal(s), ' + affectedStates.length + ' olc state(s), and '
@@ -111,12 +111,12 @@ Mediator.prototype.confirmClassDeletion = function (clazz) {
 }
 
 Mediator.prototype.deletedClass = function (clazz) {
-    this.olcModelerHook.modeler.deleteOlc(clazz.id);
+    this.olcModelerHook.modeler.deleteOlc(clazz);
     this.fragmentModelerHook.modeler.handleClassDeleted(clazz);
 }
 
 Mediator.prototype.renamedClass = function (clazz) {
-    this.olcModelerHook.modeler.renameOlc(clazz.name, clazz.id);
+    this.olcModelerHook.modeler.renameOlc(clazz.name, clazz);
     this.fragmentModelerHook.modeler.handleClassRenamed(clazz);
 }
 

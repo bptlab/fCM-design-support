@@ -89,7 +89,7 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
         var shouldDelete = eventBus.fire(OlcEvents.OLC_DELETION_REQUESTED, { olc: olcToDelete });
         if (shouldDelete !== false) {
             // Deletion was not rejected and not handled somewhere else; should not happen when mediator is involved
-            olcModeler.deleteOlc(olcToDelete.id)
+            olcModeler.deleteOlc(olcToDelete.classRef);
         }
     });
     buttonBar.appendChild(deleteOlcButton);
