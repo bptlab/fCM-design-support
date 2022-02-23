@@ -7,13 +7,15 @@ import {
   hasPrimaryModifier
 } from 'diagram-js/lib/util/Mouse';
 
+import { is } from '../../util/ModelUtil';
+
 
 /**
  * A provider for od elements context pad.
  */
 export default function ContextPadProvider(
     config, injector, eventBus, connect, create,
-    elementFactory, contextPad, modeling, rules,
+    elementFactory, elementRegistry, contextPad, modeling, rules,
     translate) {
 
   config = config || {};
@@ -23,6 +25,7 @@ export default function ContextPadProvider(
   this._connect = connect;
   this._create = create;
   this._elementFactory = elementFactory;
+  this._elementRegistry = elementRegistry;
   this._contextPad = contextPad;
 
   this._modeling = modeling;
@@ -57,6 +60,7 @@ ContextPadProvider.$inject = [
   'connect',
   'create',
   'elementFactory',
+  'elementRegistry',
   'contextPad',
   'modeling',
   'rules',
@@ -72,6 +76,7 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
     _translate: translate,
     _connect: connect,
     _elementFactory: elementFactory,
+    _elementRegistry: elementRegistry,
     _autoPlace: autoPlace,
     _create: create
   } = this;
@@ -97,11 +102,14 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
   }
     
   function makeCaseClass() {
-    if (element.businessObject.caseClass == true) {
-        modeling.updateProperties(element, {caseClass: false})
-    } else {
-        modeling.updateProperties(element, {caseClass: true})
-    }    
+      
+    var classes = elementRegistry.filter(element => is(element, 'od:Class'));
+      
+    // set all case classes to false
+    classes.forEach(clazz => modeling.updateProperties(clazz, {caseClass: false}));
+    
+    // set case class for context element to true
+    modeling.updateProperties(element, {caseClass: true}) 
   }
 
   function createDeleteEntry(actions) {
@@ -158,16 +166,24 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
   }
 
     function createLinkMakeCaseClass(actions) {
-    assign(actions, {
-      'make-case-class': {
-        group: 'make-case-class',
-        className: 'od-case-class',
-        title: 'Toggle Case Class',
-        action: {
-          click: makeCaseClass
-        },
-      },
-    });
+    
+        var createCaseClassAllowed = true;
+        if (element.businessObject.caseClass == true) {
+            createCaseClassAllowed = false;
+        }
+        
+        if (createCaseClassAllowed) {
+            assign(actions, {
+              'make-case-class': {
+                group: 'make-case-class',
+                className: 'od-case-class',
+                title: 'Toggle case class',
+                action: {
+                  click: makeCaseClass
+                },
+              },
+            });
+        }
   }
 
   /**
