@@ -39,18 +39,38 @@ export default function getDropdown(name = '') {
     }
 
     dropdownMenu.addCreateElementInput = function (onConfirm) {
-        const createNewStateEditorContainer = document.createElement('div');
-        createNewStateEditorContainer.classList.add('dd-dropdown-create-input');
-        const createNewStateEditor = document.createElement('input');
-        createNewStateEditor.type = 'text';
-        createNewStateEditor.placeholder = 'Create new'
-        createNewStateEditor.addEventListener('keypress', event => {
+        const createNewElementEditorContainer = document.createElement('div');
+        createNewElementEditorContainer.classList.add('dd-dropdown-create-input');
+        const createNewElementEditor = document.createElement('input');
+        createNewElementEditor.type = 'text';
+        createNewElementEditor.placeholder = 'Create new'
+        createNewElementEditor.addEventListener('keydown', event => {
             if (event.key === 'Enter') {
                 onConfirm(event);
             }
         });
-        createNewStateEditorContainer.appendChild(createNewStateEditor);
-        this.appendChild(createNewStateEditorContainer);
+        createNewElementEditorContainer.appendChild(createNewElementEditor);
+        this.appendChild(createNewElementEditorContainer);
+    }
+
+    dropdownMenu.getInputValue = function () {
+        const inputElements = dropdownMenu.getElementsByTagName('input');
+        return inputElements[0] ? inputElements[0].value : '';
+    }
+
+    dropdownMenu.clearInput = function () {
+        const inputElements = dropdownMenu.getElementsByTagName('input');
+        if (inputElements[0]) {
+            inputElements[0].value = '';
+        }
+    }
+
+    dropdownMenu.focusInput = function () {
+        const inputElements = dropdownMenu.getElementsByTagName('input');
+        console.log(inputElements);
+        if (inputElements[0]) {
+            inputElements[0].focus();
+        }
     }
 
     return dropdownMenu;

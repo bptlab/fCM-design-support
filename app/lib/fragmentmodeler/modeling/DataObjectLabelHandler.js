@@ -1,10 +1,8 @@
 import CommandInterceptor from "diagram-js/lib/command/CommandInterceptor";
-import {
-    is
-} from 'bpmn-js/lib/util/ModelUtil';
 import { without } from 'min-dash';
 import getDropdown from "../../util/Dropdown";
-import { formatStates } from "../../util/Util";
+import { openAsOverlay } from "../../util/HtmlUtil";
+import { formatStates, is } from "../../util/Util";
 import FragmentEvents from "../FragmentEvents";
 
 export default class DataObjectLabelHandler extends CommandInterceptor {
@@ -23,7 +21,6 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
         this._overlayId = undefined;
         this._overlays = overlays;
         this._fragmentModeler = fragmentModeler;
-        this._currentElement = undefined;
 
         eventBus.on('element.changed', function (e) {
             if (is(e.element, 'bpmn:DataObjectReference') && e.element.parent) {
@@ -43,18 +40,13 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
             }
         });
 
-        eventBus.on(['element.click', 'create.start'], event => {
-            if (this._currentDropdownTarget && ((event.element || event.shape).businessObject !== this._currentDropdownTarget)) {
-                this.cancel();
-            }
-        });
-
         eventBus.on(['element.dblclick', 'create.end', 'autoPlace.end'], e => {
             const element = e.element || e.shape || e.elements[0];
             if (is(element, 'bpmn:DataObjectReference')) {
                 const olcs = this._fragmentModeler._olcs;
                 const dataObject = element.businessObject;
-                this._currentElement = element;
+                this._dropdownContainer.currentElement = element;
+                let currentOlc = undefined;
 
                 const updateStateSelection = () => {
                     this._stateDropdown.getEntries().forEach(entry => entry.setSelected(dataObject.get('states').includes(entry.option)));
@@ -63,7 +55,6 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                 const updateClassSelection = () => {
                     if (olcs.length > 0) {
                         let states = [];
-                        let currentOlc = undefined;
                         if (dataObject.dataclass) {
                             currentOlc = olcs.filter(olc => olc.classRef === dataObject.dataclass)[0];
                             this._classDropdown.getEntries().forEach(entry => entry.setSelected(entry.option === currentOlc));
@@ -106,6 +97,74 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
 
                 populateClassDropdown();
 
+                const handleClick = (event) => {
+                    const newClassInput = this._classDropdown.getInputValue();
+                    const newStateInput = this._stateDropdown.getInputValue();
+                    if (!this._dropdownContainer.contains(event.target)) {
+                        if (newClassInput !== '') {
+                            const newClass = this.createDataclass(newClassInput);
+                            this.updateClass(newClass, element);
+                        }
+                        if (newStateInput !== '') {
+                            const newState = this.createState(newStateInput, currentOlc);
+                            this.updateState(newState, element);
+                        }
+                        cancel();
+                    } else {
+                        if (newClassInput !== '') {
+                            if (event.target.classList.contains('dd-dropdown-entry')) {
+                                this._classDropdown.clearInput();
+                            } else if (!(this._classDropdown.contains(event.target) && event.target.tagName === 'INPUT')) {
+                                const newClass = this.createDataclass(newClassInput);
+                                this.updateClass(newClass, element);
+                                populateClassDropdown();
+                                this._stateDropdown.focusInput();
+                            }
+                        }
+                        if (newStateInput !== '') {
+                            if (event.target.classList.contains('dd-dropdown-entry')) {
+                                this._stateDropdown.clearInput();
+                            } else if (!(this._stateDropdown.contains(event.target) && event.target.tagName === 'INPUT')) {
+                                const newState = this.createState(newStateInput, currentOlc);
+                                this.updateState(newState, element);
+                                updateClassSelection();
+                                updateStateSelection();
+                            }
+                        }
+                    }
+                }
+
+                const handleEscapeKey = (event) => {
+                    if (event.key === 'Escape') {
+                        cancel();
+                    }
+                }
+
+                const cancel = () => {
+                    if (this._overlayId) {
+                        this._overlays.remove(this._overlayId);
+                        this._overlayId = undefined;
+                    }
+                    if (this._currentDropdownTarget?.dataclass === undefined) {
+                        this._modeling.removeElements([this._dropdownContainer.currentElement]);
+                    }
+                    this._dropdownContainer.currentElement = undefined;
+                    this._currentDropdownTarget = undefined;
+                    document.removeEventListener('mousedown', handleClick, true);
+                    document.removeEventListener('keydown', handleEscapeKey, true);
+                }
+
+                
+                document.addEventListener('mousedown', handleClick, true);
+                document.addEventListener('keydown', handleEscapeKey, true);
+
+                eventBus.once('element.contextmenu', event => {
+                if (this._currentDropdownTarget && ((event.element || event.shape).businessObject !== this._currentDropdownTarget)) {
+                    cancel();
+                    event.preventDefault();
+                    }
+                });
+
                 // Show the menu(e)
                 this._overlayId = overlays.add(element.id, 'classSelection', {
                     position: {
@@ -119,18 +178,6 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                 this._currentDropdownTarget = element.businessObject;
             }
         });
-    }
-
-    cancel() {
-        if (this._overlayId) {
-            this._overlays.remove(this._overlayId);
-            this._overlayId = undefined;
-        }
-        if (this._currentDropdownTarget.dataclass === undefined) {
-            this._modeling.removeElements([this._currentElement]);
-        }
-        this._currentElement = undefined;
-        this._currentDropdownTarget = undefined;
     }
 
     updateClass(newClass, element) {
