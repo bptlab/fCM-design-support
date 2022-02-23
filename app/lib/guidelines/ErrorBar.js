@@ -81,14 +81,17 @@ export function makeGuidelineLink(link) {
 
 export function makeQuickFixDiv(quickFixes, onFix = ()=>{}) {
     const quickFixDiv = document.createElement('div');
-    quickFixDiv.style.background = 'gray';
+    quickFixDiv.classList.add("quickFixDiv");
 
     const quickFixTable = document.createElement('table');
     quickFixes.forEach(quickFix => {
         const quickFixRow = quickFixTable.insertRow(-1);
+        quickFixRow.style.borderBottom = '0px';
         const cell = quickFixRow.insertCell(-1);
-        cell.classList.add('dd-dropdown-entry');
-        cell.style.padding = 'unset';
+//        cell.classList.add('dd-dropdown-entry');
+        cell.classList.add('quickFixCell');
+        cell.style.padding = '3px';
+        cell.style.color = '#29487D';
         cell.innerHTML = quickFix.label;
         cell.addEventListener('click', event => {
             onFix(quickFix);

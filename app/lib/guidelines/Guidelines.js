@@ -324,7 +324,7 @@ export default [
                 });
 
                 function stringifyTransition({sourceState, targetState}) {
-                    return '\[' + sourceState.name + ' -> ' + targetState.name + '\]';
+                    return '\[' + sourceState.name + ' → ' + targetState.name + '\]';
                 }
 
                 if (uncoveredTransitions.length > 0) {
@@ -333,7 +333,7 @@ export default [
                         message : 'Please make sure that all state transitions in activity ' + activity.name + ' are in the OLCs. Unmatched transitions: ' + uncoveredTransitions.map(stringifyTransition).join(', '), //TODO improve this message
                         quickFixes : uncoveredTransitions.map(transition => (
                             {
-                                label : 'Create transition ' + stringifyTransition(transition) + ' in OLC ' + transition.sourceState.$parent.name,
+                                label : 'Create transition: ' + stringifyTransition(transition) + ' in OLC ' + transition.sourceState.$parent.name,
                                 action : () => mediator.olcModelerHook.modeler.createTransition(transition.sourceState, transition.targetState)
                             }
                         ))
