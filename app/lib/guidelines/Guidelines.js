@@ -462,13 +462,17 @@ export default [
             if (!caseClasses.length) {
                 return clazzes.map(clazz => ({
                     element : clazz.businessObject,
-                    message : 'Please specify a case class.'
+                    message : 'Please specify a case class.',
+                    quickFixes : [
+                            {
+                                label : 'Make class a case class',
+                                action : (action) => dataModeler.updateProperty(clazz, {caseClass: true})
+                            }
+                        ]
                 }));
             } else {
                 return [];
             }
-            
-
         },
         severity : SEVERITY.ERROR,
         link : 'https://github.com/bptlab/fCM-design-support/wiki/Data-Model#d2---specify-a-case-class'
@@ -491,10 +495,7 @@ export default [
             const connectedWithCaseClass = getConnectedElements(caseClasses[0]);
             
             const notConnectedClasses = clazzes.filter(clazz => connectedWithCaseClass.indexOf(clazz) === -1);
-            
-            console.log(connectedWithCaseClass);
-            console.log(notConnectedClasses);
-    
+
             return notConnectedClasses.map(clazz => ({
                 element:clazz.businessObject,
                 message: 'Please connect every class to the case class.'

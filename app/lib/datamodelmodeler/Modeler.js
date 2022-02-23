@@ -145,3 +145,8 @@ Modeler.prototype.renameClass = function (clazz, name) {
 Modeler.prototype.deleteClass = function (clazz) {
   this.get('modeling').removeShape(this.get('elementRegistry').get(clazz.id));
 }
+
+Modeler.prototype.updateProperty = function (clazz, property) {
+  console.log(clazz);
+  this.get('modeling').updateProperties(clazz, property);
+}
