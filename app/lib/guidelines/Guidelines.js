@@ -497,7 +497,7 @@ export default [
     
             return notConnectedClasses.map(clazz => ({
                 element:clazz.businessObject,
-                message: 'Please connect the case class to every other class.'
+                message: 'Please connect every class to the case class.'
             }
             ))
 
