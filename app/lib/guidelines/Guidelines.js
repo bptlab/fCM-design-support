@@ -301,42 +301,74 @@ export default [
             return activities.map(activity => activity.businessObject).flatMap(activity => {
                 // TODO improve after introduction of IO-Sets
                 const statesPerClass = {};
-                activity.dataInputAssociations?.forEach(assoc => {
-                    const dataObjectReference = assoc.sourceRef[0];
+                activity.dataInputAssociations?.map(assoc => assoc.sourceRef[0]).filter(dataObjectReference => dataObjectReference.dataclass && dataObjectReference.states).forEach(dataObjectReference => {
                     if (!statesPerClass[dataObjectReference.dataclass.id]) {
                         statesPerClass[dataObjectReference.dataclass.id] = {incoming : [], outgoing : []};
                     }
                     statesPerClass[dataObjectReference.dataclass.id].incoming.push(...dataObjectReference.states);
                 });
-                activity.dataOutputAssociations?.forEach(assoc => {
-                    const dataObjectReference = assoc.targetRef;
-                    if (dataObjectReference.dataclass && statesPerClass[dataObjectReference.dataclass.id]) {
-                        statesPerClass[dataObjectReference.dataclass.id].outgoing.push(...dataObjectReference.states);
+                activity.dataOutputAssociations?.map(assoc => assoc.targetRef).filter(dataObjectReference => dataObjectReference.dataclass && dataObjectReference.states).forEach(dataObjectReference => {
+                    if (!statesPerClass[dataObjectReference.dataclass.id]) {
+                        statesPerClass[dataObjectReference.dataclass.id] = {incoming : [], outgoing : []};
                     }
+                    statesPerClass[dataObjectReference.dataclass.id].outgoing.push(...dataObjectReference.states);
                 });
-                const uncoveredTransitions = Object.keys(statesPerClass).flatMap(clazz => {
+                const uncovered = Object.keys(statesPerClass).map(clazz => {
                     const transitionsInOlc = statesPerClass[clazz].incoming[0]?.$parent.get('Elements').filter(element => is(element, 'olc:Transition')) || [];
-                    return statesPerClass[clazz].incoming.flatMap(sourceState => {
-                        return statesPerClass[clazz].outgoing.filter(targetState => {
-                            return sourceState !== targetState && transitionsInOlc.filter(transition => transition.sourceState === sourceState && transition.targetState === targetState).length !== 1;
-                        }).map(targetState => ({sourceState, targetState}));
-                    });
-                });
+                    
+                    function transitionsMatching (sourceState, targetState) {
+                        return transitionsInOlc.filter(transition => transition.sourceState === sourceState && transition.targetState === targetState);
+                    }
 
-                function stringifyTransition({sourceState, targetState}) {
+                    const uncoveredInputstates = statesPerClass[clazz].incoming.filter(sourceState => {
+                        // Has target states of same class and none is covered
+                        return statesPerClass[clazz].outgoing.length > 0 && statesPerClass[clazz].outgoing.filter(targetState => {
+                            return sourceState === targetState || transitionsMatching(sourceState, targetState).length > 0;
+                        }).length === 0;
+                    });
+
+                    const uncoveredOutputstates = statesPerClass[clazz].outgoing.filter(targetState => {
+                        // Has source states of same class and none is covered
+                        return statesPerClass[clazz].incoming.length > 0 && statesPerClass[clazz].incoming.filter(sourceState => {
+                            return sourceState === targetState || transitionsMatching(sourceState, targetState).length > 0;
+                        }).length === 0;
+                    });
+                    
+                    return {
+                        clazz,
+                        uncoveredInputstates,
+                        uncoveredOutputstates
+                    }
+
+                }).filter(({uncoveredInputstates, uncoveredOutputstates}) => (uncoveredInputstates.length + uncoveredOutputstates.length) > 0);
+
+                function stringifyUncovered({uncoveredInputstates, uncoveredOutputstates}) {
+                    return '' 
+                        + (uncoveredInputstates.length > 0 && 'input state(s) ' + uncoveredInputstates.map(state => '"' + state.name + '"').join(', ') || '')
+                        + (uncoveredInputstates.length > 0 && uncoveredOutputstates.length > 0 && ' and ' || '')
+                        + (uncoveredOutputstates.length > 0 && 'output state(s) ' + uncoveredOutputstates.map(state => '"' + state.name + '"').join(', ') || '')
+                        + ' for class "' + (uncoveredInputstates[0] || uncoveredOutputstates[0])?.$parent.name + '"';
+                }
+
+                function stringifyTransition(sourceState, targetState) {
                     return '\[' + sourceState.name + ' → ' + targetState.name + '\]';
                 }
 
-                if (uncoveredTransitions.length > 0) {
+                function transitionToQuickFix(sourceState, targetState) {
+                    return {
+                        label : 'Create transition: ' + stringifyTransition(sourceState, targetState) + ' in OLC ' + sourceState.$parent.name,
+                        action : () => mediator.olcModelerHook.modeler.createTransition(sourceState, targetState)
+                    }
+                }
+
+                if (uncovered.length > 0) {
                     return [{
                         element : activity,
-                        message : 'Please make sure that all state transitions in activity ' + activity.name + ' are in the OLCs. Unmatched transitions: ' + uncoveredTransitions.map(stringifyTransition).join(', '), //TODO improve this message
-                        quickFixes : uncoveredTransitions.map(transition => (
-                            {
-                                label : 'Create transition: ' + stringifyTransition(transition) + ' in OLC ' + transition.sourceState.$parent.name,
-                                action : () => mediator.olcModelerHook.modeler.createTransition(transition.sourceState, transition.targetState)
-                            }
-                        ))
+                        message : 'Please make sure that for each input and output state of data references of activity "' + activity.name + '" there are valid transitions in the olc. Unmatched states: ' + uncovered.map(stringifyUncovered).join(', '), //TODO improve this message
+                        quickFixes : uncovered.flatMap(({clazz, uncoveredInputstates, uncoveredOutputstates}) => [
+                            ... uncoveredInputstates.flatMap(sourceState => statesPerClass[clazz].outgoing.map(targetState => ({sourceState, targetState}))),
+                            ... uncoveredOutputstates.flatMap(targetState => statesPerClass[clazz].incoming.filter(sourceState => !uncoveredInputstates.includes(sourceState)).map(sourceState => ({sourceState, targetState})))
+                        ].map(({sourceState, targetState}) => transitionToQuickFix(sourceState, targetState)))
                     }];
                 } else {
                     return [];
