@@ -1,3 +1,5 @@
+import { is } from "../../util/Util";
+
 export default function OlcContextPadProvider(connect, contextPad, modeling, elementFactory, create, autoPlace) {
   this._connect = connect;
   this._modeling = modeling;
@@ -45,7 +47,7 @@ OlcContextPadProvider.prototype.getContextPadEntries = function (element) {
     create.start(event, shape, { source: element });
   }
 
-  return {
+  const entries =  {
     'delete': {
       group: 'edit',
       className: 'bpmn-icon-trash',
@@ -63,8 +65,11 @@ OlcContextPadProvider.prototype.getContextPadEntries = function (element) {
         click: startConnect,
         dragstart: startConnect
       }
-    },
-    'append': {
+    }
+  };
+
+  if (is(element, 'olc:State')) {
+    entries['append'] = {
       group: 'create',
       className: 'bpmn-icon-start-event-none',
       title: 'Append State',
@@ -73,5 +78,7 @@ OlcContextPadProvider.prototype.getContextPadEntries = function (element) {
         dragstart: appendStateStart
       }
     }
-  };
+  }
+
+  return entries;
 };
