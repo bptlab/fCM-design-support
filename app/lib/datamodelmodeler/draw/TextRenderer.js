@@ -5,7 +5,7 @@ import TextUtil from 'diagram-js/lib/util/Text';
 var DEFAULT_FONT_SIZE = 16;
 var LINE_HEIGHT_RATIO = 1.2;
 
-
+// TODO candidate for common module
 export default function TextRenderer(config) {
 
   var defaultStyle = assign({

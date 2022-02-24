@@ -34,14 +34,14 @@ OlcElementFactory.prototype.baseCreate = BaseElementFactory.prototype.create;
 OlcElementFactory.prototype.baseCreateShape = BaseElementFactory.prototype.createShape;
 
 OlcElementFactory.prototype.createShape = function(attrs) {
-    attrs = assign(defaultSizeForType(attrs.type), attrs);
+    attrs = assign(this.defaultSizeForType(attrs.type), attrs);
     return this.baseCreateShape(attrs);
 }
 
 OlcElementFactory.prototype.create = function (elementType, attrs) {
 
     attrs = attrs || {};
-    attrs = assign(defaultSizeForType(attrs.type), attrs);
+    attrs = assign(this.defaultSizeForType(attrs.type), attrs);
 
     var businessObject = attrs.businessObject;
 
@@ -57,13 +57,12 @@ OlcElementFactory.prototype.create = function (elementType, attrs) {
 
     attrs = assign({
         businessObject: businessObject,
-        id: businessObject.id,
-        size: defaultSizeForType(attrs.type)
+        id: businessObject.id
     }, attrs);
 
     return this.baseCreate(elementType, attrs);
 };
 
-function defaultSizeForType(type) {
-    return { width: 60, height: 60 };
+OlcElementFactory.prototype.defaultSizeForType = function (type) {
+    return { width: 100, height: 100 };
 }
