@@ -5,7 +5,6 @@ import newDatamodel from '../resources/emptyBoard.bpmn';
 import OlcModeler from './lib/olcmodeler/OlcModeler';
 import GoalStateModeler from './lib/goalstatemodeler/GoalStateModeler';
 import DataModelModeler from './lib/datamodelmodeler/Modeler';
-import DummyData from './DummyData';
 
 import $ from 'jquery';
 import Mediator from './lib/mediator/Mediator';
@@ -16,6 +15,7 @@ import { download, upload } from './lib/util/FileUtil';
 import conferenceProcess from '../resources/conferenceModel/process.bpmn';
 import conferenceDataModel from '../resources/conferenceModel/datamodel.xml';
 import conferenceOLC from '../resources/conferenceModel/olc.xml';
+import conferenceGoalState from '../resources/conferenceModel/goalState.xml';
 
 import Zip from 'jszip';
 
@@ -69,32 +69,12 @@ const checker = new Checker(mediator, errorBar);
 
 
 async function loadDebugData() {
-  // TODO dummy fragment data
-  await dataModeler.importXML(conferenceDataModel);
-  await olcModeler.importXML(conferenceOLC);
-  await fragmentModeler.importXML(conferenceProcess);
-  // DummyData.dummyStateList.forEach(clazz => {
-  //   var clazzRef = dataModeler.get('elementRegistry').get(clazz.id).businessObject;
-  //   olcModeler.addOlc(clazzRef);
-  //   // AddOlc Also implies that this olc is then selected
-  //   var canvas = olcModeler.get('canvas');
-  //   var diagramRoot = canvas.getRootElement();
-  //   for (var i = 0; i < clazz.states.length; i++) {
-  //     var state = clazz.states[i];
-  //     var attrs = {
-  //       type: 'olc:State',
-  //       id: state.id,
-  //       name: state.name,
-  //       x: (i+2) * 100,
-  //       y: 100
-  //     };
-  //     var stateVisual = olcModeler.get('elementFactory').createShape(attrs);
-  //     diagramRoot.businessObject.get('Elements').push(stateVisual.businessObject);
-  //     stateVisual.businessObject.$parent = diagramRoot.businessObject;
-  //     canvas.addShape(stateVisual, diagramRoot);
-  //   }
-  // });
-  // goalStateModeler.showGoalState(DummyData.dummyGoalState(olcModeler._definitions.olcs));
+  const zip = new Zip();
+  zip.file('fragments.bpmn', conferenceProcess);
+  zip.file('dataModel.xml', conferenceDataModel);
+  zip.file('olcs.xml', conferenceOLC);
+  zip.file('goalState.xml', conferenceGoalState);
+  await importFromZip(zip.generateAsync({type : 'base64'}));
 }
 
 async function createNewDiagram() {

@@ -1,5 +1,6 @@
 import { is } from "./lib/datamodelmodeler/util/ModelUtil";
 
+//TODO might be obsolete, might be used to complete conference example
 export var dummyStateList = [
     {
         id: 'Class1_Paper',
