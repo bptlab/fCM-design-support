@@ -203,6 +203,14 @@ div.highlightedElement {
 }
 
 .quickFixDiv {
+    margin-top: 10px;
+}
+
+.quickFixDiv > table {
+    border-collapse:separate;
+}
+
+.quickFixDiv > table > tbody > tr > td {
     background-color: white;
     margin-top: 5px;
     margin-bottom: 5px;
@@ -210,11 +218,13 @@ div.highlightedElement {
     border: solid transparent 2px;
 }
 
-.quickFixDiv:hover {
+.quickFixDiv > table > tbody > tr > td:hover {
     background-color: #29487D;
     border: solid white 2px;
-}
-
-.quickFixDiv:hover .quickFixCell {
+    border-radius: 10px;
     color: white !important;
 }
+
+//.quickFixDiv:hover .quickFixCell {
+//    color: white !important;
+//}
