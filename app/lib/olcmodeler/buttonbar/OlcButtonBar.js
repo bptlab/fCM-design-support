@@ -7,6 +7,7 @@ import {
 
 import getDropdown from '../../util/Dropdown';
 import {download, upload} from '../../util/FileUtil';
+import { appendOverlayListeners } from '../../util/HtmlUtil';
 
 import OlcEvents from '../OlcEvents';
 
@@ -47,8 +48,8 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     var selectOlcMenu = getDropdown();
     selectOlcComponent.addEventListener('click', event => {
         if (event.target === selectOlcComponent || event.target === selectedOlcSpan) {
-            repopulate();
-            selectOlcMenu.style.display = 'block';
+            repopulateDropdown();
+            showSelectOlcMenu();
         } else {
             return;
         }
@@ -77,7 +78,6 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
         }
     });
     selectOlcComponent.appendChild(selectedOlcSpan);
-    selectOlcComponent.appendChild(selectOlcMenu);
     buttonBar.appendChild(selectOlcComponent);
 
     // Delete olc button
@@ -94,7 +94,11 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     });
     buttonBar.appendChild(deleteOlcButton);
 
-    function repopulate() {
+    selectOlcMenu.handleClick = (event) => {
+        return selectOlcMenu.contains(event.target);
+    }
+
+    function repopulateDropdown() {
         var olcs = olcModeler.getOlcs();
         var valueBefore = selectOlcComponent.value;
         selectOlcMenu.populate(olcs, olc => {
@@ -102,24 +106,30 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
             hideSelectOlcMenu();
         });
         selectOlcMenu.addCreateElementInput(event => {
-            var className = event.target.value;
-            eventBus.fire(OlcEvents.DATACLASS_CREATION_REQUESTED, {
-                name: className
-            });
+            var className = selectOlcMenu.getInputValue();
+            if (className && className.length > 0) {
+                eventBus.fire(OlcEvents.DATACLASS_CREATION_REQUESTED, {
+                    name: className
+                });
+            }
         });
         deleteOlcButton.disabled = olcs.length === 0;
         selectOlcComponent.showValue(valueBefore);
     }
 
-    function hideSelectOlcMenu() {
-        selectOlcMenu.innerHTML = '';
-        selectOlcMenu.style.display = 'none';
+    function showSelectOlcMenu() {
+        const closeOverlay = appendOverlayListeners(selectOlcMenu);
+        selectOlcMenu.style.display = 'block';
+        selectOlcComponent.appendChild(selectOlcMenu);
+        eventBus.once('element.contextmenu', event => {
+            closeOverlay(event);
+            event.preventDefault();
+        });
     }
 
-    eventBus.on([OlcEvents.DEFINITIONS_CHANGED], event => repopulate());
-    eventBus.on([OlcEvents.SELECTED_OLC_CHANGED], event => selectOlcComponent.showValue(event.olc));
-    eventBus.on('element.click', event => hideSelectOlcMenu())
 
+    eventBus.on([OlcEvents.DEFINITIONS_CHANGED], event => repopulateDropdown());
+    eventBus.on([OlcEvents.SELECTED_OLC_CHANGED], event => selectOlcComponent.showValue(event.olc));
 }
 
 OlcButtonBar.$inject = [

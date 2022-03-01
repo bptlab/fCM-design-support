@@ -43,10 +43,11 @@ export default function getDropdown(name = '') {
         createNewElementEditorContainer.classList.add('dd-dropdown-create-input');
         const createNewElementEditor = document.createElement('input');
         createNewElementEditor.type = 'text';
-        createNewElementEditor.placeholder = 'Create new'
+        createNewElementEditor.placeholder = 'Create new';
+        this.confirm = event => onConfirm(event);
         createNewElementEditor.addEventListener('keydown', event => {
             if (event.key === 'Enter') {
-                onConfirm(event);
+                this.confirm(event);
             }
         });
         createNewElementEditorContainer.appendChild(createNewElementEditor);
