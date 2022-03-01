@@ -3,9 +3,9 @@ import inherits from 'inherits';
 import { isFunction, without } from 'min-dash';
 import { is } from '../util/Util';
 import OlcEvents from '../olcmodeler/OlcEvents';
-import FragmentEvents from '../fragmentmodeler/FragmentEvents';
 import { namespace, root } from '../util/Util';
 import AbstractHook from './AbstractHook';
+import CommonEvents from '../common/CommonEvents';
 
 const DEFAULT_EVENT_PRIORITY = 1000; //From diagram-js/lib/core/EventBus.DEFAULT_PRIORITY
 
@@ -48,6 +48,14 @@ export default function Mediator() {
             // Do not propagate handle these events by low priority listeners such as canvas-move
             event.cancelBubble = true;
         }
+    });
+
+    this.on(CommonEvents.DATACLASS_CREATION_REQUESTED, event => {
+        return this.createDataclass(event.name);
+    });
+
+    this.on(CommonEvents.STATE_CREATION_REQUESTED, event => {
+        return this.createState(event.name, event.olc);
     });
 }
 
@@ -249,10 +257,6 @@ Mediator.prototype.OlcModelerHook = function (eventBus, olcModeler) {
         return false; // Deletion should never be directly done in olc modeler, will instead propagate from data modeler
     });
 
-    eventBus.on(OlcEvents.DATACLASS_CREATION_REQUESTED, event => {
-        return this.mediator.createDataclass(event.name);
-    });
-
     eventBus.on('import.parse.complete', ({context}) => {
         context.warnings.filter(({message}) => message.startsWith('unresolved reference')).forEach(({property, value, element}) => {
             if (property === 'olc:classRef') {
@@ -363,14 +367,6 @@ Mediator.prototype.FragmentModelerHook = function (eventBus, fragmentModeler) {
     AbstractHook.call(this, fragmentModeler, 'Fragments', 'https://github.com/bptlab/fCM-design-support/wiki/Fragments');
     this.mediator.fragmentModelerHook = this;
     this.eventBus = eventBus;
-
-    eventBus.on(FragmentEvents.CREATED_STATE, event => {
-        return this.mediator.createState(event.name, event.olc);
-    });
-
-    eventBus.on(FragmentEvents.CREATED_DATACLASS, event => {
-        return this.mediator.createDataclass(event.name);
-    });
 
     eventBus.on('import.parse.complete', ({warnings}) => {
         warnings.filter(({message}) => message.startsWith('unresolved reference')).forEach(({property, value, element}) => {

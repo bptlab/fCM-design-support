@@ -1,9 +1,9 @@
 import CommandInterceptor from "diagram-js/lib/command/CommandInterceptor";
 import { without } from 'min-dash';
+import CommonEvents from "../../common/CommonEvents";
 import getDropdown from "../../util/Dropdown";
 import { appendOverlayListeners } from "../../util/HtmlUtil";
 import { formatStates, is } from "../../util/Util";
-import FragmentEvents from "../FragmentEvents";
 
 export default class DataObjectLabelHandler extends CommandInterceptor {
     constructor(eventBus, modeling, directEditing, overlays, fragmentModeler) {
@@ -182,14 +182,14 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
     }
 
     createState(name, olc) {
-        return this._eventBus.fire(FragmentEvents.CREATED_STATE, {
+        return this._eventBus.fire(CommonEvents.STATE_CREATION_REQUESTED, {
             name,
             olc
         });
     }
 
     createDataclass(name) {
-        return this._eventBus.fire(FragmentEvents.CREATED_DATACLASS, {
+        return this._eventBus.fire(CommonEvents.DATACLASS_CREATION_REQUESTED, {
             name
         });
     }

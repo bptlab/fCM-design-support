@@ -4,6 +4,7 @@ import {
     event as domEvent,
     query as domQuery
 } from 'min-dom';
+import CommonEvents from '../../common/CommonEvents';
 
 import getDropdown from '../../util/Dropdown';
 import {download, upload} from '../../util/FileUtil';
@@ -108,7 +109,7 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
         selectOlcMenu.addCreateElementInput(event => {
             var className = selectOlcMenu.getInputValue();
             if (className && className.length > 0) {
-                eventBus.fire(OlcEvents.DATACLASS_CREATION_REQUESTED, {
+                eventBus.fire(CommonEvents.DATACLASS_CREATION_REQUESTED, {
                     name: className
                 });
             }

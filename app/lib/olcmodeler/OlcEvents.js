@@ -2,6 +2,5 @@ export default {
     DEFINITIONS_CHANGED : 'olc.definitions.changed',
     SELECTED_OLC_CHANGED : 'olc.selected.changed',
     OLC_RENAME : 'olc.renamed',
-    OLC_DELETION_REQUESTED : 'olc.delete.requested',
-    DATACLASS_CREATION_REQUESTED: 'dataclass.create.requested'
+    OLC_DELETION_REQUESTED : 'olc.delete.requested'
 }
