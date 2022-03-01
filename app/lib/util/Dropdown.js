@@ -67,7 +67,6 @@ export default function getDropdown(name = '') {
 
     dropdownMenu.focusInput = function () {
         const inputElements = dropdownMenu.getElementsByTagName('input');
-        console.log(inputElements);
         if (inputElements[0]) {
             inputElements[0].focus();
         }

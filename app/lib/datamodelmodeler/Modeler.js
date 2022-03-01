@@ -147,6 +147,5 @@ Modeler.prototype.deleteClass = function (clazz) {
 }
 
 Modeler.prototype.updateProperty = function (clazz, property) {
-  console.log(clazz);
   this.get('modeling').updateProperties(clazz, property);
 }

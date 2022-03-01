@@ -1,4 +1,5 @@
 import { is } from '../datamodelmodeler/util/ModelUtil';
+import { type } from '../util/Util';
 import { getConnectedElements, startDoCreation } from './GuidelineUtils';
 
 export const SEVERITY = {
@@ -140,7 +141,7 @@ export default [
             }
             return elements.filter(element => !connectedElements.has(element.id)).map(element => ({
                 element: element.businessObject,
-                message: 'Please use at least one activity for each fragment.'
+                message: 'Please connect this ' + type(element.businessObject) + ' to a component with an activity.'
             }));
         },
         severity: SEVERITY.ERROR,
@@ -451,7 +452,8 @@ export default [
         title : 'Specify a Case Class.',
         id : 'D2',
         getViolations(mediator) {
-            const dataModeler = mediator.dataModelerHook.modeler;
+            const hook = mediator.dataModelerHook;
+            const dataModeler = hook.modeler;
             const clazzes = dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class'));
             
             const caseClasses = dataModeler.get('elementRegistry')
@@ -460,16 +462,16 @@ export default [
                 .filter(clazz => clazz.caseClass);
             
             if (!caseClasses.length) {
-                return clazzes.map(clazz => ({
-                    element : clazz.businessObject,
+                return [{
+                    element : hook.getRootObject(),
                     message : 'Please specify a case class.',
-                    quickFixes : [
+                    quickFixes : clazzes.map(clazz => (
                             {
-                                label : 'Make class a case class',
+                                label : 'Make class "' + clazz.businessObject.name + '" a case class',
                                 action : (action) => dataModeler.updateProperty(clazz, {caseClass: true})
                             }
-                        ]
-                }));
+                    ))
+                }];
             } else {
                 return [];
             }
@@ -498,7 +500,7 @@ export default [
 
             return notConnectedClasses.map(clazz => ({
                 element:clazz.businessObject,
-                message: 'Please connect every class to the case class.'
+                message: 'Please connect class "' + clazz.businessObject.name + '" to the case class via a path of existential associations.'
             }
             ))
 
