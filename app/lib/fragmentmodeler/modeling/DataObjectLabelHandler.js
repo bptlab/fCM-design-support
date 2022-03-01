@@ -1,7 +1,7 @@
 import CommandInterceptor from "diagram-js/lib/command/CommandInterceptor";
 import { without } from 'min-dash';
 import getDropdown from "../../util/Dropdown";
-import { openAsOverlay } from "../../util/HtmlUtil";
+import { appendOverlayListeners } from "../../util/HtmlUtil";
 import { formatStates, is } from "../../util/Util";
 import FragmentEvents from "../FragmentEvents";
 
@@ -67,12 +67,7 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                         }, element);
 
                         // Prevent adding new states if no dataclass is selected
-                        dataObject.dataclass && this._stateDropdown.addCreateElementInput(event => {
-                            const state = this.createState(event.target.value, currentOlc);
-                            this.updateState(state, element);
-                            updateClassSelection();
-                            updateStateSelection();
-                        });
+                        dataObject.dataclass && this._stateDropdown.addCreateElementInput(event => this._dropdownContainer.confirm());
                     } else {
                         this._stateDropdown.populate([], (newState, element) => {
                             this.updateState(newState, element);
@@ -86,61 +81,52 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                         this.updateClass(olc.classRef, element);
                         updateClassSelection();
                     }, element);
-                    this._classDropdown.addCreateElementInput(event => {
-                        const clazz = this.createDataclass(event.target.value);
-                        this.updateClass(clazz, element);
-                        populateClassDropdown();
-                    });
+                    this._classDropdown.addCreateElementInput(event => this._dropdownContainer.confirm());
                     updateClassSelection();
                     updateStateSelection();
                 }
 
                 populateClassDropdown();
 
-                const handleClick = (event) => {
+                this._dropdownContainer.confirm = (event) => {
                     const newClassInput = this._classDropdown.getInputValue();
                     const newStateInput = this._stateDropdown.getInputValue();
-                    if (!this._dropdownContainer.contains(event.target)) {
-                        if (newClassInput !== '') {
-                            const newClass = this.createDataclass(newClassInput);
-                            this.updateClass(newClass, element);
-                        }
-                        if (newStateInput !== '') {
-                            const newState = this.createState(newStateInput, currentOlc);
-                            this.updateState(newState, element);
-                        }
-                        cancel();
-                    } else {
-                        if (newClassInput !== '') {
-                            if (event.target.classList.contains('dd-dropdown-entry')) {
-                                this._classDropdown.clearInput();
-                            } else if (!(this._classDropdown.contains(event.target) && event.target.tagName === 'INPUT')) {
-                                const newClass = this.createDataclass(newClassInput);
-                                this.updateClass(newClass, element);
-                                populateClassDropdown();
-                                this._stateDropdown.focusInput();
-                            }
-                        }
-                        if (newStateInput !== '') {
-                            if (event.target.classList.contains('dd-dropdown-entry')) {
-                                this._stateDropdown.clearInput();
-                            } else if (!(this._stateDropdown.contains(event.target) && event.target.tagName === 'INPUT')) {
-                                const newState = this.createState(newStateInput, currentOlc);
-                                this.updateState(newState, element);
-                                updateClassSelection();
-                                updateStateSelection();
-                            }
-                        }
+                    let needUpdate = false;
+                    if (newClassInput !== '') {
+                        const newClass = this.createDataclass(newClassInput);
+                        this.updateClass(newClass, element);
+                        populateClassDropdown();
+                        needUpdate = true;
+                    }
+                    if (newStateInput !== '') {
+                        const newState = this.createState(newStateInput, currentOlc);
+                        this.updateState(newState, element);
+                        needUpdate = true;
+                    }
+                    if (needUpdate) {
+                        updateClassSelection();
+                        updateStateSelection();
+                        this._stateDropdown.focusInput();
                     }
                 }
 
-                const handleEscapeKey = (event) => {
-                    if (event.key === 'Escape') {
-                        cancel();
+                let shouldBlockNextClick = e.type === 'create.end';
+                this._dropdownContainer.handleClick = (event) => {
+                    if (shouldBlockNextClick) {
+                        shouldBlockNextClick = false;
+                        return true;
+                    } else if (!this._dropdownContainer.contains(event.target)) {
+                        return false;
+                    } else if (event.target.classList.contains('dd-dropdown-entry')) {
+                        this._classDropdown.clearInput();
+                        this._stateDropdown.clearInput();
+                    } else if (event.target.tagName !== 'INPUT' || !event.target.value) {
+                        this._dropdownContainer.confirm();
                     }
+                    return true;
                 }
 
-                const cancel = () => {
+                this._dropdownContainer.close = () => {
                     if (this._overlayId) {
                         this._overlays.remove(this._overlayId);
                         this._overlayId = undefined;
@@ -150,18 +136,13 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                     }
                     this._dropdownContainer.currentElement = undefined;
                     this._currentDropdownTarget = undefined;
-                    document.removeEventListener('mousedown', handleClick, true);
-                    document.removeEventListener('keydown', handleEscapeKey, true);
                 }
 
-                
-                document.addEventListener('mousedown', handleClick, true);
-                document.addEventListener('keydown', handleEscapeKey, true);
-
+                const closeOverlay = appendOverlayListeners(this._dropdownContainer);
                 eventBus.once('element.contextmenu', event => {
-                if (this._currentDropdownTarget && ((event.element || event.shape).businessObject !== this._currentDropdownTarget)) {
-                    cancel();
-                    event.preventDefault();
+                    if (this._currentDropdownTarget && ((event.element || event.shape).businessObject !== this._currentDropdownTarget)) {
+                        closeOverlay(event);
+                        event.preventDefault();
                     }
                 });
 
