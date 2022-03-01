@@ -5,6 +5,7 @@ import getDropdown from '../util/Dropdown';
 import EventBus from 'diagram-js/lib/core/EventBus'
 import GoalStateEvents from './GoalStateEvents';
 import GoalStateModdle from './GoalStateModdle';
+import CommonEvents from '../common/CommonEvents';
 
 const NAMESPACE = 'gs';
 
@@ -131,6 +132,13 @@ GoalStateModeler.prototype.populateLiteral = function (literal, element) {
             without(this.getClassList(), literal.class),
             (clazz, element) => this.changeClass(clazz, literal)
         );
+        classElement.dropdown.addCreateElementInput(event => {
+            const clazz = this.eventBus.fire(CommonEvents.DATACLASS_CREATION_REQUESTED, {
+                name: classElement.dropdown.getInputValue()
+            });
+            const olc = this.getClassList().filter(olc => olc.classRef === clazz)[0];
+            this.changeClass(olc, literal);
+        });
         classElement.dropdown.style.display = 'block';
     });
     classElement.addEventListener('mouseleave', event => {
@@ -141,7 +149,7 @@ GoalStateModeler.prototype.populateLiteral = function (literal, element) {
 
     stateElement.innerText = formatStates(literal.states);    
     stateElement.dropdown.innerHTML = '';
-    stateElement.addEventListener('mouseenter', event => {
+    const openStateDropdown = (event) => {
         const updateStateSelection = () => {
             stateElement.dropdown.getEntries().forEach(entry => entry.setSelected(literal.states.includes(entry.option)));
         }
@@ -152,9 +160,19 @@ GoalStateModeler.prototype.populateLiteral = function (literal, element) {
                 updateStateSelection();
             }
         );
+        stateElement.dropdown.addCreateElementInput(event => {
+            const state = this.eventBus.fire(CommonEvents.STATE_CREATION_REQUESTED, {
+                name: stateElement.dropdown.getInputValue(),
+                olc: literal.class
+            });
+            this.toggleState(state, literal);
+            openStateDropdown(event);
+        });
         updateStateSelection();
         stateElement.dropdown.style.display = 'block';
-    });
+        stateElement.dropdown.focusInput();
+    }
+    stateElement.addEventListener('mouseenter', event => openStateDropdown(event));
     stateElement.addEventListener('mouseleave', event => {
         stateElement.dropdown.innerHTML = '';
         stateElement.dropdown.style.display = 'none';
