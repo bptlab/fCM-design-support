@@ -25,7 +25,7 @@ The repository is structured as follows:
     * For changes of the overall UI: The web page `.js` and `.html` files can be found in its root, and most general style files under [/styles](app/styles).
     * The actual logic is then contained in the [/lib](app/lib) folder
         * [/datamodelmodeler](app/lib/datamodelmodeler), [/fragmentmodeler](app/lib/fragmentmodeler), [/goalstatemodeler](app/lib/goalstatemodeler), and [/olcmodeler](app/lib/olcmodeler) include the resources of the respective modelers. These build heavily on [diagram-js](https://github.com/bpmn-io/diagram-js), [bpmn-js](https://github.com/bpmn-io/bpmn-js), and [object diagram modeler](https://github.com/timKraeuter/object-diagram-modeler/tree/master/modeler), please refer to the documentations of those three to understand how they work. Common modules between the modelers can be found in [/common](app/lib/common), however, duplication might still exist.
-        * [/mediator](app/lib/mediator) includes the central component that controls the communication between and access to the single modelers.
+        * [/mediator](app/lib/mediator) includes the central component that controls the communication between and access to the single modelers. For each modeler, his [Mediator](app/lib/mediator/Mediator.js) contains one so called "hook", which wraps and allows access  to the respective modeler.
         * [/guidelines](app/lib/guidelines) includes all relevant code for guidelines. The list of guidelines is defined in [Guidelines.js](app/lib/guidelines/Guidelines.js)
 * [/resources](resources) contains auxiliary example and default files.
 
@@ -34,7 +34,7 @@ The guidelines are integrated via a unified interface. They can be found in [app
 
 - `title`: The title of the guideline which shortly summerizes what the guideline is about.
 - `id`: The id of the guideline which must be a unique identifier.
-- `getViolations(mediator) {}`: A function which returns an array of elements.
+- `getViolations(mediator) {}`: A function which returns an array of elements. The mediator parameter allows access to the respective modelers via its hooks (see above).
 - `severity`: Can be one of the following: Errors | Warnings | Information and indicates the color the element is highlighted in.
 - `link`: A link to the guideline in the [guideline catalog](https://github.com/bptlab/fCM-design-support/wiki/Guidelines). 
 
