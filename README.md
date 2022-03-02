@@ -46,3 +46,9 @@ For every returned element in the getViolations() function the follwing must be 
     -   `action`: The actual action which is performed when the button is clicked.
 
 A new guideline can therefore be implemented by adding the code in the described format in the `export default` array in the [Guidelines.js](app/lib/guidelines/Guidelines.js) file. 
+
+## License
+
+[MIT](LICENSE)
+
+Contains parts of [bpmn-io](https://github.com/bpmn-io) released under the [bpmn.io license](http://bpmn.io/license), and [diagram-js](https://github.com/bpmn-io/diagram-js) and [object diagram modeler](https://github.com/timKraeuter/object-diagram-modeler/tree/master/modeler) released under the MIT license.
