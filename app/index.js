@@ -19,8 +19,8 @@ import conferenceGoalState from '../resources/conferenceModel/goalState.xml';
 
 import Zip from 'jszip';
 
-const LOAD_DUMMY = true;
-const SHOW_DEBUG_BUTTONS = true;
+const LOAD_DUMMY = false; // Set to true to load conference example data
+const SHOW_DEBUG_BUTTONS = false; // Set to true to show additional buttons for debugging
 
 
 var mediator = new Mediator();
