@@ -18,6 +18,16 @@ When developing, the following can be run to automatically re-bundle on changes:
 npm run dev
 ```
 
+## Structure Overview
+The repository is structured as follows: 
+* [/app](app) contains the actual application files.
+    * For changes of the overall UI: The web page `.js` and `.html` files can be found in its root, and most general style files under [/styles](app/styles).
+    * The actual logic is then contained in the [/lib](app/lib) folder
+        * [/datamodelmodeler](app/lib/datamodelmodeler), [/fragmentmodeler](app/lib/fragmentmodeler), [/goalstatemodeler](app/lib/goalstatemodeler), and [/olcmodeler](app/lib/olcmodeler) include the resources of the respective modelers. These build heavily on [diagram-js](https://github.com/bpmn-io/diagram-js) and [bpmn-js](https://github.com/bpmn-io/bpmn-js), please refer to the documentations of those two to understand how they work. Common modules between the modelers can be found in [/common](app/lib/common), however, duplication might still exist.
+        * [/mediator](app/lib/mediator) includes the central component that controls the communication between and access to the single modelers.
+        * [/guidelines](app/lib/guidelines) includes all relevant code for guidelines. The list of guidelines is defined in [Guidelines.js](app/lib/guidelines/Guidelines.js)
+* [/resources](resources) contains auxiliary example and default files.
+
 ## Guidelines
 The guidelines are integrated via a unified interface. They can be found in *app/lib/guidelines*. In here the actual guidelines are implemented in *Guidelines.js* while the checking component is located in *Checker.js*. Every guideline consists of the following components:
 
@@ -27,7 +37,7 @@ The guidelines are integrated via a unified interface. They can be found in *app
 - severity: Can be one of the following: Errors | Warnings | Information and indicates the color the element is highlighted in.
 - link: A link to the guideline. 
 
-For every returned element in the getVioaltions() function the follwing must be returned:
+For every returned element in the getViolations() function the follwing must be returned:
 - element: The .businessobject of the element the violation should be displayed on.
 - message: The error message which is displayed in the error table and the hints.
 - quickFixes: An array of potential quickfixes for the violation.
