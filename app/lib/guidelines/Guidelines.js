@@ -280,7 +280,7 @@ export default [
                         + (uncoveredInputstates.length > 0 && 'input state(s) ' + uncoveredInputstates.map(state => '"' + state.name + '"').join(', ') || '')
                         + (uncoveredInputstates.length > 0 && uncoveredOutputstates.length > 0 && ' and ' || '')
                         + (uncoveredOutputstates.length > 0 && 'output state(s) ' + uncoveredOutputstates.map(state => '"' + state.name + '"').join(', ') || '')
-                        + ' for class "' + (uncoveredInputstates[0] || uncoveredOutputstates[0])?.$parent.name + '"';
+                        + ' of class "' + (uncoveredInputstates[0] || uncoveredOutputstates[0])?.$parent.name + '"';
                 }
 
                 function stringifyTransition(sourceState, targetState) {
@@ -297,7 +297,7 @@ export default [
                 if (uncovered.length > 0) {
                     return [{
                         element : activity,
-                        message : 'Please make sure that for each input and output state of data references of activity "' + activity.name + '" there are valid transitions in the olc. Unmatched states: ' + uncovered.map(stringifyUncovered).join(', '), //TODO improve this message
+                        message : 'Please cover the ' + uncovered.map(stringifyUncovered).join(', ') + ' with valid transitions in the OLC.',
                         quickFixes : uncovered.flatMap(({clazz, uncoveredInputstates, uncoveredOutputstates}) => [
                             ... uncoveredInputstates.flatMap(sourceState => statesPerClass[clazz].outgoing.map(targetState => ({sourceState, targetState}))),
                             ... uncoveredOutputstates.flatMap(targetState => statesPerClass[clazz].incoming.filter(sourceState => !uncoveredInputstates.includes(sourceState)).map(sourceState => ({sourceState, targetState})))
