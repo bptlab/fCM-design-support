@@ -361,13 +361,13 @@ export default [
                     return [{
                         element: activity,
                         // Maybe we can also add to the error message, which classes are missing their context class?
-                        message: 'In activity ' + activity.name + ', please add references to the following context classes: ' + missingAssociations.map(stringifyMissing).join(', '),
-                        quickFixes : missingAssociations.flatMap(({createdClass, contextClass}) => (
+                        message: 'In activity "' + activity.name + '", please add references to the following context classes: ' + missingAssociations.map(stringifyMissing).join(', '),
+                        quickFixes : missingAssociations.flatMap(({contextClass}) => (
                             [{
-                                label : 'Add reading data object reference of class \"' + createdClass.name + '\" to activity \"' + activity.name + '\"',
+                                label : 'Add reading data object reference of class \"' + contextClass.name + '\" to activity \"' + activity.name + '\"',
                                 action : (event) => fragmentModeler.startDoCreation(event, activityShape, contextClass, true)
                             },{
-                                label : 'Add writing data object reference of class \"' + createdClass.name + '\" to activity \"' + activity.name + '\"',
+                                label : 'Add writing data object reference of class \"' + contextClass.name + '\" to activity \"' + activity.name + '\"',
                                 action : (event) => fragmentModeler.startDoCreation(event, activityShape, contextClass)
                             }]
                         ))
