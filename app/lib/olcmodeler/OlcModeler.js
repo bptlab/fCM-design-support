@@ -250,7 +250,7 @@ OlcModeler.prototype.showOlcById = function (id) {
 }
 
 OlcModeler.prototype.addOlc = function (clazz) {
-  var olc = this.get('elementFactory').createBusinessObject('olc:Olc', { name: clazz.name || '<TBD>', classRef: clazz, id: clazz.id });
+  var olc = this.get('elementFactory').createBusinessObject('olc:Olc', { name: clazz.name || '<TBD>', classRef: clazz });
   this._definitions.get('olcs').push(olc);
   this._emit(OlcEvents.DEFINITIONS_CHANGED, { definitions: this._definitions });
   this.showOlc(olc);
