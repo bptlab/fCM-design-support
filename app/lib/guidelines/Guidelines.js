@@ -1,6 +1,6 @@
 import { is } from '../datamodelmodeler/util/ModelUtil';
 import { type } from '../util/Util';
-import { getConnectedElements, startDoCreation } from './GuidelineUtils';
+import { getClassDependencies, getClassDependents, getConnectedByExistentialAssociation, getConnectedElements, startDoCreation } from './GuidelineUtils';
 
 export const SEVERITY = {
     ERROR : {
@@ -315,29 +315,7 @@ export default [
         title: 'C5: Provide existential objects',
         id: 'C5',
         getViolations(mediator) {
-            const dataModeler = mediator.dataModelerHook.modeler;
-            const classDependencies = {};
-            function addClassDependency(dependentClass, contextClass) {
-                if (!classDependencies[dependentClass.id]) {
-                    classDependencies[dependentClass.id] = [];
-                }
-                classDependencies[dependentClass.id].push(contextClass);
-            }
-            const associations = dataModeler.get('elementRegistry').filter(element => is(element, 'od:Association') && element.type !== 'label').map(association => association.businessObject);
-            associations
-            .filter(association => association.sourceCardinality && association.targetCardinality) // TODO this is an hotfix
-            .forEach(association => {
-                const [sourceLowerBound, sourceUpperBound] = association.sourceCardinality.split('..');
-                const [targetLowerBound, targetUpperBound] = association.targetCardinality.split('..');
-                if (parseInt(sourceLowerBound) > 0) {
-                    // The lower bound for the association source class is positive, which means the target class is dependent of it
-                    addClassDependency(association.targetRef, association.sourceRef);
-                }
-                if (parseInt(targetLowerBound) > 0) {
-                    // The lower bound for the association target class is positive, which means the source class is dependent of it
-                    addClassDependency(association.sourceRef, association.targetRef);
-                }
-            });
+            const classDependencies = getClassDependencies(mediator);
 
             const fragmentModeler = mediator.fragmentModelerHook.modeler;
             const activities = fragmentModeler.get('elementRegistry').filter(element => is(element, 'bpmn:Activity')).map(activity => activity.businessObject);
@@ -416,23 +394,23 @@ export default [
         id : 'D3',
         getViolations(mediator) {
             const dataModeler = mediator.dataModelerHook.modeler;
-            const clazzes = dataModeler.get('elementRegistry').getAll().filter(element => is(element, 'od:Class'));
-            
-            const caseClasses = dataModeler.get('elementRegistry')
+            const classDependents = getClassDependents(mediator);
+            const clazzes = dataModeler.get('elementRegistry')
                 .filter(element => is(element, 'od:Class'))
-                .filter(clazz => clazz.businessObject.caseClass);
+                .map(element => element.businessObject);
             
+            const caseClasses = clazzes.filter(clazz => clazz.caseClass);
+
             if (!caseClasses.length) {
                 return [];
             }
             
-            const connectedWithCaseClass = getConnectedElements(caseClasses[0]);
-            
+            const connectedWithCaseClass = getConnectedByExistentialAssociation(caseClasses[0], classDependents);
             const notConnectedClasses = clazzes.filter(clazz => connectedWithCaseClass.indexOf(clazz) === -1);
 
             return notConnectedClasses.map(clazz => ({
-                element:clazz.businessObject,
-                message: 'Please connect class "' + clazz.businessObject.name + '" to the case class via a path of existential associations.'
+                element: clazz,
+                message: 'Please connect class "' + clazz.name + '" to the case class via a path of existential associations.'
             }
             ))
 
