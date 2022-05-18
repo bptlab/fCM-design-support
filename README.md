@@ -24,7 +24,7 @@ npm run dev
 ```
 
 ### Usage
-There are a [demo video](TBD) and a [use case tutorial](TBD) to showcase how to use fcm-js.
+There are a [demo video](TBD) and a [use case tutorial](/.docs/Tutorial.md) to showcase how to use fcm-js.
 
 ## Developer Guide
 ### Structure Overview
