@@ -1,7 +1,12 @@
-# fCM-design-support
-Modeling Tool with Design-Time Support for Fragment-Based Case Management
+# fCM-js
+*Modeling Tool with Design-Time Support for Fragment-Based Case Management.*
 
-## Installation & Usage
+fcm-js is a modeling tool for fragment-based case management. It aims at supporting users at design time by providing a joint, visual user interface for all artifacts and by integrating automated guideline checking based on fCM guidelines. 
+
+The catalog of fCM guidelines is also available in this repository in [the wiki](../../wiki).
+
+## User Guide
+### Installation
 Node needs to be installed for the modeler to run.
 
 To install the modeler, clone this repository on your machine. To start, navigate to the installation folder and enter the following into your command line:
@@ -17,6 +22,9 @@ When developing, the following can be run to automatically re-bundle on changes:
 ```shell
 npm run dev
 ```
+
+### Usage
+There are a [demo video](TBD) and a [use case tutorial](TBD) to showcase how to use fcm-js.
 
 ## Developer Guide
 ### Structure Overview
