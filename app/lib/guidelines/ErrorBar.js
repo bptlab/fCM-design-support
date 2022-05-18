@@ -48,7 +48,6 @@ export default class ErrorBar {
                 event.stopPropagation();
                 const quickFixDiv = makeQuickFixDiv(quickFixes, () => {
                     this.mediator.focusElement(element);
-                    quickFixDiv.close();
                 });
                 openAsOverlay(quickFixDiv, event);
             });
