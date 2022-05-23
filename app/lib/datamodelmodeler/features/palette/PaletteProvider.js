@@ -105,7 +105,7 @@ PaletteProvider.prototype.getPaletteEntries = function(element) {
     'object-linker': {
       group: 'od-elements',
       className: 'bpmn-icon-connection',
-      title: translate('Link objects'),
+      title: translate('Associate Classes'),
       action: {
         click: function(event) {
           globalConnect.start(event);
