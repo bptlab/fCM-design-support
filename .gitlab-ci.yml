@@ -1,0 +1,17 @@
+stages:
+  - deploy
+
+deployOnDockerHost:
+  stage: deploy
+  only:
+    - main
+  image: alpine:3.12
+  before_script:
+    - apk update
+    # configure ssh tools
+    - 'which ssh-agent || ( apk add openssh-client )'
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "$identitykey" | ssh-add -
+  script:
+    - ssh -o StrictHostKeyChecking=no $deployuser@$targethost '/var/fcm-design-support/deploy.sh'
