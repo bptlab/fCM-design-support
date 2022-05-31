@@ -1,5 +1,5 @@
 # Tutorial
-This is a short tutorial document to showcase the usage of fcm-js with an example. A video version of this tutorial can be found at TBD.
+This is a short tutorial document to showcase the usage of fcm-js with an example. A video version of this tutorial can be found [here](https://www.youtube.com/watch?v=bIDZUYBNms0).
 
 <!-- TBD how to talk about suitability checking, because it is not the first screen to be shown. -->
 
