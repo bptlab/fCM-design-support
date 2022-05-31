@@ -1,5 +1,7 @@
 # fCM-js
 *Modeling Tool with Design-Time Support for Fragment-Based Case Management.*
+### ***[:rocket: Try it live! :rocket:](https://bpt-lab.org/fcm-js/)***
+
 
 fcm-js is a modeling tool for fragment-based case management. It aims at supporting users at design time by providing a joint, visual user interface for all artifacts and by integrating automated guideline checking based on fCM guidelines. 
 
@@ -24,7 +26,7 @@ npm run dev
 ```
 
 ### Usage
-There are a [demo video](TBD) and a [use case tutorial](/.docs/Tutorial.md) to showcase how to use fcm-js.
+There are a [demo video](https://www.youtube.com/watch?v=bIDZUYBNms0) and a [use case tutorial](/.docs/Tutorial.md) to showcase how to use fcm-js.
 
 ## Developer Guide
 ### Structure Overview
