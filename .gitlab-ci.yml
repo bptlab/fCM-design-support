@@ -1,10 +1,24 @@
 stages:
+  - build
   - deploy
+
+buildContainer:
+  stage: build
+  tags:
+    - dockerbuilder
+  script:
+    - docker build -t fcm-design-support:latest .
+    - docker image tag fcm-design-support:latest 172.20.3.140:5000/fcm-design-support:latest
+    - docker image push 172.20.3.140:5000/fcm-design-support:latest
+    - docker image rm 172.20.3.140:5000/fcm-design-support:latest
+    - docker image rm fcm-design-support:latest
+  only:
+    - deployment
 
 deployOnDockerHost:
   stage: deploy
   only:
-    - main
+    - deployment
   image: alpine:3.12
   before_script:
     - apk update
@@ -12,6 +26,9 @@ deployOnDockerHost:
     - 'which ssh-agent || ( apk add openssh-client )'
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
-    - echo "$identitykey" | ssh-add -
+    # take care to deploy private key in GitLab as corresponding env var
+    - echo "$SSHDEPLOY" | ssh-add -
   script:
-    - ssh -o StrictHostKeyChecking=no $deployuser@$targethost '/var/fcm-design-support/deploy.sh'
+    - ssh -o StrictHostKeyChecking=no deploybot@172.20.3.140 'docker container ls -al | grep fcm-design-support && docker container rm -f fcm-design-support'
+    - ssh -o StrictHostKeyChecking=no deploybot@172.20.3.140 'docker run -d -p 9024:9024 --restart=always --name=fcm-design-support --pull=always localhost:5000/fcm-design-support:latest'
+    
