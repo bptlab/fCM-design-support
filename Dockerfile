@@ -11,7 +11,7 @@ COPY . .
 
 RUN grunt build
 
-EXPOSE 9024
+EXPOSE 9005
 
 CMD [ "grunt", "serve" ]
 

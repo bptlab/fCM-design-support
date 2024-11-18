@@ -7,15 +7,15 @@ import LabelEditingPreview from './LabelEditingPreview';
 
 
 export default {
-  __depends__: [
-    ChangeSupportModule,
-    ResizeModule,
-    DirectEditingModule
-  ],
-  __init__: [
-    'labelEditingProvider',
-    'labelEditingPreview'
-  ],
-  labelEditingProvider: [ 'type', LabelEditingProvider ],
-  labelEditingPreview: [ 'type', LabelEditingPreview ]
+    __depends__: [
+        ChangeSupportModule,
+        ResizeModule,
+        DirectEditingModule
+    ],
+    __init__: [
+        'labelEditingProvider',
+        'labelEditingPreview'
+    ],
+    labelEditingProvider: ['type', LabelEditingProvider],
+    labelEditingPreview: ['type', LabelEditingPreview]
 };

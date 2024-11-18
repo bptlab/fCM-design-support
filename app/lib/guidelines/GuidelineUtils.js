@@ -1,4 +1,4 @@
-import { is } from '../datamodelmodeler/util/ModelUtil';
+import {is} from '../common/util/ModelUtil';
 
 export function getConnectedElements(element) {
 
@@ -46,12 +46,14 @@ export function getConnectedByExistentialAssociation(caseClass, classDependents)
  */
 export function getClassDependents(mediator) {
     const classDependents = {};
+
     function addClassDependent(dependentClass, contextClass) {
         if (!classDependents[contextClass.id]) {
             classDependents[contextClass.id] = [];
         }
         classDependents[contextClass.id].push(dependentClass);
     }
+
     forEachExistentialAssociation(mediator, addClassDependent);
 
     return classDependents;
@@ -62,12 +64,14 @@ export function getClassDependents(mediator) {
  */
 export function getClassDependencies(mediator) {
     const classDependencies = {};
+
     function addClassDependency(dependentClass, contextClass) {
         if (!classDependencies[dependentClass.id]) {
             classDependencies[dependentClass.id] = [];
         }
         classDependencies[dependentClass.id].push(contextClass);
     }
+
     forEachExistentialAssociation(mediator, addClassDependency);
 
     return classDependencies;
@@ -81,19 +85,19 @@ export function forEachExistentialAssociation(mediator, handler) {
     const classDependencies = {};
     const associations = dataModeler.get('elementRegistry').filter(element => is(element, 'od:Association') && element.type !== 'label').map(association => association.businessObject);
     associations
-    .filter(association => association.sourceCardinality && association.targetCardinality) // TODO this is an hotfix
-    .forEach(association => {
-        const [sourceLowerBound, sourceUpperBound] = association.sourceCardinality.split('..');
-        const [targetLowerBound, targetUpperBound] = association.targetCardinality.split('..');
-        if (parseInt(sourceLowerBound) > 0) {
-            // The lower bound for the association source class is positive, which means the target class is dependent of it
-            handler(association.targetRef, association.sourceRef);
-        }
-        if (parseInt(targetLowerBound) > 0) {
-            // The lower bound for the association target class is positive, which means the source class is dependent of it
-            handler(association.sourceRef, association.targetRef);
-        }
-    });
+        .filter(association => association.sourceCardinality && association.targetCardinality) // TODO this is an hotfix
+        .forEach(association => {
+            const [sourceLowerBound, sourceUpperBound] = association.sourceCardinality.split('..');
+            const [targetLowerBound, targetUpperBound] = association.targetCardinality.split('..');
+            if (parseInt(sourceLowerBound) > 0) {
+                // The lower bound for the association source class is positive, which means the target class is dependent of it
+                handler(association.targetRef, association.sourceRef);
+            }
+            if (parseInt(targetLowerBound) > 0) {
+                // The lower bound for the association target class is positive, which means the source class is dependent of it
+                handler(association.sourceRef, association.targetRef);
+            }
+        });
 
     return classDependencies;
 }

@@ -1,9 +1,9 @@
 import CommandInterceptor from "diagram-js/lib/command/CommandInterceptor";
-import { without } from 'min-dash';
+import {without} from 'min-dash';
 import CommonEvents from "../../common/CommonEvents";
 import getDropdown from "../../util/Dropdown";
-import { appendOverlayListeners } from "../../util/HtmlUtil";
-import { formatStates, is } from "../../util/Util";
+import {appendOverlayListeners} from "../../util/HtmlUtil";
+import {formatStates, is} from "../../util/Util";
 
 export default class DataObjectLabelHandler extends CommandInterceptor {
     constructor(eventBus, modeling, directEditing, overlays, fragmentModeler) {
@@ -60,7 +60,7 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                             this._classDropdown.getEntries().forEach(entry => entry.setSelected(entry.option === currentOlc));
                             states = currentOlc.get('Elements').filter(element => is(element, 'olc:State'));
                         }
-                    
+
                         this._stateDropdown.populate(states, (newState, element) => {
                             this.updateState(newState, element);
                             updateStateSelection();
@@ -89,8 +89,8 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                 populateClassDropdown();
 
                 this._dropdownContainer.confirm = (event) => {
-                    const newClassInput = this._classDropdown.getInputValue();
-                    const newStateInput = this._stateDropdown.getInputValue();
+                    const newClassInput = this._classDropdown.getInputValue().trim();
+                    const newStateInput = this._stateDropdown.getInputValue().trim();
                     let needUpdate = false;
                     if (newClassInput !== '') {
                         const newClass = this.createDataclass(newClassInput);
@@ -130,9 +130,6 @@ export default class DataObjectLabelHandler extends CommandInterceptor {
                     if (this._overlayId) {
                         this._overlays.remove(this._overlayId);
                         this._overlayId = undefined;
-                    }
-                    if (this._currentDropdownTarget?.dataclass === undefined) {
-                        this._modeling.removeElements([this._dropdownContainer.currentElement]);
                     }
                     this._dropdownContainer.currentElement = undefined;
                     this._currentDropdownTarget = undefined;

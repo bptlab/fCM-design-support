@@ -1,7 +1,7 @@
-import { getNewShapePosition } from './OlcAutoPlaceUtil';
+import {getNewShapePosition} from './OlcAutoPlaceUtil';
 
 export default function AutoPlace(eventBus) {
-    eventBus.on('autoPlace', function(context) {
+    eventBus.on('autoPlace', function (context) {
         const shape = context.shape,
             source = context.source;
 

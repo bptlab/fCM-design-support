@@ -11,20 +11,20 @@ import PaletteProvider from './PaletteProvider';
 import OlcContextPadProvider from './OlcContextPadProvider';
 
 export default {
-  __depends__: [
-    PaletteModule,
-    ContextPadModule,
-    CreateModule,
-    SpaceToolModule,
-    LassoToolModule,
-    HandToolModule,
-    GlobalConnectModule,
-    translate
-  ],
-  __init__: [ 
-    'olcContextPadProvider',
-    'paletteProvider'
-  ],
-  paletteProvider: [ 'type', PaletteProvider ],
-  olcContextPadProvider: [ 'type', OlcContextPadProvider ]
+    __depends__: [
+        PaletteModule,
+        ContextPadModule,
+        CreateModule,
+        SpaceToolModule,
+        LassoToolModule,
+        HandToolModule,
+        GlobalConnectModule,
+        translate
+    ],
+    __init__: [
+        'olcContextPadProvider',
+        'paletteProvider'
+    ],
+    paletteProvider: ['type', PaletteProvider],
+    olcContextPadProvider: ['type', OlcContextPadProvider]
 };

@@ -1,14 +1,9 @@
-import {
-    attr as domAttr,
-    classes as domClasses,
-    event as domEvent,
-    query as domQuery
-} from 'min-dom';
+import {classes as domClasses} from 'min-dom';
 import CommonEvents from '../../common/CommonEvents';
 
 import getDropdown from '../../util/Dropdown';
 import {download, upload} from '../../util/FileUtil';
-import { appendOverlayListeners } from '../../util/HtmlUtil';
+import {appendOverlayListeners} from '../../util/HtmlUtil';
 
 import OlcEvents from '../OlcEvents';
 
@@ -23,7 +18,7 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     const exportButton = document.createElement('button');
     exportButton.innerHTML = 'Export Olc as Xml'
     exportButton.addEventListener('click', function () {
-        olcModeler.saveXML({ format: true }).then(result => {
+        olcModeler.saveXML({format: true}).then(result => {
             download('foobar.xml', result.xml);
         });
     });
@@ -87,7 +82,7 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
     deleteOlcButton.title = 'Delete Current Olc';
     deleteOlcButton.addEventListener('click', () => {
         var olcToDelete = selectOlcComponent.value;
-        var shouldDelete = eventBus.fire(OlcEvents.OLC_DELETION_REQUESTED, { olc: olcToDelete });
+        var shouldDelete = eventBus.fire(OlcEvents.OLC_DELETION_REQUESTED, {olc: olcToDelete});
         if (shouldDelete !== false) {
             // Deletion was not rejected and not handled somewhere else; should not happen when mediator is involved
             olcModeler.deleteOlc(olcToDelete.classRef);
@@ -107,7 +102,7 @@ export default function OlcButtonBar(canvas, eventBus, olcModeler) {
             selectOlcMenu.hide();
         });
         selectOlcMenu.addCreateElementInput(event => {
-            var className = selectOlcMenu.getInputValue();
+            var className = selectOlcMenu.getInputValue().trim();
             if (className && className.length > 0) {
                 eventBus.fire(CommonEvents.DATACLASS_CREATION_REQUESTED, {
                     name: className

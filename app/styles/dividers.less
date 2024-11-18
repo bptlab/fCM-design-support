@@ -1,69 +1,69 @@
 .left {
-    width: 70%;
-    height: 100%;
+  width: 70%;
+  height: 100%;
 }
 
 .right {
-    width: 30%;
-    height: 100%;
-  }
-  
-  .right {
-    left: 0%;
-  }
-  
-  .top, .bottom {
-    width: 100%;
-    height: 50%;
-  }
-  
-  .bottom {
-    top: 0%;
-  }
-  
-  .divider {
-    float: none;
-    overflow: hidden;
-    background-color: transparent;
-    position:absolute;
-    z-index: 100;
-    --thickness: 20px;
-  }
-
-  .divider:after {
-    content: '';
-    display: block;
-    --border-width: 6px;
-    --offset: calc((var(--thickness) - var(--border-width)) / 2);
-    --border-style: var(--border-width) dotted rgba(150,150,150,1);
+  width: 30%;
+  height: 100%;
 }
 
-  .divider.dragged {
-    --thickness: 20px;
-    background-color: rgba(150,150,150,0.5);
-  }
-  
-  .divider.vertical {
-    width: var(--thickness);
-    height: 100%;
-    left: calc(70% - 10px);
-    cursor: w-resize;
-  }
+.right {
+  left: 0%;
+}
 
-  .divider.vertical:after {
-    margin-left: var(--offset);
-    border-left: var(--border-style);
-    height: 100%;
-  }
-  
-  .divider.horizontal {
-    height: var(--thickness);
-    width: 100%;
-    top: calc(50% - 10px);
-    cursor: n-resize;
-  }
+.top, .bottom {
+  width: 100%;
+  height: 50%;
+}
 
-  .divider.horizontal:after {
-    margin-top: var(--offset);
-    border-bottom: var(--border-style);
-  }
+.bottom {
+  top: 0%;
+}
+
+.divider {
+  float: none;
+  overflow: hidden;
+  background-color: transparent;
+  position: absolute;
+  z-index: 100;
+  --thickness: 20px;
+}
+
+.divider:after {
+  content: '';
+  display: block;
+  --border-width: 6px;
+  --offset: calc((var(--thickness) - var(--border-width)) / 2);
+  --border-style: var(--border-width) dotted rgba(150, 150, 150, 1);
+}
+
+.divider.dragged {
+  --thickness: 20px;
+  background-color: rgba(150, 150, 150, 0.5);
+}
+
+.divider.vertical {
+  width: var(--thickness);
+  height: 100%;
+  left: calc(70% - 10px);
+  cursor: w-resize;
+}
+
+.divider.vertical:after {
+  margin-left: var(--offset);
+  border-left: var(--border-style);
+  height: 100%;
+}
+
+.divider.horizontal {
+  height: var(--thickness);
+  width: 100%;
+  top: calc(50% - 10px);
+  cursor: n-resize;
+}
+
+.divider.horizontal:after {
+  margin-top: var(--offset);
+  border-bottom: var(--border-style);
+}

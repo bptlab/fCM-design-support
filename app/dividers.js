@@ -2,13 +2,21 @@ import $ from 'jquery';
 
 var dragTarget = undefined;
 
-window.addEventListener('mousemove', function (e) { dragmove(e); });
-window.addEventListener('touchmove', function (e) { dragmove(e); });
+window.addEventListener('mousemove', function (e) {
+    dragmove(e);
+});
+window.addEventListener('touchmove', function (e) {
+    dragmove(e);
+});
 window.addEventListener('mouseup', dragend);
 window.addEventListener('touchend', dragend);
 $('.divider').each((index, divider) => {
-    divider.addEventListener('mousedown', function (e) { dragstart(e); });
-    divider.addEventListener('touchstart', function (e) { dragstart(e); });
+    divider.addEventListener('mousedown', function (e) {
+        dragstart(e);
+    });
+    divider.addEventListener('touchstart', function (e) {
+        dragstart(e);
+    });
 });
 
 function dragstart(e) {
@@ -30,7 +38,7 @@ function dragmove(e) {
                 var mainPercentage = 100 - percentage;
                 prev.style.width = percentage + '%';
                 next.style.width = mainPercentage + '%';
-                dragTarget.style.left = 'calc('+ percentage * (parentInnerWidth / parseInt(parentStyle.width, 10)) + '% - 10px - '+ parentStyle.paddingLeft +')';
+                dragTarget.style.left = 'calc(' + percentage * (parentInnerWidth / parseInt(parentStyle.width, 10)) + '% - 10px - ' + parentStyle.paddingLeft + ')';
                 next.style.left = 0 + '%';
             }
         } else {
@@ -40,7 +48,7 @@ function dragmove(e) {
                 var mainPercentage = 100 - percentage;
                 prev.style.height = percentage + '%';
                 next.style.height = mainPercentage + '%';
-                dragTarget.style.top = 'calc('+percentage * (parentInnerHeight / parseInt(parentStyle.height, 10)) + '% - 10px + ' + parentStyle.paddingTop +')';
+                dragTarget.style.top = 'calc(' + percentage * (parentInnerHeight / parseInt(parentStyle.height, 10)) + '% - 10px + ' + parentStyle.paddingTop + ')';
                 next.style.top = 0 + '%';
             }
         }

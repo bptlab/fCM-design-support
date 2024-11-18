@@ -24,6 +24,7 @@ export function openAsOverlay(htmlElement, {x, y}) {
 
 export function appendOverlayListeners(htmlElement) {
     const documentListeners = [];
+
     function addDocumentListener(eventType, value) {
         document.addEventListener(eventType, value, true);
         documentListeners.push({eventType, value});

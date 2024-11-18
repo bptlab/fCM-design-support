@@ -1,17 +1,12 @@
-import {
-  find,
-  forEach
-} from 'min-dash';
+import {find, forEach} from 'min-dash';
 
 import Refs from 'object-refs';
 
-import {
-  elementToString
-} from './Util';
+import {elementToString} from '../../common/import/Util';
 
 var diRefs = new Refs(
-  { name: 'boardElement', enumerable: true },
-  { name: 'di', configurable: true }
+    {name: 'boardElement', enumerable: true},
+    {name: 'di', configurable: true}
 );
 
 /**
@@ -23,7 +18,7 @@ var diRefs = new Refs(
  * @return {Boolean}
  */
 function is(element, type) {
-  return element.$instanceOf(type);
+    return element.$instanceOf(type);
 }
 
 
@@ -32,115 +27,115 @@ function is(element, type) {
  * correctly specify one.
  */
 function findDisplayCandidate(definitions) {
-  return find(definitions.rootElements, function(e) {
-    return is(e, 'od:OdBoard');
-  });
+    return find(definitions.rootElements, function (e) {
+        return is(e, 'od:OdBoard');
+    });
 }
 
 
 export default function OdTreeWalker(handler, translate) {
 
-  // list of containers already walked
-  var handledElements = {};
+    // list of containers already walked
+    var handledElements = {};
 
-  // list of elements to handle deferred to ensure
-  // prerequisites are drawn
-  var deferred = [];
+    // list of elements to handle deferred to ensure
+    // prerequisites are drawn
+    var deferred = [];
 
-  // Helpers //////////////////////
+    // Helpers //////////////////////
 
-  function visitRoot(element, diagram) {
-    return handler.root(element, diagram);
-  }
-
-  function visit(element, ctx) {
-
-    var gfx = element.gfx;
-
-    // avoid multiple rendering of elements
-    if (gfx) {
-      throw new Error(
-        translate('already rendered {element}', { element: elementToString(element) })
-      );
+    function visitRoot(element, diagram) {
+        return handler.root(element, diagram);
     }
 
-    // call handler
-    return handler.element(element, ctx);
-  }
+    function visit(element, ctx) {
 
-  function visitIfDi(element, ctx) {
+        var gfx = element.gfx;
 
-    try {
-      var gfx = element.di && visit(element, ctx);
+        // avoid multiple rendering of elements
+        if (gfx) {
+            throw new Error(
+                translate('already rendered {element}', {element: elementToString(element)})
+            );
+        }
 
-      handled(element);
-
-      return gfx;
-    } catch (e) {
-      logError(e.message, { element: element, error: e });
-
-      console.error(translate('failed to import {element}', { element: elementToString(element) }));
-      console.error(e);
+        // call handler
+        return handler.element(element, ctx);
     }
-  }
 
-  function logError(message, context) {
-    handler.error(message, context);
-  }
+    function visitIfDi(element, ctx) {
 
-  function handled(element) {
-    handledElements[element.id] = element;
-  }
+        try {
+            var gfx = element.di && visit(element, ctx);
 
-  // DI handling //////////////////////
+            handled(element);
 
-  function registerDi(di) {
-    var boardElement = di.boardElement;
+            return gfx;
+        } catch (e) {
+            logError(e.message, {element: element, error: e});
 
-    if (boardElement) {
-      if (boardElement.di) {
-        logError(
-          translate('multiple DI elements defined for {element}', {
-            element: elementToString(boardElement)
-          }),
-          { element: boardElement }
-        );
-      } else {
-        diRefs.bind(boardElement, 'di');
-        boardElement.di = di;
-      }
-    } else {
-      logError(
-        translate('no boardElement referenced in {element}', {
-          element: elementToString(di)
-        }),
-        { element: di }
-      );
+            console.error(translate('failed to import {element}', {element: elementToString(element)}));
+            console.error(e);
+        }
     }
-  }
 
-  function handleBoard(diagram) {
-    handlePlane(diagram.plane);
-  }
+    function logError(message, context) {
+        handler.error(message, context);
+    }
 
-  function handlePlane(plane) {
-    registerDi(plane);
+    function handled(element) {
+        handledElements[element.id] = element;
+    }
 
-    forEach(plane.planeElement, handlePlaneElement);
-  }
+    // DI handling //////////////////////
 
-  function handlePlaneElement(planeElement) {
-    registerDi(planeElement);
-  }
+    function registerDi(di) {
+        var boardElement = di.boardElement;
 
-  function handleSequenceFlow(sequenceFlow, context) {
-    visitIfDi(sequenceFlow, context);
-  }
+        if (boardElement) {
+            if (boardElement.di) {
+                logError(
+                    translate('multiple DI elements defined for {element}', {
+                        element: elementToString(boardElement)
+                    }),
+                    {element: boardElement}
+                );
+            } else {
+                diRefs.bind(boardElement, 'di');
+                boardElement.di = di;
+            }
+        } else {
+            logError(
+                translate('no boardElement referenced in {element}', {
+                    element: elementToString(di)
+                }),
+                {element: di}
+            );
+        }
+    }
+
+    function handleBoard(diagram) {
+        handlePlane(diagram.plane);
+    }
+
+    function handlePlane(plane) {
+        registerDi(plane);
+
+        forEach(plane.planeElement, handlePlaneElement);
+    }
+
+    function handlePlaneElement(planeElement) {
+        registerDi(planeElement);
+    }
+
+    function handleSequenceFlow(sequenceFlow, context) {
+        visitIfDi(sequenceFlow, context);
+    }
 
 
-  // Semantic handling //////////////////////
+    // Semantic handling //////////////////////
 
-  /**
+    /**
      * Handle definitions and return the rendered board (if any)
      *
      * @param {ModdleElement} definitions to walk and import
@@ -148,108 +143,108 @@ export default function OdTreeWalker(handler, translate) {
      *
      * @throws {Error} if no diagram to display could be found
      */
-  function handleDefinitions(definitions, rootBoard) {
+    function handleDefinitions(definitions, rootBoard) {
 
-    // make sure we walk the correct boardElement
+        // make sure we walk the correct boardElement
 
-    var rootBoards = definitions.rootBoards;
+        var rootBoards = definitions.rootBoards;
 
-    if (rootBoard && rootBoards.indexOf(rootBoard) === -1) {
-      throw new Error(translate('rootBoard not part of od:Definitions'));
+        if (rootBoard && rootBoards.indexOf(rootBoard) === -1) {
+            throw new Error(translate('rootBoard not part of od:Definitions'));
+        }
+
+        if (!rootBoard && rootBoards && rootBoards.length) {
+            rootBoard = rootBoards[0];
+        }
+
+        // no root board -> nothing to import
+        if (!rootBoard) {
+            throw new Error(translate('no rootBoard to display'));
+        }
+
+        // load DI from selected root board only
+        handleBoard(rootBoard);
+
+        var plane = rootBoard.plane;
+
+        if (!plane) {
+            throw new Error(translate(
+                'no plane for {element}',
+                {element: elementToString(rootBoard)}
+            ));
+        }
+
+        var rootElement = plane.boardElement;
+
+        // ensure we default to a suitable display candidate (board),
+        // even if non is specified in DI
+        if (!rootElement) {
+            rootElement = findDisplayCandidate(definitions);
+
+            if (!rootElement) {
+                throw new Error(translate('no board to display'));
+            } else {
+
+                logError(
+                    translate('correcting missing boardElement on {plane} to {rootElement}', {
+                        plane: elementToString(plane),
+                        rootElement: elementToString(rootElement)
+                    })
+                );
+
+                // correct DI on the fly
+                plane.boardElement = rootElement;
+                registerDi(plane);
+            }
+        }
+
+        var ctx = visitRoot(rootElement, plane);
+
+        if (is(rootElement, 'od:OdBoard')) {
+            handleOdBoard(rootElement, ctx);
+        }
+
+        // handle all deferred elements
+        handleDeferred(deferred);
     }
 
-    if (!rootBoard && rootBoards && rootBoards.length) {
-      rootBoard = rootBoards[0];
-    }
-
-    // no root board -> nothing to import
-    if (!rootBoard) {
-      throw new Error(translate('no rootBoard to display'));
-    }
-
-    // load DI from selected root board only
-    handleBoard(rootBoard);
-
-    var plane = rootBoard.plane;
-
-    if (!plane) {
-      throw new Error(translate(
-        'no plane for {element}',
-        { element: elementToString(rootBoard) }
-      ));
-    }
-
-    var rootElement = plane.boardElement;
-
-    // ensure we default to a suitable display candidate (board),
-    // even if non is specified in DI
-    if (!rootElement) {
-      rootElement = findDisplayCandidate(definitions);
-
-      if (!rootElement) {
-        throw new Error(translate('no board to display'));
-      } else {
-
-        logError(
-          translate('correcting missing boardElement on {plane} to {rootElement}', {
-            plane: elementToString(plane),
-            rootElement: elementToString(rootElement)
-          })
-        );
-
-        // correct DI on the fly
-        plane.boardElement = rootElement;
-        registerDi(plane);
-      }
-    }
-
-    var ctx = visitRoot(rootElement, plane);
-
-    if (is(rootElement, 'od:OdBoard')) {
-      handleOdBoard(rootElement, ctx);
-    }
-
-    // handle all deferred elements
-    handleDeferred(deferred);
-  }
-
-  function handleBoardElements(boardElements, context) {
-    forEach(boardElements, function(element) {
-      if (is(element, 'od:Association')) {
-        deferred.push(function() {
-          handleSequenceFlow(element, context);
+    function handleBoardElements(boardElements, context) {
+        forEach(boardElements, function (element) {
+            if (is(element, 'od:Association')) {
+                deferred.push(function () {
+                    handleSequenceFlow(element, context);
+                });
+            } else {
+                visitIfDi(element, context);
+            }
         });
-      } else {
-        visitIfDi(element, context);
-      }
-    });
-  }
-
-  function handleOdBoard(board, context) {
-    handleBoardElements(board.boardElements, context);
-
-    // log board handled
-    handled(board);
-  }
-
-  function handleDeferred() {
-
-    var fn;
-
-    // drain deferred until empty
-    while (deferred.length) {
-      fn = deferred.shift();
-
-      fn();
     }
-  }
+
+    function handleOdBoard(board, context) {
+        handleBoardElements(board.boardElements, context);
+
+        // log board handled
+        handled(board);
+    }
+
+    function handleDeferred() {
+
+        var fn;
+
+        // drain deferred until empty
+        while (deferred.length) {
+            fn = deferred.shift();
+
+            fn();
+        }
+    }
 
 
-  // API //////////////////////
+    // API //////////////////////
 
-  return {
-    handleDeferred: handleDeferred,
-    handleDefinitions: handleDefinitions,
-    registerDi: registerDi
-  };
+    return {
+        handleDeferred: handleDeferred,
+        handleDefinitions: handleDefinitions,
+        registerDi: registerDi
+    };
 }

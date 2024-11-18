@@ -30,10 +30,10 @@ import PaletteModule from './features/palette';
 import ResizeModule from 'diagram-js/lib/features/resize';
 import SpaceToolBehaviorModule from './behavior';
 import SnappingModule from './features/snapping';
-import { nextPosition } from '../util/Util';
+import {nextPosition} from '../util/Util';
 
 var initialDiagram =
-  `<?xml version="1.0" encoding="UTF-8"?>
+    `<?xml version="1.0" encoding="UTF-8"?>
 <od:definitions xmlns:od="http://tk/schema/od" xmlns:odDi="http://tk/schema/odDi">
     <od:odBoard id="Board_debug" />
     <odDi:odRootBoard id="RootBoard_debug">
@@ -42,7 +42,7 @@ var initialDiagram =
 </od:definitions>`;
 
 export default function Modeler(options) {
-  BaseModeler.call(this, options);
+    BaseModeler.call(this, options);
 }
 
 inherits(Modeler, BaseModeler);
@@ -52,20 +52,20 @@ Modeler.Viewer = Viewer;
 Modeler.NavigatedViewer = NavigatedViewer;
 
 /**
-* The createDiagram result.
-*
-* @typedef {Object} CreateDiagramResult
-*
-* @property {Array<string>} warnings
-*/
+ * The createDiagram result.
+ *
+ * @typedef {Object} CreateDiagramResult
+ *
+ * @property {Array<string>} warnings
+ */
 
 /**
-* The createDiagram error.
-*
-* @typedef {Error} CreateDiagramError
-*
-* @property {Array<string>} warnings
-*/
+ * The createDiagram error.
+ *
+ * @typedef {Error} CreateDiagramError
+ *
+ * @property {Array<string>} warnings
+ */
 
 /**
  * Create a new diagram to start modeling.
@@ -73,43 +73,43 @@ Modeler.NavigatedViewer = NavigatedViewer;
  * @returns {Promise<CreateDiagramResult, CreateDiagramError>}
  *
  */
-Modeler.prototype.createDiagram = function() {
-  return this.importXML(initialDiagram);
+Modeler.prototype.createDiagram = function () {
+    return this.importXML(initialDiagram);
 };
 
 
 Modeler.prototype._interactionModules = [
 
-  // non-modeling components
-  KeyboardMoveModule,
-  MoveCanvasModule,
-  TouchModule,
-  ZoomScrollModule
+    // non-modeling components
+    KeyboardMoveModule,
+    MoveCanvasModule,
+    TouchModule,
+    ZoomScrollModule
 ];
 
 Modeler.prototype._modelingModules = [
 
-  // modeling components
-  AutoplaceModule,
-  AlignElementsModule,
-  AutoScrollModule,
-  BendpointsModule,
-  ConnectModule,
-  ConnectionPreviewModule,
-  ContextPadModule,
-  CopyPasteModule,
-  CreateModule,
-  EditorActionsModule,
-  GridSnappingModule,
-  KeyboardModule,
-  KeyboardMoveSelectionModule,
-  LabelEditingModule,
-  ModelingModule,
-  MoveModule,
-  PaletteModule,
-  ResizeModule,
-  SnappingModule,
-  SpaceToolBehaviorModule
+    // modeling components
+    AutoplaceModule,
+    AlignElementsModule,
+    AutoScrollModule,
+    BendpointsModule,
+    ConnectModule,
+    ConnectionPreviewModule,
+    ContextPadModule,
+    CopyPasteModule,
+    CreateModule,
+    EditorActionsModule,
+    GridSnappingModule,
+    KeyboardModule,
+    KeyboardMoveSelectionModule,
+    LabelEditingModule,
+    ModelingModule,
+    MoveModule,
+    PaletteModule,
+    ResizeModule,
+    SnappingModule,
+    SpaceToolBehaviorModule
 ];
 
 
@@ -120,32 +120,43 @@ Modeler.prototype._modelingModules = [
 // - modeling modules
 
 Modeler.prototype._modules = [].concat(
-  Viewer.prototype._modules,
-  Modeler.prototype._interactionModules,
-  Modeler.prototype._modelingModules
+    Viewer.prototype._modules,
+    Modeler.prototype._interactionModules,
+    Modeler.prototype._modelingModules
 );
 
-Modeler.prototype.createDataclass = function (name) {
-  const modeling = this.get('modeling');
-  const canvas = this.get('canvas');
-  const diagramRoot = canvas.getRootElement();
+Modeler.prototype.id = "DM";
+Modeler.prototype.rank = 2;
 
-  const {x,y} = nextPosition(this, 'od:Class');
-  const shape = modeling.createShape({
-    type: 'od:Class',
-    name: name
-  }, {x,y}, diagramRoot);
-  return shape.businessObject;
+Modeler.prototype.name = function (constructionMode) {
+    if (constructionMode) {
+        return "Data Model";
+    } else {
+        return "Data Model";
+    }
+}
+
+Modeler.prototype.createDataclass = function (name) {
+    const modeling = this.get('modeling');
+    const canvas = this.get('canvas');
+    const diagramRoot = canvas.getRootElement();
+
+    const {x, y} = nextPosition(this, 'od:Class');
+    const shape = modeling.createShape({
+        type: 'od:Class',
+        name: name
+    }, {x, y}, diagramRoot);
+    return shape.businessObject;
 }
 
 Modeler.prototype.renameClass = function (clazz, name) {
-  this.get('modeling').updateLabel(this.get('elementRegistry').get(clazz.id), name);
+    this.get('modeling').updateLabel(this.get('elementRegistry').get(clazz.id), name);
 }
 
 Modeler.prototype.deleteClass = function (clazz) {
-  this.get('modeling').removeShape(this.get('elementRegistry').get(clazz.id));
+    this.get('modeling').removeShape(this.get('elementRegistry').get(clazz.id));
 }
 
 Modeler.prototype.updateProperty = function (clazz, property) {
-  this.get('modeling').updateProperties(clazz, property);
+    this.get('modeling').updateProperties(clazz, property);
 }

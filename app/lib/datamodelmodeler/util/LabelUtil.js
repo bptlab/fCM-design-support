@@ -1,14 +1,12 @@
-import {
-  assign
-} from 'min-dash';
-import { getLabelAttr } from '../features/label-editing/LabelUtil';
+import {assign} from 'min-dash';
+import {getLabelAttr} from '../features/label-editing/LabelUtil';
 
-import { is } from './ModelUtil';
+import {is} from '../../common/util/ModelUtil';
 
 
 export var DEFAULT_LABEL_SIZE = {
-  width: 90,
-  height: 20
+    width: 90,
+    height: 20
 };
 
 export var FLOW_LABEL_INDENT = 15;
@@ -21,7 +19,7 @@ export var FLOW_LABEL_INDENT = 15;
  * @return {Boolean} true if has label
  */
 export function isLabelExternal(semantic) {
-  return is(semantic, 'od:Association');
+    return is(semantic, 'od:Association');
 }
 
 /**
@@ -31,7 +29,7 @@ export function isLabelExternal(semantic) {
  * @return {Boolean} true if has label
  */
 export function hasExternalLabel(element) {
-  return isLabel(element.label);
+    return isLabel(element.label);
 }
 
 /**
@@ -42,28 +40,28 @@ export function hasExternalLabel(element) {
  */
 export function getFlowLabelPosition(waypoints) {
 
-  // get the waypoints mid
-  var mid = waypoints.length / 2 - 1;
+    // get the waypoints mid
+    var mid = waypoints.length / 2 - 1;
 
-  var first = waypoints[Math.floor(mid)];
-  var second = waypoints[Math.ceil(mid + 0.01)];
+    var first = waypoints[Math.floor(mid)];
+    var second = waypoints[Math.ceil(mid + 0.01)];
 
-  // get position
-  var position = getWaypointsMid(waypoints);
+    // get position
+    var position = getWaypointsMid(waypoints);
 
-  // calculate angle
-  var angle = Math.atan((second.y - first.y) / (second.x - first.x));
+    // calculate angle
+    var angle = Math.atan((second.y - first.y) / (second.x - first.x));
 
-  var x = position.x,
-      y = position.y;
+    var x = position.x,
+        y = position.y;
 
-  if (Math.abs(angle) < Math.PI / 2) {
-    y -= FLOW_LABEL_INDENT;
-  } else {
-    x += FLOW_LABEL_INDENT;
-  }
+    if (Math.abs(angle) < Math.PI / 2) {
+        y -= FLOW_LABEL_INDENT;
+    } else {
+        x += FLOW_LABEL_INDENT;
+    }
 
-  return { x: x, y: y };
+    return {x: x, y: y};
 }
 
 /**
@@ -74,74 +72,76 @@ export function getFlowLabelPosition(waypoints) {
  */
 export function getWaypointsMid(waypoints) {
 
-  var mid = waypoints.length / 2 - 1;
+    var mid = waypoints.length / 2 - 1;
 
-  var first = waypoints[Math.floor(mid)];
-  var second = waypoints[Math.ceil(mid + 0.01)];
+    var first = waypoints[Math.floor(mid)];
+    var second = waypoints[Math.ceil(mid + 0.01)];
 
-  return {
-    x: first.x + (second.x - first.x) / 2,
-    y: first.y + (second.y - first.y) / 2
-  };
+    return {
+        x: first.x + (second.x - first.x) / 2,
+        y: first.y + (second.y - first.y) / 2
+    };
 }
 
 
 export function getExternalLabelMid(element) {
-  if (element.waypoints) {
-    return getFlowLabelPosition(element.waypoints);
-  } else {
-    return {
-      x: element.x + element.width / 2,
-      y: element.y + element.height + DEFAULT_LABEL_SIZE.height / 2
-    };
-  }
+    if (element.waypoints) {
+        return getFlowLabelPosition(element.waypoints);
+    } else {
+        return {
+            x: element.x + element.width / 2,
+            y: element.y + element.height + DEFAULT_LABEL_SIZE.height / 2
+        };
+    }
 }
 
 export function getSourceLabelPosition(element) {
-  if (element.waypoints) {
-    return {x: element.waypoints[0].x, 
-            y: element.waypoints[0].y + 10 
-           };
-    // return getFlowLabelPosition(element.waypoints);
-  } else {
-    return {
-      x: element.x + element.width / 2,
-      y: element.y + element.height + DEFAULT_LABEL_SIZE.height / 2
-    };
-  }
+    if (element.waypoints) {
+        return {
+            x: element.waypoints[0].x,
+            y: element.waypoints[0].y + 10
+        };
+        // return getFlowLabelPosition(element.waypoints);
+    } else {
+        return {
+            x: element.x + element.width / 2,
+            y: element.y + element.height + DEFAULT_LABEL_SIZE.height / 2
+        };
+    }
 }
 
 export function getTargetLabelPosition(element) {
-  if (element.waypoints) {
-    return {x: element.waypoints.at(-1).x, 
-            y: element.waypoints.at(-1).y + 10 
-           };
-    // return getFlowLabelPosition(element.waypoints);
-  } else {
-    return {
-      x: element.x + element.width / 2,
-      y: element.y + element.height + DEFAULT_LABEL_SIZE.height / 2
-    };
-  }
+    if (element.waypoints) {
+        return {
+            x: element.waypoints.at(-1).x,
+            y: element.waypoints.at(-1).y + 10
+        };
+        // return getFlowLabelPosition(element.waypoints);
+    } else {
+        return {
+            x: element.x + element.width / 2,
+            y: element.y + element.height + DEFAULT_LABEL_SIZE.height / 2
+        };
+    }
 }
 
 export function getLabelElementId(element) {
-    
-  var semantic = element.businessObject;
-  const labelAttributeToElementIdMap = {
-    sourceCardinality: 'sourceLabel',
-    targetCardinality: 'targetLabel' 
-  }
 
-  const elementToLabelElementIdMap = {
-    'od:Association' : 'sourceLabel'
-  }
-  var labelAttribute = getLabelAttr(element);
-    
+    var semantic = element.businessObject;
+    const labelAttributeToElementIdMap = {
+        sourceCardinality: 'sourceLabel',
+        targetCardinality: 'targetLabel'
+    }
 
-  var labelElementId = labelAttribute && labelAttributeToElementIdMap[labelAttribute] || elementToLabelElementIdMap[semantic.$type] || 'label';
-  
-  return labelElementId;
+    const elementToLabelElementIdMap = {
+        'od:Association': 'sourceLabel'
+    }
+    var labelAttribute = getLabelAttr(element);
+
+
+    var labelElementId = labelAttribute && labelAttributeToElementIdMap[labelAttribute] || elementToLabelElementIdMap[semantic.$type] || 'label';
+
+    return labelElementId;
 }
 
 
@@ -154,38 +154,38 @@ export function getLabelElementId(element) {
  */
 export function getExternalLabelBounds(semantic, element) {
 
-  var mid,
-      size,
-      bounds;
+    var mid,
+        size,
+        bounds;
 
-  var di = semantic.di;
-  var label = di[getLabelElementId(element)];
+    var di = semantic.di;
+    var label = di[getLabelElementId(element)];
 
-  if (label && label.bounds) {
-    bounds = label.bounds;
+    if (label && label.bounds) {
+        bounds = label.bounds;
 
-    size = {
-      width: Math.max(DEFAULT_LABEL_SIZE.width, bounds.width),
-      height: bounds.height
-    };
+        size = {
+            width: Math.max(DEFAULT_LABEL_SIZE.width, bounds.width),
+            height: bounds.height
+        };
 
-    mid = {
-      x: bounds.x + bounds.width / 2,
-      y: bounds.y + bounds.height / 2
-    };
-  } else {
+        mid = {
+            x: bounds.x + bounds.width / 2,
+            y: bounds.y + bounds.height / 2
+        };
+    } else {
 
-    mid = getExternalLabelMid(element);
+        mid = getExternalLabelMid(element);
 
-    size = DEFAULT_LABEL_SIZE;
-  }
+        size = DEFAULT_LABEL_SIZE;
+    }
 
-  return assign({
-    x: mid.x - size.width / 2,
-    y: mid.y - size.height / 2
-  }, size);
+    return assign({
+        x: mid.x - size.width / 2,
+        y: mid.y - size.height / 2
+    }, size);
 }
 
 export function isLabel(element) {
-  return element && !!element.labelTarget;
+    return element && !!element.labelTarget;
 }

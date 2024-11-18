@@ -79,6 +79,11 @@
           "isAttr": true,
           "isReference": true,
           "type": "Class"
+        },
+        {
+          "name": "inheritance",
+          "isAttr": true,
+          "type": "Boolean"
         }
       ]
     },

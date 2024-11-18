@@ -1,0 +1,152 @@
+{
+  "name": "Resource Model",
+  "uri": "http://tk/schema/od",
+  "prefix": "rem",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "types": [
+    {
+      "name": "BoardElement",
+      "isAbstract": true,
+      "properties": [
+        {
+          "name": "name",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "id",
+          "isAttr": true,
+          "type": "String",
+          "isId": true
+        }
+      ]
+    },
+    {
+      "name": "Resource",
+      "superClass": [
+        "BoardElement"
+      ],
+      "properties": [
+        {
+          "name": "links",
+          "isMany": true,
+          "type": "Link",
+          "isReference": true
+        },
+        {
+          "name": "capacity",
+          "isAttr": true,
+          "type": "Integer"
+        },
+        {
+          "name": "roles",
+          "isMany": true,
+          "type": "rom:Role",
+          "isReference": true
+        },
+        {
+          "name": "availabilityStart",
+          "isAttr": true,
+          "type": "Integer"
+        },
+        {
+          "name": "availabilityEnd",
+          "isAttr": true,
+          "type": "Integer"
+        }
+      ]
+    },
+    {
+      "name": "Link",
+      "superClass": [
+        "BoardElement"
+      ],
+      "properties": [
+        {
+          "name": "type",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "sourceRef",
+          "isAttr": true,
+          "isReference": true,
+          "type": "Resource"
+        },
+        {
+          "name": "targetRef",
+          "isAttr": true,
+          "isReference": true,
+          "type": "Resource"
+        }
+      ]
+    },
+    {
+      "name": "OdBoard",
+      "superClass": [
+        "RootElement"
+      ],
+      "properties": [
+        {
+          "name": "boardElements",
+          "isMany": true,
+          "type": "BoardElement"
+        }
+      ]
+    },
+    {
+      "name": "RootElement",
+      "isAbstract": true,
+      "superClass": [
+        "BoardElement"
+      ]
+    },
+    {
+      "name": "Definitions",
+      "superClass": [
+        "BoardElement"
+      ],
+      "properties": [
+        {
+          "name": "targetNamespace",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "expressionLanguage",
+          "default": "http://www.w3.org/1999/XPath",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "typeLanguage",
+          "default": "http://www.w3.org/2001/XMLSchema",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "rootElements",
+          "type": "RootElement",
+          "isMany": true
+        },
+        {
+          "name": "rootBoards",
+          "isMany": true,
+          "type": "odDi:OdRootBoard"
+        },
+        {
+          "name": "exporter",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "exporterVersion",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    }
+  ]
+}

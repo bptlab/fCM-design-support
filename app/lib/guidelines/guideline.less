@@ -1,6 +1,5 @@
 .highlightedElement .djs-visual {
-    filter:
-    url('data:image/svg+xml,\
+  filter: url('data:image/svg+xml,\
     <svg xmlns="http://www.w3.org/2000/svg">\
     <filter id="noInnerGlow"> \
         <feColorMatrix type="matrix" values="1 0 0 0 0 \
@@ -8,86 +7,86 @@
                                         0 0 1 0 0 \
                                         0 0 0 100 0" /> \
     </filter> \
-    </svg>#noInnerGlow') 
-        drop-shadow(0 0 2px var(--highlight-color)) drop-shadow(1px 0 0 var(--highlight-color)) drop-shadow(-1px 0 0 var(--highlight-color)) drop-shadow(0 -1px 0 var(--highlight-color)) drop-shadow(0 1px 0 var(--highlight-color));
+    </svg>#noInnerGlow') drop-shadow(0 0 2px var(--highlight-color)) drop-shadow(1px 0 0 var(--highlight-color)) drop-shadow(-1px 0 0 var(--highlight-color)) drop-shadow(0 -1px 0 var(--highlight-color)) drop-shadow(0 1px 0 var(--highlight-color));
 }
 
 div.highlightedElement {
-    box-shadow: inset 0 0 10px var(--highlight-color), inset 2px 0 0 var(--highlight-color), inset -2px 0 0 var(--highlight-color), inset 0 -2px 0 var(--highlight-color), inset 0 2px 0 var(--highlight-color);
+  box-shadow: inset 0 0 10px var(--highlight-color), inset 2px 0 0 var(--highlight-color), inset -2px 0 0 var(--highlight-color), inset 0 -2px 0 var(--highlight-color), inset 0 2px 0 var(--highlight-color);
 }
 
 .informationElement {
-    --highlight-color: rgb(179, 250, 255);
-    --text-color: black;
-    --icon: 'ℹ️';
-    order: 3;
+  --highlight-color: rgb(179, 250, 255);
+  --text-color: black;
+  --icon: 'ℹ️';
+  order: 3;
 }
 
 .warningElement {
-    --highlight-color: yellow;
-    --text-color: black;
-    --icon: '⚠️';
-    order: 2;
+  --highlight-color: yellow;
+  --text-color: black;
+  --icon: '⚠️';
+  order: 2;
 }
 
 .errorElement {
-    --highlight-color: red !important;
-    --text-color: white;
-    --icon: '🛑';
-    order: 1;
+  --highlight-color: red !important;
+  --text-color: white;
+  --icon: '🛑';
+  order: 1;
 }
 
 .hasQuickFixes td {
-    --icon: '💡';
+  --icon: '💡';
 }
 
 .violationMarker {
-    width: 10px;
-    height: 15px;
-    background-color: var(--highlight-color);
-    text-align: center;
-    vertical-align: middle;
-    cursor: pointer;
+  width: 10px;
+  height: 15px;
+  background-color: var(--highlight-color);
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
 }
 
 .canvas > .markerContainer > .violationMarker {
-    height: 30px;
-    width: 20px;
-    font-size: 20px;
+  height: 30px;
+  width: 20px;
+  font-size: 20px;
 }
 
 .markerContainer {
-    display: flex;
+  display: flex;
 }
 
 
-.errorMarker .dd-dropdown-menu .dd-dropdown-entry:hover  {
-    background-color: #29487D;
-    color: white;
+.errorMarker .dd-dropdown-menu .dd-dropdown-entry:hover {
+  background-color: #29487D;
+  color: white;
 }
 
 .errorMarker .dd-dropdown-menu .dd-dropdown-entry {
-    border-bottom-color: white;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
+  border-bottom-color: white;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
 }
 
 .errorMarker .dd-dropdown-menu .dd-dropdown-entry:last-child {
-    border-bottom-color: transparent;
-    border-bottom-width: 0px;
-    border-bottom-style: solid;
+  border-bottom-color: transparent;
+  border-bottom-width: 0px;
+  border-bottom-style: solid;
 }
 
 #errorBar {
-    width: 100%;
-    height: 200px;
-    background-color: #29487D;
-    display: flex;
-    flex: none;
-    justify-content: flex-start;
-    align-items: flex-start; 
-    z-index: 1000;
-    flex-direction: column;
+  display: table;
+  width: 100%;
+  height: 200px;
+  background-color: #29487D;
+  flex: none;
+  justify-content: flex-start;
+  align-items: flex-start;
+  z-index: 1000;
+  flex-direction: row;
+  clear: both;
 }
 
 // #errorBar:not(.hidingTable):hover { //TODO reintroduce; but distracts from clickable and draggable elements inside table
@@ -95,103 +94,105 @@ div.highlightedElement {
 // }
 
 #errorBar:active {
-    cursor: grabbing;
+  cursor: grabbing;
 }
 
 .errorTable {
-    display: block;
-    overflow: auto;
-    table-layout: auto;
-    height: 100%;
-    font-size: 14px;
-    color: white;
-    border-color: white;
-    width: 90%;
-    margin-left: 5%;
-    margin-right: 5%;
-    margin-top: 20px;
+  display: block;
+  overflow: auto;
+  table-layout: auto;
+  height: 100%;
+  font-size: 14px;
+  color: white;
+  border-color: white;
+  width: 90%;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-top: 20px;
 }
 
 .errorTable tbody {
-    display: table;
-    width: 100%;
+  display: table;
+  width: 100%;
 }
 
 .errorTable tr {
-    border-bottom: 1px solid white;
-    height: 20px;
+  border-bottom: 1px solid white;
+  height: 20px;
 }
 
 .errorTable tr > td:first-child:before {
-    content: var(--icon);
-    position: relative;
-    margin-right: 5px;
+  content: var(--icon);
+  position: relative;
+  margin-right: 5px;
 }
 
 .errorTable th {
-    padding-bottom: 10px;
+  padding-bottom: 10px;
 }
 
-.errorTable th,td {
-    padding-left: 10px;
-    padding-right: 10px;
+.errorTable th, td {
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .errorTable .narrowColumn {
-    width:0.1%;
-    white-space: nowrap;
+  width: 0.1%;
+  white-space: nowrap;
 }
 
 .hidingTable {
-    max-height: 40px;
+  max-height: 40px;
 }
 
 .hidingTable .errorTable {
-    display: none;
+  display: none;
 }
 
-#errorBar:not(.hidingTable) #toggleErrorTable , #errorBar .strong {
-    background-color: white;
-    color: #29487D;
-    padding-left: 5px !important;
-    padding-right: 5px !important;
-    text-decoration: none;
+#errorBar:not(.hidingTable) #toggleErrorTable, #errorBar .strong {
+  background-color: white;
+  color: #29487D;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+  text-decoration: none;
 }
 
 #errorBar:not(.hidingTable) #toggleErrorTable:after {
-    content: 'Hide List';
+  content: 'Hide List';
 }
 
 #errorBar.hidingTable #toggleErrorTable:after {
-    content: 'Show List';
+  content: 'Show List';
 }
 
 .errorBarControls {
-    display: flex;
-    flex: none;
-    height: 40px;
-    position: relative;
-    bottom: 0;
-    width: 100%;
-    background-color: #29487D;
-    padding: 5px;
-    align-items: center;
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  float: left;
+  height: 40px;
+  position: relative;
+  bottom: 0;
+  width: 50%;
+  background-color: #29487D;
+  padding: 5px;
+  align-items: center;
 }
 
-.errorBarControls div,a {
-    font-size: 14px;
-    color: white;
-    text-decoration: none !important; // Overrule bootstrap
+.errorBarControls div, a {
+  font-size: 14px;
+  color: white;
+  text-decoration: none !important; // Overrule bootstrap
 }
 
 .columnDivider {
-    top: 0;
-    right: 0;
-    width: 5px;
-    position: absolute;
-    cursor: col-resize;
-    background-color: transparent;
-    user-select: none;
+  top: 0;
+  right: 0;
+  width: 5px;
+  position: absolute;
+  cursor: col-resize;
+  background-color: transparent;
+  user-select: none;
 }
 
 .columnDivider:after {
@@ -203,26 +204,27 @@ div.highlightedElement {
 }
 
 .quickFixDiv {
-    margin-top: 10px;
+  margin-top: 10px;
+  margin-right: 10px;
 }
 
 .quickFixDiv > table {
-    border-collapse:separate;
+  border-collapse: separate;
 }
 
 .quickFixDiv > table > tbody > tr > td {
-    background-color: white;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    border-radius: 10px;
-    border: solid transparent 2px;
+  background-color: white;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  border: solid transparent 2px;
 }
 
 .quickFixDiv > table > tbody > tr > td:hover {
-    background-color: #29487D;
-    border: solid white 2px;
-    border-radius: 10px;
-    color: white !important;
+  background-color: #29487D;
+  border: solid white 2px;
+  border-radius: 10px;
+  color: white !important;
 }
 
 //.quickFixDiv:hover .quickFixCell {

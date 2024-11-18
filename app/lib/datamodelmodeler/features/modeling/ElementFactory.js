@@ -1,116 +1,110 @@
-import {
-  assign,
-  forEach
-} from 'min-dash';
+import {assign, forEach} from 'min-dash';
 
 import inherits from 'inherits';
 
-import { is } from '../../util/ModelUtil';
+import {is} from '../../../common/util/ModelUtil';
 
 import BaseElementFactory from 'diagram-js/lib/core/ElementFactory';
 
-import {
-  DEFAULT_LABEL_SIZE
-} from '../../util/LabelUtil';
+import {DEFAULT_LABEL_SIZE} from '../../util/LabelUtil';
 
 
 /**
  * A od-aware factory for diagram-js shapes
  */
 export default function ElementFactory(odFactory, moddle, translate) {
-  BaseElementFactory.call(this);
+    BaseElementFactory.call(this);
 
-  this._odFactory = odFactory;
-  this._moddle = moddle;
-  this._translate = translate;
+    this._odFactory = odFactory;
+    this._moddle = moddle;
+    this._translate = translate;
 }
 
 inherits(ElementFactory, BaseElementFactory);
 
 ElementFactory.$inject = [
-  'odFactory',
-  'moddle',
-  'translate'
+    'odFactory',
+    'moddle',
+    'translate'
 ];
 
 ElementFactory.prototype.baseCreate = BaseElementFactory.prototype.create;
 
-ElementFactory.prototype.create = function(elementType, attrs) {
+ElementFactory.prototype.create = function (elementType, attrs) {
 
-  // no special magic for labels,
-  // we assume their businessObjects have already been created
-  // and wired via attrs
-  if (elementType === 'label') {
-    return this.baseCreate(elementType, assign({ type: 'label' }, DEFAULT_LABEL_SIZE, attrs));
-  }
-
-  return this.createOdElement(elementType, attrs);
-};
-
-
-ElementFactory.prototype.createOdElement = function(elementType, attrs) {
-  var size,
-      translate = this._translate;
-
-  attrs = attrs || {};
-
-  var businessObject = attrs.businessObject;
-
-  if (!businessObject) {
-    if (!attrs.type) {
-      throw new Error(translate('no shape type specified'));
+    // no special magic for labels,
+    // we assume their businessObjects have already been created
+    // and wired via attrs
+    if (elementType === 'label') {
+        return this.baseCreate(elementType, assign({type: 'label'}, DEFAULT_LABEL_SIZE, attrs));
     }
 
-    businessObject = this._odFactory.create(attrs.type, attrs);
-  }
+    return this.createOdElement(elementType, attrs);
+};
 
-  if (!businessObject.di) {
-    if (elementType === 'root') {
-      businessObject.di = this._odFactory.createDiPlane(businessObject, [], {
-        id: businessObject.id + '_di'
-      });
-    } else if (elementType === 'connection') {
-      businessObject.di = this._odFactory.createDiEdge(businessObject, [], {
-        id: businessObject.id + '_di'
-      });
-    } else {
-      businessObject.di = this._odFactory.createDiShape(businessObject, {}, {
-        id: businessObject.id + '_di'
-      });
+
+ElementFactory.prototype.createOdElement = function (elementType, attrs) {
+    var size,
+        translate = this._translate;
+
+    attrs = attrs || {};
+
+    var businessObject = attrs.businessObject;
+
+    if (!businessObject) {
+        if (!attrs.type) {
+            throw new Error(translate('no shape type specified'));
+        }
+
+        businessObject = this._odFactory.create(attrs.type, attrs);
     }
-  }
 
-  if (attrs.di) {
-    assign(businessObject.di, attrs.di);
+    if (!businessObject.di) {
+        if (elementType === 'root') {
+            businessObject.di = this._odFactory.createDiPlane(businessObject, [], {
+                id: businessObject.id + '_di'
+            });
+        } else if (elementType === 'connection') {
+            businessObject.di = this._odFactory.createDiEdge(businessObject, [], {
+                id: businessObject.id + '_di'
+            });
+        } else {
+            businessObject.di = this._odFactory.createDiShape(businessObject, {}, {
+                id: businessObject.id + '_di'
+            });
+        }
+    }
 
-    delete attrs.di;
-  }
+    if (attrs.di) {
+        assign(businessObject.di, attrs.di);
 
-  applyAttributes(businessObject, attrs, [
-    'processRef',
-    'isInterrupting',
-    'associationDirection',
-    'isForCompensation'
-  ]);
+        delete attrs.di;
+    }
 
-  size = this._getDefaultSize(businessObject);
+    applyAttributes(businessObject, attrs, [
+        'processRef',
+        'isInterrupting',
+        'associationDirection',
+        'isForCompensation'
+    ]);
 
-  attrs = assign({
-    businessObject: businessObject,
-    id: businessObject.id
-  }, size, attrs);
+    size = this._getDefaultSize(businessObject);
 
-  return this.baseCreate(elementType, attrs);
+    attrs = assign({
+        businessObject: businessObject,
+        id: businessObject.id
+    }, size, attrs);
+
+    return this.baseCreate(elementType, attrs);
 };
 
 
-ElementFactory.prototype._getDefaultSize = function(semantic) {
-  if (is(semantic, 'od:Class')) {
-    return { width: 150, height: 90 };
-  }
-  return { width: 100, height: 80 };
+ElementFactory.prototype._getDefaultSize = function (semantic) {
+    if (is(semantic, 'od:Class')) {
+        return {width: 150, height: 90};
+    }
+    return {width: 100, height: 80};
 };
-
 
 
 // helpers //////////////////////
@@ -125,11 +119,11 @@ ElementFactory.prototype._getDefaultSize = function(semantic) {
  */
 function applyAttributes(element, attrs, attributeNames) {
 
-  forEach(attributeNames, function(property) {
-    if (attrs[property] !== undefined) {
-      applyAttribute(element, attrs, property);
-    }
-  });
+    forEach(attributeNames, function (property) {
+        if (attrs[property] !== undefined) {
+            applyAttribute(element, attrs, property);
+        }
+    });
 }
 
 /**
@@ -141,7 +135,7 @@ function applyAttributes(element, attrs, attributeNames) {
  * @param {String} attributeName to apply
  */
 function applyAttribute(element, attrs, attributeName) {
-  element[attributeName] = attrs[attributeName];
+    element[attributeName] = attrs[attributeName];
 
-  delete attrs[attributeName];
+    delete attrs[attributeName];
 }

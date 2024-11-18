@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gs:disjunction xmlns:gs="http://bptlab/schema/gs">
+  <gs:conjunction>
+    <gs:literal class="Olc_Conference" states="State_2" />
+    <gs:literal class="Olc_Paper" states="State_5" />
+  </gs:conjunction>
+</gs:disjunction>

@@ -1,38 +1,29 @@
-import {
-  assign
-} from 'min-dash';
+import {assign} from 'min-dash';
 
-import { is } from '../util/ModelUtil';
+import {is} from '../../common/util/ModelUtil';
 
-import {
-  isLabelExternal,
-  getExternalLabelBounds
-} from '../util/LabelUtil';
+import {getExternalLabelBounds} from '../util/LabelUtil';
 
-import {
-  getLabel
-} from '../features/label-editing/LabelUtil';
+import {getLabel} from '../features/label-editing/LabelUtil';
 
-import {
-  elementToString
-} from './Util';
-import { getMid } from 'diagram-js/lib/layout/LayoutUtil';
+import {elementToString} from '../../common/import/Util';
+import {getMid} from 'diagram-js/lib/layout/LayoutUtil';
 
 
 function elementData(semantic, attrs) {
-  return assign({
-    id: semantic.id,
-    type: semantic.$type,
-    businessObject: semantic
-  }, attrs);
+    return assign({
+        id: semantic.id,
+        type: semantic.$type,
+        businessObject: semantic
+    }, attrs);
 }
 
 function notYetDrawn(translate, semantic, refSemantic, property) {
-  return new Error(translate('element {element} referenced by {referenced}#{property} not yet drawn', {
-    element: elementToString(refSemantic),
-    referenced: elementToString(semantic),
-    property: property
-  }));
+    return new Error(translate('element {element} referenced by {referenced}#{property} not yet drawn', {
+        element: elementToString(refSemantic),
+        referenced: elementToString(semantic),
+        property: property
+    }));
 }
 
 
@@ -50,21 +41,21 @@ export default function OdImporter(
     eventBus, canvas, elementFactory,
     elementRegistry, translate, textRenderer) {
 
-  this._eventBus = eventBus;
-  this._canvas = canvas;
-  this._elementFactory = elementFactory;
-  this._elementRegistry = elementRegistry;
-  this._translate = translate;
-  this._textRenderer = textRenderer;
+    this._eventBus = eventBus;
+    this._canvas = canvas;
+    this._elementFactory = elementFactory;
+    this._elementRegistry = elementRegistry;
+    this._translate = translate;
+    this._textRenderer = textRenderer;
 }
 
 OdImporter.$inject = [
-  'eventBus',
-  'canvas',
-  'elementFactory',
-  'elementRegistry',
-  'translate',
-  'textRenderer'
+    'eventBus',
+    'canvas',
+    'elementFactory',
+    'elementRegistry',
+    'translate',
+    'textRenderer'
 ];
 
 
@@ -72,98 +63,96 @@ OdImporter.$inject = [
  * Add od element (semantic) to the canvas onto the
  * specified parent shape.
  */
-OdImporter.prototype.add = function(semantic, parentElement) {
+OdImporter.prototype.add = function (semantic, parentElement) {
 
-  var di = semantic.di,
-      element,
-      translate = this._translate,
-      hidden;
+    var di = semantic.di,
+        element,
+        translate = this._translate,
+        hidden;
 
-  var parentIndex;
+    var parentIndex;
 
-  // ROOT ELEMENT
-  // handle the special case that we deal with a
-  // invisible root element
-  if (is(di, 'odDi:OdPlane')) {
+    // ROOT ELEMENT
+    // handle the special case that we deal with a
+    // invisible root element
+    if (is(di, 'odDi:OdPlane')) {
 
-    // add a virtual element (not being drawn)
-    element = this._elementFactory.createRoot(elementData(semantic));
+        // add a virtual element (not being drawn)
+        element = this._elementFactory.createRoot(elementData(semantic));
 
-    this._canvas.setRootElement(element);
-  }
+        this._canvas.setRootElement(element);
+    }
 
-  // SHAPE
-  else if (is(di, 'odDi:OdShape')) {
+    // SHAPE
+    else if (is(di, 'odDi:OdShape')) {
 
-    var isFrame = isFrameElement(semantic);
+        var isFrame = isFrameElement(semantic);
 
-    hidden = parentElement && (parentElement.hidden || parentElement.collapsed);
+        hidden = parentElement && (parentElement.hidden || parentElement.collapsed);
 
-    var bounds = semantic.di.bounds;
+        var bounds = semantic.di.bounds;
 
-    element = this._elementFactory.createShape(elementData(semantic, {
-      hidden: hidden,
-      x: Math.round(bounds.x),
-      y: Math.round(bounds.y),
-      width: Math.round(bounds.width),
-      height: Math.round(bounds.height),
-      isFrame: isFrame
-    }));
+        element = this._elementFactory.createShape(elementData(semantic, {
+            hidden: hidden,
+            x: Math.round(bounds.x),
+            y: Math.round(bounds.y),
+            width: Math.round(bounds.width),
+            height: Math.round(bounds.height),
+            isFrame: isFrame
+        }));
 
-    this._canvas.addShape(element, parentElement, parentIndex);
-  }
+        this._canvas.addShape(element, parentElement, parentIndex);
+    }
 
-  // CONNECTION
-  else if (is(di, 'odDi:Association')) {
+    // CONNECTION
+    else if (is(di, 'odDi:Association')) {
 
-    var source = this._getSource(semantic),
-        target = this._getTarget(semantic);
+        var source = this._getSource(semantic),
+            target = this._getTarget(semantic);
 
-    hidden = parentElement && (parentElement.hidden || parentElement.collapsed);
+        hidden = parentElement && (parentElement.hidden || parentElement.collapsed);
 
-    element = this._elementFactory.createConnection(elementData(semantic, {
-      hidden: hidden,
-      source: source,
-      target: target,
-      waypoints: getWaypoints(semantic, source, target)
-    }));
+        element = this._elementFactory.createConnection(elementData(semantic, {
+            hidden: hidden,
+            source: source,
+            target: target,
+            waypoints: getWaypoints(semantic, source, target)
+        }));
 
-    this._canvas.addConnection(element, parentElement, 0);
-  }
+        this._canvas.addConnection(element, parentElement, 0);
+    } else {
+        throw new Error(translate('unknown di {di} for element {semantic}', {
+            di: elementToString(di),
+            semantic: elementToString(semantic)
+        }));
+    }
 
-  else {
-    throw new Error(translate('unknown di {di} for element {semantic}', {
-      di: elementToString(di),
-      semantic: elementToString(semantic)
-    }));
-  }
+    // (optional) LABEL
+    if (is(semantic, 'od:Association')) {
+        //TODO this could be done nicer without explicitely setting labelAttribute
+        semantic.labelAttribute = 'sourceCardinality';
+        this.addLabel(semantic, element);
+        semantic.labelAttribute = 'targetCardinality';
+        this.addLabel(semantic, element);
+        semantic.labelAttribute = undefined;
+    }
 
-  // (optional) LABEL
-  if (is(semantic, 'od:Association')) {
-    //TODO this could be done nicer without explicitely setting labelAttribute
-    semantic.labelAttribute = 'sourceCardinality';
-    this.addLabel(semantic, element);
-    semantic.labelAttribute = 'targetCardinality';
-    this.addLabel(semantic, element);
-    semantic.labelAttribute = undefined;
-  }
+    this._eventBus.fire('boardElement.added', {element: element});
 
-  this._eventBus.fire('boardElement.added', { element: element });
-
-  return element;
+    return element;
 };
 
 function getWaypoints(bo, source, target) {
 
-  var waypoints = bo.di.waypoint;
+    var waypoints = bo.di.waypoint;
 
-  if (!waypoints || waypoints.length < 2) {
-    return [ getMid(source), getMid(target) ];
-  }
+    if (!waypoints || waypoints.length < 2) {
+        return [getMid(source), getMid(target)];
+    }
 
-  return waypoints.map(function(p) {
-    return { x: p.x, y: p.y };
-  });
+    return waypoints.map(function (p) {
+        return {x: p.x, y: p.y};
+    });
 }
 
 
@@ -173,67 +162,67 @@ function getWaypoints(bo, source, target) {
  * @param {ModdleElement} boundarySemantic
  * @param {djs.model.Base} boundaryElement
  */
-OdImporter.prototype._attachBoundary = function(boundarySemantic, boundaryElement) {
-  var translate = this._translate;
-  var hostSemantic = boundarySemantic.attachedToRef;
+OdImporter.prototype._attachBoundary = function (boundarySemantic, boundaryElement) {
+    var translate = this._translate;
+    var hostSemantic = boundarySemantic.attachedToRef;
 
-  if (!hostSemantic) {
-    throw new Error(translate('missing {semantic}#attachedToRef', {
-      semantic: elementToString(boundarySemantic)
-    }));
-  }
+    if (!hostSemantic) {
+        throw new Error(translate('missing {semantic}#attachedToRef', {
+            semantic: elementToString(boundarySemantic)
+        }));
+    }
 
-  var host = this._elementRegistry.get(hostSemantic.id),
-      attachers = host && host.attachers;
+    var host = this._elementRegistry.get(hostSemantic.id),
+        attachers = host && host.attachers;
 
-  if (!host) {
-    throw notYetDrawn(translate, boundarySemantic, hostSemantic, 'attachedToRef');
-  }
+    if (!host) {
+        throw notYetDrawn(translate, boundarySemantic, hostSemantic, 'attachedToRef');
+    }
 
-  // wire element.host <> host.attachers
-  boundaryElement.host = host;
+    // wire element.host <> host.attachers
+    boundaryElement.host = host;
 
-  if (!attachers) {
-    host.attachers = attachers = [];
-  }
+    if (!attachers) {
+        host.attachers = attachers = [];
+    }
 
-  if (attachers.indexOf(boundaryElement) === -1) {
-    attachers.push(boundaryElement);
-  }
+    if (attachers.indexOf(boundaryElement) === -1) {
+        attachers.push(boundaryElement);
+    }
 };
 
 
 /**
  * add label for an element
  */
-OdImporter.prototype.addLabel = function(semantic, element) {
-  var bounds,
-      text,
-      label;
+OdImporter.prototype.addLabel = function (semantic, element) {
+    var bounds,
+        text,
+        label;
 
-  bounds = getExternalLabelBounds(semantic, element);
+    bounds = getExternalLabelBounds(semantic, element);
 
-  text = getLabel(element);
+    text = getLabel(element);
 
-  if (text) {
+    if (text || text === '') {
+        // get corrected bounds from actual layouted text
+        let boundsText = text ? text : '0..*';
+        bounds = this._textRenderer.getExternalLabelBounds(bounds, boundsText);
+    }
 
-    // get corrected bounds from actual layouted text
-    bounds = this._textRenderer.getExternalLabelBounds(bounds, text);
-  }
+    label = this._elementFactory.createLabel(elementData(semantic, {
+        id: semantic.id + '_label' + '_' + semantic.labelAttribute,
+        labelTarget: element,
+        labelAttribute: semantic.labelAttribute,
+        type: 'label',
+        hidden: element.hidden || false,
+        x: Math.round(bounds.x),
+        y: Math.round(bounds.y),
+        width: Math.round(bounds.width),
+        height: Math.round(bounds.height)
+    }));
 
-  label = this._elementFactory.createLabel(elementData(semantic, {
-    id: semantic.id + '_label' + '_' + semantic.labelAttribute,
-    labelTarget: element,
-    labelAttribute: semantic.labelAttribute,
-    type: 'label',
-    hidden: element.hidden || !getLabel(element),
-    x: Math.round(bounds.x),
-    y: Math.round(bounds.y),
-    width: Math.round(bounds.width),
-    height: Math.round(bounds.height)
-  }));
-    
-  return this._canvas.addShape(label, element.parent);
+    return this._canvas.addShape(label, element.parent);
 };
 
 /**
@@ -241,47 +230,47 @@ OdImporter.prototype.addLabel = function(semantic, element) {
  *
  * @throws {Error} if the end is not yet drawn
  */
-OdImporter.prototype._getEnd = function(semantic, side) {
+OdImporter.prototype._getEnd = function (semantic, side) {
 
-  var element,
-      refSemantic,
-      translate = this._translate;
+    var element,
+        refSemantic,
+        translate = this._translate;
 
-  refSemantic = semantic[side + 'Ref'];
+    refSemantic = semantic[side + 'Ref'];
 
 
-  element = refSemantic && this._getElement(refSemantic);
+    element = refSemantic && this._getElement(refSemantic);
 
-  if (element) {
-    return element;
-  }
+    if (element) {
+        return element;
+    }
 
-  if (refSemantic) {
-    throw notYetDrawn(translate, semantic, refSemantic, side + 'Ref');
-  } else {
-    throw new Error(translate('{semantic}#{side} Ref not specified', {
-      semantic: elementToString(semantic),
-      side: side
-    }));
-  }
+    if (refSemantic) {
+        throw notYetDrawn(translate, semantic, refSemantic, side + 'Ref');
+    } else {
+        throw new Error(translate('{semantic}#{side} Ref not specified', {
+            semantic: elementToString(semantic),
+            side: side
+        }));
+    }
 };
 
-OdImporter.prototype._getSource = function(semantic) {
-  return this._getEnd(semantic, 'source');
+OdImporter.prototype._getSource = function (semantic) {
+    return this._getEnd(semantic, 'source');
 };
 
-OdImporter.prototype._getTarget = function(semantic) {
-  return this._getEnd(semantic, 'target');
+OdImporter.prototype._getTarget = function (semantic) {
+    return this._getEnd(semantic, 'target');
 };
 
 
-OdImporter.prototype._getElement = function(semantic) {
-  return this._elementRegistry.get(semantic.id);
+OdImporter.prototype._getElement = function (semantic) {
+    return this._elementRegistry.get(semantic.id);
 };
 
 
 // helpers //////////
 
 function isFrameElement(semantic) {
-  return is(semantic, 'od:Group');
+    return is(semantic, 'od:Group');
 }

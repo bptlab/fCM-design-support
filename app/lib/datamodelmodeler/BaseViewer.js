@@ -1,30 +1,16 @@
-import {
-  assign,
-  find,
-  isNumber,
-  omit
-} from 'min-dash';
+import {assign, find, isNumber, omit} from 'min-dash';
 
-import {
-  domify,
-  query as domQuery,
-  remove as domRemove
-} from 'min-dom';
+import {domify, event as domEvent, query as domQuery, remove as domRemove} from 'min-dom';
 
-import {
-  innerSVG
-} from 'tiny-svg';
+import {innerSVG} from 'tiny-svg';
 
 import Diagram from 'diagram-js';
 import Moddle from './moddle';
 
 import inherits from 'inherits';
 
-import {
-  importOdDiagram
-} from './import/Importer';
-
-
+import {importOdDiagram} from './import/Importer';
+import {BPMNIO_IMG, open as openPoweredBy} from '../common/util/PoweredByUtil';
 
 
 /**
@@ -43,38 +29,38 @@ import {
  */
 export default function BaseViewer(options) {
 
-  options = assign({}, DEFAULT_OPTIONS, options);
+    options = assign({}, DEFAULT_OPTIONS, options);
 
-  this._moddle = this._createModdle(options);
+    this._moddle = this._createModdle(options);
 
-  this._container = this._createContainer(options);
+    this._container = this._createContainer(options);
 
-  /* <project-logo> */
+    /* <project-logo> */
 
-  addProjectLogo(this._container);
+    addProjectLogo(this._container);
 
-  /* </project-logo> */
+    /* </project-logo> */
 
-  this._init(this._container, this._moddle, options);
+    this._init(this._container, this._moddle, options);
 }
 
 inherits(BaseViewer, Diagram);
 
 /**
-* The importXML result.
-*
-* @typedef {Object} ImportXMLResult
-*
-* @property {Array<string>} warnings
-*/
+ * The importXML result.
+ *
+ * @typedef {Object} ImportXMLResult
+ *
+ * @property {Array<string>} warnings
+ */
 
 /**
-* The importXML error.
-*
-* @typedef {Error} ImportXMLError
-*
-* @property {Array<string>} warnings
-*/
+ * The importXML error.
+ *
+ * @typedef {Error} ImportXMLError
+ *
+ * @property {Array<string>} warnings
+ */
 
 
 /**
@@ -100,80 +86,80 @@ inherits(BaseViewer, Diagram);
  *
  * @returns {Promise<ImportXMLResult, ImportXMLError>}
  */
-BaseViewer.prototype.importXML = function(xml, rootBoard) {
+BaseViewer.prototype.importXML = function (xml, rootBoard) {
 
-  var self = this;
+    var self = this;
 
-  return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
-    // hook in pre-parse listeners +
-    // allow xml manipulation
-    xml = self._emit('import.parse.start', { xml: xml }) || xml;
+        // hook in pre-parse listeners +
+        // allow xml manipulation
+        xml = self._emit('import.parse.start', {xml: xml}) || xml;
 
-    self._moddle.fromXML(xml, 'od:Definitions').then(function(result) {
+        self._moddle.fromXML(xml, 'od:Definitions').then(function (result) {
 
-      var definitions = result.rootElement;
-      var references = result.references;
-      var parseWarnings = result.warnings;
-      var elementsById = result.elementsById;
+            var definitions = result.rootElement;
+            var references = result.references;
+            var parseWarnings = result.warnings;
+            var elementsById = result.elementsById;
 
-      var context = {
-        references: references,
-        elementsById: elementsById,
-        warnings: parseWarnings
-      };
+            var context = {
+                references: references,
+                elementsById: elementsById,
+                warnings: parseWarnings
+            };
 
-      // hook in post parse listeners +
-      // allow definitions manipulation
-      definitions = self._emit('import.parse.complete', {
-        definitions: definitions,
-        context: context
-      }) || definitions;
+            // hook in post parse listeners +
+            // allow definitions manipulation
+            definitions = self._emit('import.parse.complete', {
+                definitions: definitions,
+                context: context
+            }) || definitions;
 
-      self.importDefinitions(definitions, rootBoard).then(function(result) {
-        var allWarnings = [].concat(parseWarnings, result.warnings || []);
+            self.importDefinitions(definitions, rootBoard).then(function (result) {
+                var allWarnings = [].concat(parseWarnings, result.warnings || []);
 
-        self._emit('import.done', { error: null, warnings: allWarnings });
+                self._emit('import.done', {error: null, warnings: allWarnings});
 
-        return resolve({ warnings: allWarnings });
-      }).catch(function(err) {
-        var allWarnings = [].concat(parseWarnings, err.warnings || []);
+                return resolve({warnings: allWarnings});
+            }).catch(function (err) {
+                var allWarnings = [].concat(parseWarnings, err.warnings || []);
 
-        self._emit('import.done', { error: err, warnings: allWarnings });
+                self._emit('import.done', {error: err, warnings: allWarnings});
 
-        return reject(addWarningsToError(err, allWarnings));
-      });
-    }).catch(function(err) {
+                return reject(addWarningsToError(err, allWarnings));
+            });
+        }).catch(function (err) {
 
-      self._emit('import.parse.complete', {
-        error: err
-      });
+            self._emit('import.parse.complete', {
+                error: err
+            });
 
-      err = checkValidationError(err);
+            err = checkValidationError(err);
 
-      self._emit('import.done', { error: err, warnings: err.warnings });
+            self._emit('import.done', {error: err, warnings: err.warnings});
 
-      return reject(err);
+            return reject(err);
+        });
+
     });
-
-  });
 };
 
 /**
-* The importDefinitions result.
-*
-* @typedef {Object} ImportDefinitionsResult
-*
-* @property {Array<string>} warnings
-*/
+ * The importDefinitions result.
+ *
+ * @typedef {Object} ImportDefinitionsResult
+ *
+ * @property {Array<string>} warnings
+ */
 
 /**
-* The importDefinitions error.
-*
-* @typedef {Error} ImportDefinitionsError
-*
-* @property {Array<string>} warnings
-*/
+ * The importDefinitions error.
+ *
+ * @typedef {Error} ImportDefinitionsError
+ *
+ * @property {Array<string>} warnings
+ */
 
 /**
  * Import parsed definitions and render a Postit diagram.
@@ -195,24 +181,24 @@ BaseViewer.prototype.importXML = function(xml, rootBoard) {
  *
  * returns {Promise<ImportDefinitionsResult, ImportDefinitionsError>}
  */
-BaseViewer.prototype.importDefinitions = function(definitions, rootBoard) {
+BaseViewer.prototype.importDefinitions = function (definitions, rootBoard) {
 
-  var self = this;
+    var self = this;
 
-  return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
-    self._setDefinitions(definitions);
+        self._setDefinitions(definitions);
 
-    self.open(rootBoard).then(function(result) {
+        self.open(rootBoard).then(function (result) {
 
-      var warnings = result.warnings;
+            var warnings = result.warnings;
 
-      return resolve({ warnings: warnings });
-    }).catch(function(err) {
+            return resolve({warnings: warnings});
+        }).catch(function (err) {
 
-      return reject(err);
+            return reject(err);
+        });
     });
-  });
 };
 
 /**
@@ -224,12 +210,12 @@ BaseViewer.prototype.importDefinitions = function(definitions, rootBoard) {
  */
 
 /**
-* The open error.
-*
-* @typedef {Error} OpenError
-*
-* @property {Array<string>} warnings
-*/
+ * The open error.
+ *
+ * @typedef {Error} OpenError
+ *
+ * @property {Array<string>} warnings
+ */
 
 /**
  * Open board of previously imported XML.
@@ -250,50 +236,50 @@ BaseViewer.prototype.importDefinitions = function(definitions, rootBoard) {
  *
  * returns {Promise<OpenResult, OpenError>}
  */
-BaseViewer.prototype.open = function(rootBoardOrId) {
+BaseViewer.prototype.open = function (rootBoardOrId) {
 
-  var definitions = this._definitions;
-  var rootBord = rootBoardOrId;
+    var definitions = this._definitions;
+    var rootBord = rootBoardOrId;
 
-  var self = this;
+    var self = this;
 
-  return new Promise(function(resolve, reject) {
-    if (!definitions) {
-      var err1 = new Error('no XML imported');
+    return new Promise(function (resolve, reject) {
+        if (!definitions) {
+            var err1 = new Error('no XML imported');
 
-      return reject(addWarningsToError(err1, []));
-    }
+            return reject(addWarningsToError(err1, []));
+        }
 
-    if (typeof rootBoardOrId === 'string') {
-      rootBord = findRootBoard(definitions, rootBoardOrId);
+        if (typeof rootBoardOrId === 'string') {
+            rootBord = findRootBoard(definitions, rootBoardOrId);
 
-      if (!rootBord) {
-        var err2 = new Error('OdRootBoard <' + rootBoardOrId + '> not found');
+            if (!rootBord) {
+                var err2 = new Error('OdRootBoard <' + rootBoardOrId + '> not found');
 
-        return reject(addWarningsToError(err2, []));
-      }
-    }
+                return reject(addWarningsToError(err2, []));
+            }
+        }
 
-    // clear existing rendered diagram
-    // catch synchronous exceptions during #clear()
-    try {
-      self.clear();
-    } catch (error) {
+        // clear existing rendered diagram
+        // catch synchronous exceptions during #clear()
+        try {
+            self.clear();
+        } catch (error) {
 
-      return reject(addWarningsToError(error, []));
-    }
+            return reject(addWarningsToError(error, []));
+        }
 
-    // perform graphical import
-    importOdDiagram(self, definitions, rootBord).then(function(result) {
+        // perform graphical import
+        importOdDiagram(self, definitions, rootBord).then(function (result) {
 
-      var warnings = result.warnings;
+            var warnings = result.warnings;
 
-      return resolve({ warnings: warnings });
-    }).catch(function(err) {
+            return resolve({warnings: warnings});
+        }).catch(function (err) {
 
-      return reject(err);
+            return reject(err);
+        });
     });
-  });
 };
 
 /**
@@ -324,51 +310,51 @@ BaseViewer.prototype.open = function(rootBoardOrId) {
  *
  * returns {Promise<SaveXMLResult, Error>}
  */
-BaseViewer.prototype.saveXML = function(options) {
+BaseViewer.prototype.saveXML = function (options) {
 
-  options = options || {};
+    options = options || {};
 
-  var self = this;
+    var self = this;
 
-  var definitions = this._definitions;
+    var definitions = this._definitions;
 
-  return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
-    if (!definitions) {
-      var err = new Error('no definitions loaded');
+        if (!definitions) {
+            var err = new Error('no definitions loaded');
 
-      return reject(err);
-    }
+            return reject(err);
+        }
 
-    // allow to fiddle around with definitions
-    definitions = self._emit('saveXML.start', {
-      definitions: definitions
-    }) || definitions;
+        // allow to fiddle around with definitions
+        definitions = self._emit('saveXML.start', {
+            definitions: definitions
+        }) || definitions;
 
-    self._moddle.toXML(definitions, options).then(function(result) {
+        self._moddle.toXML(definitions, options).then(function (result) {
 
-      var xml = result.xml;
+            var xml = result.xml;
 
-      try {
-        xml = self._emit('saveXML.serialized', {
-          error: null,
-          xml: xml
-        }) || xml;
+            try {
+                xml = self._emit('saveXML.serialized', {
+                    error: null,
+                    xml: xml
+                }) || xml;
 
-        self._emit('saveXML.done', {
-          error: null,
-          xml: xml
+                self._emit('saveXML.done', {
+                    error: null,
+                    xml: xml
+                });
+            } catch (e) {
+                console.error('error in saveXML life-cycle listener', e);
+            }
+
+            return resolve({xml: xml});
+        }).catch(function (err) {
+
+            return reject(err);
         });
-      } catch (e) {
-        console.error('error in saveXML life-cycle listener', e);
-      }
-
-      return resolve({ xml: xml });
-    }).catch(function(err) {
-
-      return reject(err);
     });
-  });
 };
 
 /**
@@ -396,51 +382,51 @@ BaseViewer.prototype.saveXML = function(options) {
  *
  * returns {Promise<SaveSVGResult, Error>}
  */
-BaseViewer.prototype.saveSVG = function(options) {
+BaseViewer.prototype.saveSVG = function (options) {
 
-  var self = this;
+    var self = this;
 
-  return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
-    self._emit('saveSVG.start');
+        self._emit('saveSVG.start');
 
-    var svg, err;
+        var svg, err;
 
-    try {
-      var canvas = self.get('canvas');
+        try {
+            var canvas = self.get('canvas');
 
-      var contentNode = canvas.getDefaultLayer(),
-          defsNode = domQuery('defs', canvas._svg);
+            var contentNode = canvas.getDefaultLayer(),
+                defsNode = domQuery('defs', canvas._svg);
 
-      var contents = innerSVG(contentNode),
-          defs = defsNode ? '<defs>' + innerSVG(defsNode) + '</defs>' : '';
+            var contents = innerSVG(contentNode),
+                defs = defsNode ? '<defs>' + innerSVG(defsNode) + '</defs>' : '';
 
-      var bbox = contentNode.getBBox();
+            var bbox = contentNode.getBBox();
 
-      svg =
-        '<?xml version="1.0" encoding="utf-8"?>\n' +
-        '<!-- created with diagram-js -->\n' +
-        '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n' +
-        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
-             'width="' + bbox.width + '" height="' + bbox.height + '" ' +
-             'viewBox="' + bbox.x + ' ' + bbox.y + ' ' + bbox.width + ' ' + bbox.height + '" version="1.1">' +
-          defs + contents +
-        '</svg>';
-    } catch (e) {
-      err = e;
-    }
+            svg =
+                '<?xml version="1.0" encoding="utf-8"?>\n' +
+                '<!-- created with diagram-js -->\n' +
+                '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n' +
+                '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+                'width="' + bbox.width + '" height="' + bbox.height + '" ' +
+                'viewBox="' + bbox.x + ' ' + bbox.y + ' ' + bbox.width + ' ' + bbox.height + '" version="1.1">' +
+                defs + contents +
+                '</svg>';
+        } catch (e) {
+            err = e;
+        }
 
-    self._emit('saveSVG.done', {
-      error: err,
-      svg: svg
+        self._emit('saveSVG.done', {
+            error: err,
+            svg: svg
+        });
+
+        if (!err) {
+            return resolve({svg: svg});
+        }
+
+        return reject(err);
     });
-
-    if (!err) {
-      return resolve({ svg: svg });
-    }
-
-    return reject(err);
-  });
 };
 
 /**
@@ -475,12 +461,12 @@ BaseViewer.prototype.saveSVG = function(options) {
  */
 
 
-BaseViewer.prototype._setDefinitions = function(definitions) {
-  this._definitions = definitions;
+BaseViewer.prototype._setDefinitions = function (definitions) {
+    this._definitions = definitions;
 };
 
-BaseViewer.prototype.getModules = function() {
-  return this._modules;
+BaseViewer.prototype.getModules = function () {
+    return this._modules;
 };
 
 /**
@@ -491,41 +477,41 @@ BaseViewer.prototype.getModules = function() {
  *
  * @method BaseViewer#clear
  */
-BaseViewer.prototype.clear = function() {
-  if (!this.getDefinitions()) {
+BaseViewer.prototype.clear = function () {
+    if (!this.getDefinitions()) {
 
-    // no diagram to clear
-    return;
-  }
-
-  // remove businessObject#di binding
-  //
-  // this is necessary, as we establish the bindings
-  // in the OdTreeWalker (and assume none are given
-  // on reimport)
-  this.get('elementRegistry').forEach(function(element) {
-    var bo = element.businessObject;
-
-    if (bo && bo.di) {
-      delete bo.di;
+        // no diagram to clear
+        return;
     }
-  });
 
-  // remove drawn elements
-  Diagram.prototype.clear.call(this);
+    // remove businessObject#di binding
+    //
+    // this is necessary, as we establish the bindings
+    // in the OdTreeWalker (and assume none are given
+    // on reimport)
+    this.get('elementRegistry').forEach(function (element) {
+        var bo = element.businessObject;
+
+        if (bo && bo.di) {
+            delete bo.di;
+        }
+    });
+
+    // remove drawn elements
+    Diagram.prototype.clear.call(this);
 };
 
 /**
  * Destroy the viewer instance and remove all its
  * remainders from the document tree.
  */
-BaseViewer.prototype.destroy = function() {
+BaseViewer.prototype.destroy = function () {
 
-  // diagram destroy
-  Diagram.prototype.destroy.call(this);
+    // diagram destroy
+    Diagram.prototype.destroy.call(this);
 
-  // dom detach
-  domRemove(this._container);
+    // dom detach
+    domRemove(this._container);
 };
 
 /**
@@ -538,8 +524,8 @@ BaseViewer.prototype.destroy = function() {
  * @param {Function} callback
  * @param {Object} [target]
  */
-BaseViewer.prototype.on = function(event, priority, callback, target) {
-  return this.get('eventBus').on(event, priority, callback, target);
+BaseViewer.prototype.on = function (event, priority, callback, target) {
+    return this.get('eventBus').on(event, priority, callback, target);
 };
 
 /**
@@ -548,78 +534,78 @@ BaseViewer.prototype.on = function(event, priority, callback, target) {
  * @param {String} event
  * @param {Function} callback
  */
-BaseViewer.prototype.off = function(event, callback) {
-  this.get('eventBus').off(event, callback);
+BaseViewer.prototype.off = function (event, callback) {
+    this.get('eventBus').off(event, callback);
 };
 
-BaseViewer.prototype.attachTo = function(parentNode) {
+BaseViewer.prototype.attachTo = function (parentNode) {
 
-  if (!parentNode) {
-    throw new Error('parentNode required');
-  }
+    if (!parentNode) {
+        throw new Error('parentNode required');
+    }
 
-  // ensure we detach from the
-  // previous, old parent
-  this.detach();
+    // ensure we detach from the
+    // previous, old parent
+    this.detach();
 
-  // unwrap jQuery if provided
-  if (parentNode.get && parentNode.constructor.prototype.jquery) {
-    parentNode = parentNode.get(0);
-  }
+    // unwrap jQuery if provided
+    if (parentNode.get && parentNode.constructor.prototype.jquery) {
+        parentNode = parentNode.get(0);
+    }
 
-  if (typeof parentNode === 'string') {
-    parentNode = domQuery(parentNode);
-  }
+    if (typeof parentNode === 'string') {
+        parentNode = domQuery(parentNode);
+    }
 
-  parentNode.appendChild(this._container);
+    parentNode.appendChild(this._container);
 
-  this._emit('attach', {});
+    this._emit('attach', {});
 
-  this.get('canvas').resized();
+    this.get('canvas').resized();
 };
 
-BaseViewer.prototype.getDefinitions = function() {
-  return this._definitions;
+BaseViewer.prototype.getDefinitions = function () {
+    return this._definitions;
 };
 
-BaseViewer.prototype.detach = function() {
+BaseViewer.prototype.detach = function () {
 
-  var container = this._container,
-      parentNode = container.parentNode;
+    var container = this._container,
+        parentNode = container.parentNode;
 
-  if (!parentNode) {
-    return;
-  }
+    if (!parentNode) {
+        return;
+    }
 
-  this._emit('detach', {});
+    this._emit('detach', {});
 
-  parentNode.removeChild(container);
+    parentNode.removeChild(container);
 };
 
-BaseViewer.prototype._init = function(container, moddle, options) {
+BaseViewer.prototype._init = function (container, moddle, options) {
 
-  var baseModules = options.modules || this.getModules(),
-      additionalModules = options.additionalModules || [],
-      staticModules = [
-        {
-          dataModeler: [ 'value', this ],
-          moddle: [ 'value', moddle ]
-        }
-      ];
+    var baseModules = options.modules || this.getModules(),
+        additionalModules = options.additionalModules || [],
+        staticModules = [
+            {
+                dataModeler: ['value', this],
+                moddle: ['value', moddle]
+            }
+        ];
 
-  var diagramModules = [].concat(staticModules, baseModules, additionalModules);
+    var diagramModules = [].concat(staticModules, baseModules, additionalModules);
 
-  var diagramOptions = assign(omit(options, [ 'additionalModules' ]), {
-    canvas: assign({}, options.canvas, { container: container }),
-    modules: diagramModules
-  });
+    var diagramOptions = assign(omit(options, ['additionalModules']), {
+        canvas: assign({}, options.canvas, {container: container}),
+        modules: diagramModules
+    });
 
-  // invoke diagram constructor
-  Diagram.call(this, diagramOptions);
+    // invoke diagram constructor
+    Diagram.call(this, diagramOptions);
 
-  if (options && options.container) {
-    this.attachTo(options.container);
-  }
+    if (options && options.container) {
+        this.attachTo(options.container);
+    }
 };
 
 /**
@@ -630,27 +616,27 @@ BaseViewer.prototype._init = function(container, moddle, options) {
  *
  * @return {Object} event processing result (if any)
  */
-BaseViewer.prototype._emit = function(type, event) {
-  return this.get('eventBus').fire(type, event);
+BaseViewer.prototype._emit = function (type, event) {
+    return this.get('eventBus').fire(type, event);
 };
 
-BaseViewer.prototype._createContainer = function(options) {
+BaseViewer.prototype._createContainer = function (options) {
 
-  var container = domify('<div class="pjs-container"></div>');
+    var container = domify('<div class="pjs-container"></div>');
 
-  assign(container.style, {
-    width: ensureUnit(options.width),
-    height: ensureUnit(options.height),
-    position: options.position
-  });
+    assign(container.style, {
+        width: ensureUnit(options.width),
+        height: ensureUnit(options.height),
+        position: options.position
+    });
 
-  return container;
+    return container;
 };
 
-BaseViewer.prototype._createModdle = function(options) {
-  var moddleOptions = assign({}, this._moddleExtensions, options.moddleExtensions);
+BaseViewer.prototype._createModdle = function (options) {
+    var moddleOptions = assign({}, this._moddleExtensions, options.moddleExtensions);
 
-  return new Moddle(moddleOptions);
+    return new Moddle(moddleOptions);
 };
 
 BaseViewer.prototype._modules = [];
@@ -661,31 +647,31 @@ BaseViewer.prototype._moddleExtensions = {};
 // helpers ///////////////
 
 function addWarningsToError(err, warningsAry) {
-  err.warnings = warningsAry;
-  return err;
+    err.warnings = warningsAry;
+    return err;
 }
 
 function checkValidationError(err) {
 
-  // check if we can help the user by indicating wrong odm xml
-  // (in case he or the exporting tool did not get that right)
+    // check if we can help the user by indicating wrong odm xml
+    // (in case he or the exporting tool did not get that right)
 
-  var pattern = /unparsable content <([^>]+)> detected([\s\S]*)$/;
-  var match = pattern.exec(err.message);
+    var pattern = /unparsable content <([^>]+)> detected([\s\S]*)$/;
+    var match = pattern.exec(err.message);
 
-  if (match) {
-    err.message =
-      'unparsable content <' + match[1] + '> detected; ' +
-      'this may indicate an invalid Od board file' + match[2];
-  }
+    if (match) {
+        err.message =
+            'unparsable content <' + match[1] + '> detected; ' +
+            'this may indicate an invalid Od board file' + match[2];
+    }
 
-  return err;
+    return err;
 }
 
 var DEFAULT_OPTIONS = {
-  width: '100%',
-  height: '100%',
-  position: 'relative'
+    width: '100%',
+    height: '100%',
+    position: 'relative'
 };
 
 
@@ -693,7 +679,7 @@ var DEFAULT_OPTIONS = {
  * Ensure the passed argument is a proper unit (defaulting to px)
  */
 function ensureUnit(val) {
-  return val + (isNumber(val) ? 'px' : '');
+    return val + (isNumber(val) ? 'px' : '');
 }
 
 
@@ -706,25 +692,16 @@ function ensureUnit(val) {
  * @return {ModdleElement<PostitRootBoard>|null}
  */
 function findRootBoard(definitions, boardId) {
-  if (!boardId) {
-    return null;
-  }
+    if (!boardId) {
+        return null;
+    }
 
-  return find(definitions.rootBoards, function(element) {
-    return element.id === boardId;
-  }) || null;
+    return find(definitions.rootBoards, function (element) {
+        return element.id === boardId;
+    }) || null;
 }
 
 /* <project-logo> */
-
-import {
-  open as openPoweredBy,
-  BPMNIO_IMG
-} from './util/PoweredByUtil';
-
-import {
-  event as domEvent
-} from 'min-dom';
 
 /**
  * Adds the project logo to the diagram container as
@@ -735,26 +712,26 @@ import {
  * @param {Element} container
  */
 function addProjectLogo(container) {
-  var img = BPMNIO_IMG;
+    var img = BPMNIO_IMG;
 
-  var linkMarkup =
-    '<a href="http://bpmn.io" ' +
-    'target="_blank" ' +
-    'class="bjs-powered-by" ' +
-    'title="Powered by bpmn.io" ' +
-    'style="position: absolute; bottom: 15px; right: 15px; z-index: 100">' +
-    img +
-    '</a>';
+    var linkMarkup =
+        '<a href="http://bpmn.io" ' +
+        'target="_blank" ' +
+        'class="bjs-powered-by" ' +
+        'title="Powered by bpmn.io" ' +
+        'style="position: absolute; bottom: 15px; right: 15px; z-index: 100">' +
+        img +
+        '</a>';
 
-  var linkElement = domify(linkMarkup);
+    var linkElement = domify(linkMarkup);
 
-  container.appendChild(linkElement);
+    container.appendChild(linkElement);
 
-  domEvent.bind(linkElement, 'click', function(event) {
-    openPoweredBy();
+    domEvent.bind(linkElement, 'click', function (event) {
+        openPoweredBy();
 
-    event.preventDefault();
-  });
+        event.preventDefault();
+    });
 }
 
 /* </project-logo> */

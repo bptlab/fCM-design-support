@@ -1,0 +1,113 @@
+{
+  "name": "Dependencies",
+  "uri": "http://bptlab/schema/olc",
+  "prefix": "dep",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "types": [
+    {
+      "name": "DepElement",
+      "isAbstract": true,
+      "properties": [
+        {
+          "name": "name",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "id",
+          "isAttr": true,
+          "type": "String",
+          "isId": true
+        }
+      ]
+    },
+    {
+      "name": "Objective",
+      "superClass": [
+        "DepElement"
+      ],
+      "properties": [
+        {
+          "name": "date",
+          "isAttr": true,
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "name": "Dependency",
+      "superClass": [
+        "DepElement"
+      ],
+      "properties": [
+        {
+          "name": "sourceObjective",
+          "isAttr": true,
+          "isReference": true,
+          "type": "Objective"
+        },
+        {
+          "name": "targetObjective",
+          "isAttr": true,
+          "isReference": true,
+          "type": "Objective"
+        }
+      ]
+    },
+    {
+      "name": "Goal",
+      "superClass": [
+        "DepElement"
+      ],
+      "properties": [
+        {
+          "name": "Elements",
+          "isMany": true,
+          "type": "DepElement"
+        }
+      ]
+    },
+    {
+      "name": "Definitions",
+      "superClass": [
+        "DepElement"
+      ],
+      "properties": [
+        {
+          "name": "targetNamespace",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "expressionLanguage",
+          "default": "http://www.w3.org/1999/XPath",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "typeLanguage",
+          "default": "http://www.w3.org/2001/XMLSchema",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "goals",
+          "type": "Goal",
+          "isMany": true
+        },
+        {
+          "name": "exporter",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "exporterVersion",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    }
+  ]
+}

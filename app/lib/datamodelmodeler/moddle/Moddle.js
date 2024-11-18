@@ -1,8 +1,8 @@
-import { isString, assign } from 'min-dash';
+import {assign, isString} from 'min-dash';
 
-import { Moddle } from 'moddle';
+import {Moddle} from 'moddle';
 
-import { Reader, Writer } from 'moddle-xml';
+import {Reader, Writer} from 'moddle-xml';
 
 /**
  * A sub class of {@link Moddle} with support for import and export of Postit-js xml files.
@@ -15,7 +15,7 @@ import { Reader, Writer } from 'moddle-xml';
  * @param {Object} [options] additional options to pass over
  */
 export default function ODModdle(packages, options) {
-  Moddle.call(this, packages, options);
+    Moddle.call(this, packages, options);
 }
 
 ODModdle.prototype = Object.create(Moddle.prototype);
@@ -48,16 +48,16 @@ ODModdle.prototype = Object.create(Moddle.prototype);
  *
  * @returns {Promise<ParseResult, ParseError>}
  */
-ODModdle.prototype.fromXML = function(xmlStr, typeName, options) {
-  if (!isString(typeName)) {
-    options = typeName;
-    typeName = 'od:Definitions';
-  }
+ODModdle.prototype.fromXML = function (xmlStr, typeName, options) {
+    if (!isString(typeName)) {
+        options = typeName;
+        typeName = 'od:Definitions';
+    }
 
-  var reader = new Reader(assign({ model: this, lax: false }, options));
-  var rootHandler = reader.handler(typeName);
+    var reader = new Reader(assign({model: this, lax: false}, options));
+    var rootHandler = reader.handler(typeName);
 
-  return reader.fromXML(xmlStr, rootHandler);
+    return reader.fromXML(xmlStr, rootHandler);
 };
 
 /**
@@ -76,18 +76,18 @@ ODModdle.prototype.fromXML = function(xmlStr, typeName, options) {
  *
  * @returns {Promise<SerializationResult, Error>}
  */
-ODModdle.prototype.toXML = function(element, options) {
-  var writer = new Writer(options);
+ODModdle.prototype.toXML = function (element, options) {
+    var writer = new Writer(options);
 
-  return new Promise(function(resolve, reject) {
-    try {
-      var result = writer.toXML(element);
+    return new Promise(function (resolve, reject) {
+        try {
+            var result = writer.toXML(element);
 
-      return resolve({
-        xml: result
-      });
-    } catch (err) {
-      return reject(err);
-    }
-  });
+            return resolve({
+                xml: result
+            });
+        } catch (err) {
+            return reject(err);
+        }
+    });
 };

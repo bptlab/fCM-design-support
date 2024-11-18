@@ -1,103 +1,205 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <link rel="icon" href="favicon.ico">
-    <title>fcm-js</title>
+  <head>
+    <meta charset="utf-8" />
+    <title>for-Construction-Modeling</title>
 
     <link rel="stylesheet" href="vendor/bpmn-js/assets/diagram-js.css" />
-    <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css" />
+    <link
+      rel="stylesheet"
+      href="vendor/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css"
+    />
     <link rel="stylesheet" href="css/index.css" />
     <link rel="stylesheet" href="css/lib.css" />
     <!-- CSS only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Quicksand" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-</head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//fonts.googleapis.com/css?family=Quicksand"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+  </head>
 
-<body>
-    <div class="topBar">
-        <a id="newButton" class="barButton"> New </a>
-        <a id="openButton" class="barButton"> Open </a>
-        <a id="saveButton" class="barButton"> Save </a>
-        <a id="noteAreaToggleButton" class="barButton"> Toggle Note Area </a>
-        <a class="barButton" href="https://github.com/bptlab/fCM-design-support/wiki" target="_blank"> Guideline Help </a>
+  <body>
+    <div id="navigationBar" class="topBar">
+      <a id="newButton" class="barButton barContent"> New </a>
+      <a id="openButton" class="barButton barContent"> Open </a>
+      <a id="saveButton" class="barButton barContent"> Save </a>
+      <a id="noteAreaToggleButton" class="barButton barContent">
+        Toggle Note Area
+      </a>
+      <a
+        class="barButton barContent"
+        target="_blank"
+      >
+        Guideline Help
+      </a>
+      <h3 id="fileName" class="barContent">Unnamed file</h3>
     </div>
     <div id="note-area-wrapper" class="hidden">
-        <div id="note-area-drag" style="display:inline"><i class="material-icons">crop</i></div>
-        <div id="note-area-close" style="display:inline"><i class="material-icons">close</i></div>
-        <textarea class="note-area"></textarea>
+      <div id="note-area-drag" style="display: inline">
+        <i class="material-icons">crop</i>
+      </div>
+      <div id="note-area-close" style="display: inline">
+        <i class="material-icons">close</i>
+      </div>
+      <textarea class="note-area"></textarea>
     </div>
     <div id="main" class="mainContent">
-        <div class="content left">
-            <div id="fragments-canvas" class="canvas focus">
-                <div class="canvasHeader">
-                    <h3 class="focusHeader">Fragments <i class="material-icons focusHeaderIcon">photo_size_select_small</i></h3>
-                    <a class="questionButton" href="https://github.com/bptlab/fCM-design-support/wiki/Fragments" target="_blank">?</a>
-                </div>
-            </div>
+      <div id="fragments-canvas" class="canvas focus">
+        <div class="canvasHeader">
+          <h3 class="focusHeader" id="titleFM">
+            <i class="material-icons focusHeaderIcon"
+              >photo_size_select_small</i
+            >
+          </h3>
+          <a
+            class="questionButton"
+            href="https://github.com/Noel-Bastubbe/for-Construction-Modeling/wiki/Fragment-Modeler"
+            target="_blank"
+            >?</a
+          >
         </div>
-
-        <div class="divider vertical"></div>
-
-        <div class="content right">
-            <div class="content top">
-                <div id="datamodel-canvas" class="canvas">
-                    <div class="canvasHeader">
-                        <h3 class="focusHeader">Data Model <i class="material-icons focusHeaderIcon">photo_size_select_small</i></h3>
-                        <a class="questionButton" href="https://github.com/bptlab/fCM-design-support/wiki/Data-Model" target="_blank">?</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="divider horizontal"></div>
-
-            <div class="content bottom">
-                <div class="content top">
-                    <div id="goalstate-canvas" class="canvas">
-                        <div class="canvasHeader" style="position:relative">
-                            <h3 class="focusHeader">Goal State <i class="material-icons focusHeaderIcon">photo_size_select_small</i></h3>
-                            <a class="questionButton" href="https://github.com/bptlab/fCM-design-support/wiki/Goal-State" target="_blank">?</a>
-                        </div>  
-                    </div>
-                </div>
-
-                <div class="divider horizontal"></div>
-
-                <div class="content bottom">
-                    <div id="olc-canvas" class="canvas">
-                        <div class="canvasHeader">
-                            <h3 class="focusHeader">OLCs <i class="material-icons focusHeaderIcon">photo_size_select_small</i></h3>
-                            <a class="questionButton" href="https://github.com/bptlab/fCM-design-support/wiki/Object-Lifecycle-(OLC)" target="_blank">?</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      </div>
+      <div id="datamodel-canvas" class="canvas hidden">
+        <div class="canvasHeader">
+          <h3 class="focusHeader" id="titleDM">
+            <i class="material-icons focusHeaderIcon"
+              >photo_size_select_small</i
+            >
+          </h3>
+          <a
+            class="questionButton"
+            href="https://github.com/Noel-Bastubbe/for-Construction-Modeling/wiki/Data-Modeler"
+            target="_blank"
+            >?</a
+          >
         </div>
+      </div>
+      <div id="objectivemodel-canvas" class="canvas hidden">
+        <div class="canvasHeader">
+          <h3 class="focusHeader" id="titleOM">
+            <i class="material-icons focusHeaderIcon"
+              >photo_size_select_small</i
+            >
+          </h3>
+          <a
+            class="questionButton"
+            href="https://github.com/Noel-Bastubbe/for-Construction-Modeling/wiki/Objective-Modeler"
+            target="_blank"
+            >?</a
+          >
+        </div>
+      </div>
+      <div id="rolemodel-canvas" class="canvas hidden">
+        <div class="canvasHeader">
+          <h3 class="focusHeader" id="titleROM">
+            <i class="material-icons focusHeaderIcon"
+              >photo_size_select_small</i
+            >
+          </h3>
+          <a
+            class="questionButton"
+            href="https://github.com/Noel-Bastubbe/for-Construction-Modeling/wiki/Role-Modeler"
+            target="_blank"
+            >?</a
+          >
+        </div>
+      </div>
+      <div id="resourcemodel-canvas" class="canvas hidden">
+        <div class="canvasHeader">
+          <h3 class="focusHeader" id="titleREM">
+            <i class="material-icons focusHeaderIcon"
+              >photo_size_select_small</i
+            >
+          </h3>
+          <a
+            class="questionButton"
+            href="https://github.com/Noel-Bastubbe/for-Construction-Modeling/wiki/Resource-Modeler"
+            target="_blank"
+            >?</a
+          >
+        </div>
+      </div>
+      <div id="terminationcondition-canvas" class="canvas hidden">
+        <div
+          class="canvasHeader"
+          style="position: relative; display: inline-flex"
+        >
+          <h3 class="focusHeader" id="titleTC">
+            <i class="material-icons focusHeaderIcon"
+              >photo_size_select_small</i
+            >
+          </h3>
+          <a
+            class="questionButton"
+            href="https://github.com/bptlab/fCM-design-support/wiki/Goal-State"
+            target="_blank"
+            >?</a
+          >
+        </div>
+      </div>
+      <div id="dependencymodel-canvas" class="canvas hidden">
+        <div class="canvasHeader">
+          <h3 class="focusHeader" id="titleDEP">
+            <i class="material-icons focusHeaderIcon"
+              >photo_size_select_small</i
+            >
+          </h3>
+          <a
+            class="questionButton"
+            href="https://github.com/Noel-Bastubbe/for-Construction-Modeling/wiki/Dependency-Modeler"
+            target="_blank"
+            >?</a
+          >
+        </div>
+      </div>
+      <div id="olc-canvas" class="canvas hidden">
+        <div class="canvasHeader">
+          <h3 class="focusHeader" id="titleOLC">
+            <i class="material-icons focusHeaderIcon"
+              >photo_size_select_small</i
+            >
+          </h3>
+          <a
+            class="questionButton"
+            href="https://github.com/bptlab/fCM-design-support/wiki/Object-Lifecycle-%28OLC%29"
+            target="_blank"
+            >?</a
+          >
+        </div>
+      </div>
     </div>
-
     <div id="errorBar" class="hidingTable">
-        <table id="errorTable" class="errorTable">
-            <tr>
-                <th> </th>
-                <th>Message</th>
-                <th> </th>
-                <th>Element</th>
-                <th>Artifact</th>
-            </tr>
-        </table>
-        <div class="errorBarControls">
-            <div>
-                <a id="toggleErrorTable" class="barButton"></a>
-            </div>
-            <div id="numberOfViolations">
-                
-            </div>
+      <table id="errorTable" class="errorTable">
+        <tr>
+          <th></th>
+          <th>Message</th>
+          <th></th>
+          <th>Element</th>
+          <th>Artifact</th>
+        </tr>
+      </table>
+      <div class="errorBarControls">
+        <div>
+          <a id="toggleErrorTable" class="barButton barContent"></a>
         </div>
+        <div id="numberOfViolations"></div>
+      </div>
+      <!-- <div id="buttonContainer" class="errorBarControls">
+        <a id="planningButton" class="barButton barContent">Generate Plan</a>
+    </div> -->
     </div>
 
     <script src="./index.js"></script>
-</body>
-
+  </body>
 </html>

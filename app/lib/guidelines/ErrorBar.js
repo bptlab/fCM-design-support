@@ -1,5 +1,5 @@
-import { openAsOverlay } from "../util/HtmlUtil";
-import { type } from "../util/Util";
+import {openAsOverlay} from "../util/HtmlUtil";
+import {type} from "../util/Util";
 
 //TODO rename to "ViolationBar" or similar, as only one severity is about errors
 
@@ -24,13 +24,14 @@ export default class ErrorBar {
         this.numberOfViolations.innerHTML = '';
     }
 
-    displayRow({ severity, element, artifact, message, link, quickFixes }) {
+    displayRow({severity, element, artifact, message, link, quickFixes}) {
         const row = this.table.insertRow(-1);
         row.addEventListener('dblclick', event => {
             this.mediator.focusElement(element);
         });
         row.classList.add(severity.cssClass);
-        const severityCell = row.insertCell(-1), messageCell = row.insertCell(-1), linkCell = row.insertCell(-1), elementCell = row.insertCell(-1), artifactCell = row.insertCell(-1);
+        const severityCell = row.insertCell(-1), messageCell = row.insertCell(-1), linkCell = row.insertCell(-1),
+            elementCell = row.insertCell(-1), artifactCell = row.insertCell(-1);
         severityCell.classList.add('narrowColumn');
         elementCell.innerHTML = type(element) + ' \"' + element.name + '\"';
         artifactCell.innerHTML = artifact;
@@ -65,6 +66,7 @@ export default class ErrorBar {
         const display = document.createElement('span');
         display.innerHTML = severity.label + ': ' + number;
         display.classList.add('barButton');
+        display.classList.add('barContent');
         this.numberOfViolations.appendChild(display);
         return display;
     }
@@ -78,7 +80,8 @@ export function makeGuidelineLink(link) {
     return linkElement;
 }
 
-export function makeQuickFixDiv(quickFixes, onFix = ()=>{}) {
+export function makeQuickFixDiv(quickFixes, onFix = () => {
+}) {
     const quickFixDiv = document.createElement('div');
     quickFixDiv.classList.add("quickFixDiv");
 

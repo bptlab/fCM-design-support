@@ -1,0 +1,66 @@
+.tc-root {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.tc-root.no-dataclass::before {
+  content: 'Please create data classes before modeling the termination condition';
+  color: gray;
+}
+
+.tc-root.no-dataclass * {
+  visibility: hidden;
+}
+
+.tc-conjunction > .tc-operands > .operand:not(:first-of-type):before {
+  content: " ∧ ";
+}
+
+.tc-disjunction > .tc-operands > .operand:not(:first-of-type):before {
+  content: " ∨ "
+}
+
+.tc-literal, .tc-operands {
+  display: inline;
+}
+
+.tc-literal > button {
+  background-color: #29487D;
+  color: white;
+  border-width: 0px;
+}
+
+.tc-operands {
+  margin-right: 20px;
+}
+
+.tc-operation > button {
+  background-color: #29487D;
+  color: white;
+  border-width: 0px;
+  margin-right: 2px;
+}
+
+.tc-operation, .tc-literal {
+  //border: 1px solid gray;
+  padding: 1px;
+  margin: 1px;
+  margin-top: 5px;
+  width: fit-content;
+  background-color: white;
+}
+
+.tc-dataclass, .tc-datastate {
+  display: inline;
+  padding: 1px;
+  position: relative;
+  cursor: default;
+}
+
+.tc-datastate {
+  margin-right: 5px;
+}
+
+.tc-dataclass:hover, .tc-datastate:hover {
+  background-color: lightgray;
+}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<olc:definitions xmlns:olc="http://bptlab/schema/olc" xmlns:olcDi="http://bptlab/schema/olcDi">
+<olc:definitions xmlns:olc="http://bptlab/schema/olc">
   <olc:olc name="Conference" id="Olc_Conference" classRef="Object_0spiahz">
     <olc:state name="open for submissions" id="State_0" type="olc:State" x="120" y="70" />
     <olc:state name="closed for submissions" id="State_1" type="olc:State" x="230" y="70" />

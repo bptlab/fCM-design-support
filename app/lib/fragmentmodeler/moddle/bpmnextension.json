@@ -1,32 +1,57 @@
 {
-    "name": "HPI fCM",
-    "prefix": "fcm",
-    "uri": "http://bptlab/schema/fcm",
-    "xml": {
-        "tagAlias": "lowerCase"
-    },
-    "associations": [],
-    "types": [
+  "name": "HPI fCM",
+  "prefix": "fcm",
+  "uri": "http://bptlab/schema/fcm",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "associations": [],
+  "types": [
+    {
+      "name": "DataConfiguration",
+      "extends": [
+        "bpmn:DataObjectReference"
+      ],
+      "properties": [
         {
-            "name": "DataConfiguration",
-            "extends": ["bpmn:DataObjectReference"],
-            "properties": [
-                {
-                    "name": "dataclass",
-                    "isAttr": true,
-                    "isReference": true,
-                    "type": "od:Class"
-                },
-                {
-                    "name": "states",
-                    "isAttr": true,
-                    "isReference": true,
-                    "type": "olc:State",
-                    "isMany": true
-                }
-            ]
-
+          "name": "dataclass",
+          "isAttr": true,
+          "isReference": true,
+          "type": "od:Class"
+        },
+        {
+          "name": "states",
+          "isAttr": true,
+          "isReference": true,
+          "type": "olc:State",
+          "isMany": true
         }
-    ],
-    "enumerations": []
+      ]
+    },
+    {
+      "name": "ActivityConfiguration",
+      "extends": [
+        "bpmn:Task"
+      ],
+      "properties": [
+        {
+          "name": "duration",
+          "isAttr": true,
+          "type": "int"
+        },
+        {
+          "name": "role",
+          "isAttr": true,
+          "isReference": true,
+          "type": "rom:Role"
+        },
+        {
+          "name": "NoP",
+          "isAttr": true,
+          "type": "int"
+        }
+      ]
+    }
+  ],
+  "enumerations": []
 }

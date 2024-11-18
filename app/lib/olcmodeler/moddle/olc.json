@@ -62,10 +62,10 @@
           "type": "OlcElement"
         },
         {
-            "name": "classRef",
-            "isAttr": true,
-            "isReference": true,
-            "type": "od:Class"
+          "name": "classRef",
+          "isAttr": true,
+          "isReference": true,
+          "type": "od:Class"
         }
       ]
     },

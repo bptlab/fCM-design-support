@@ -1,8 +1,8 @@
-import { isString, assign } from 'min-dash';
+import {assign} from 'min-dash';
 
-import { Moddle } from 'moddle';
+import {Moddle} from 'moddle';
 
-import { Reader, Writer } from 'moddle-xml';
+import {Reader, Writer} from 'moddle-xml';
 
 export default function OlcModdle(packages, options) {
     Moddle.call(this, packages, options);
@@ -12,7 +12,7 @@ OlcModdle.prototype = Object.create(Moddle.prototype);
 
 OlcModdle.prototype.fromXML = function (xmlStr, options) {
     var typeName = 'olc:Definitions';
-    var reader = new Reader(assign({ model: this, lax: false }, options));
+    var reader = new Reader(assign({model: this, lax: false}, options));
     var rootHandler = reader.handler(typeName);
 
     return reader.fromXML(xmlStr, rootHandler);

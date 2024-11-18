@@ -1,6 +1,4 @@
-import {
-    assign
-} from 'min-dash';
+import {assign} from 'min-dash';
 import inherits from 'inherits';
 import BaseElementFactory from 'diagram-js/lib/core/ElementFactory';
 import Ids from 'ids';
@@ -21,10 +19,10 @@ OlcElementFactory.$inject = [
 
 OlcElementFactory.prototype.createBusinessObject = function (type, attrs) {
     const element = this._moddle.create(type, attrs || {});
-    if(!element.id) {
+    if (!element.id) {
         const prefix = (element.$type || '').replace(/^[^:]*:/g, '') + '_';
         element.id = this._ids.nextPrefixed(prefix, element);
-    } else if(this._ids.assigned(element.id)) {
+    } else if (this._ids.assigned(element.id)) {
         throw new Error('Cannot create element, id "' + element.id + '" already exists');
     }
     return element;
@@ -33,7 +31,7 @@ OlcElementFactory.prototype.createBusinessObject = function (type, attrs) {
 OlcElementFactory.prototype.baseCreate = BaseElementFactory.prototype.create;
 OlcElementFactory.prototype.baseCreateShape = BaseElementFactory.prototype.createShape;
 
-OlcElementFactory.prototype.createShape = function(attrs) {
+OlcElementFactory.prototype.createShape = function (attrs) {
     attrs = assign(this.defaultSizeForType(attrs.type), attrs);
     return this.baseCreateShape(attrs);
 }
@@ -64,5 +62,5 @@ OlcElementFactory.prototype.create = function (elementType, attrs) {
 };
 
 OlcElementFactory.prototype.defaultSizeForType = function (type) {
-    return { width: 100, height: 100 };
+    return {width: 100, height: 100};
 }

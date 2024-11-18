@@ -1,6 +1,6 @@
 import OlcButtonBar from "./OlcButtonBar";
 
 export default {
-  __init__: [ 'olcButtonBar' ],
-  olcButtonBar: [ 'type', OlcButtonBar ]
+    __init__: ['olcButtonBar'],
+    olcButtonBar: ['type', OlcButtonBar]
 };
